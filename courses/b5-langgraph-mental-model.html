@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 5 · The LangGraph mental model - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 5 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 5 of 10</div>
+    <h1>The LangGraph <span class="accent">mental model</span></h1>
+    <p class="sub">Four sessions in, create_agent has carried DataDesk well - but it is ONE fixed graph shape, chosen by someone else. Tonight you eject downward and meet the runtime underneath: state, nodes, edges. By the end DataDesk has a spine you designed, and every "how do I make it do X?" question for the rest of the track has the same answer - change the graph.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · langgraph&gt;=1.2 · your b3 DataDesk file</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · From loop to graph</span>
+      <span class="a3" style="flex:5">20-42 · Build-along: DataDesk gets a spine</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why tonight changes the track</h2>
+    </div>
+    <p class="lede">Sessions b2-b4 lived at the create_agent altitude: one model, some tools, middleware around a loop you never saw. That loop is a LangGraph graph - a prebuilt one. Real systems need shapes create_agent does not ship: a router in front of two specialists, a deterministic validation step after every model call, parallel branches, a cycle with an exit condition. LangGraph is the machine for building those shapes, and the whole API is smaller than you fear: one state schema, functions as nodes, edges between them, compile. Everything b6-b9 adds - memory, approval gates, multi-agent - is a feature OF this machine, which is why tonight is the hinge session of the track.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The four LangGraph primitives (state, nodes, edges, conditional edges) in your fingers, DataDesk v2 rebuilt as a 3-node routed graph that wraps your b3 agent as one node, the ability to read any LangGraph codebase by finding its build sequence, and a printed diagram of a graph you built yourself.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: FROM LOOP TO GRAPH ============ -->
+  <section class="section" id="loop-to-graph">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers LangGraph graph-api docs + Academy LangGraph Essentials</span>
+      <h2>From loop to graph <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">The agent loop you wrote by hand in b1 is one control-flow shape among many. Graphs let you draw the shape your problem actually has - and keep the drawing and the code the same artifact.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three graph shapes side by side: a fixed chain, a router with conditional branches, and an agent cycle between model and tools">
+        <style>
+          .b5gT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b5gI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b5gH { font: 700 16px Inter, sans-serif; fill: #132D2D; }
+          .b5gX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b5gN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b5gArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b5gAh); }
+        </style>
+        <defs>
+          <marker id="b5gAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b5gH" x="40" y="36">1 · Chain</text>
+        <rect x="60" y="56" width="180" height="44" rx="10" fill="#1D3D3C"/>
+        <text class="b5gT" x="84" y="83">load</text>
+        <rect x="60" y="130" width="180" height="44" rx="10" fill="#8F84F2"/>
+        <text class="b5gT" x="84" y="157">summarize</text>
+        <rect x="60" y="204" width="180" height="44" rx="10" fill="#132D2D"/>
+        <text class="b5gT" x="84" y="231">answer</text>
+        <line class="b5gArr" x1="150" y1="100" x2="150" y2="122"/>
+        <line class="b5gArr" x1="150" y1="174" x2="150" y2="196"/>
+        <text class="b5gX" x="60" y="278">fixed edges only</text>
+        <text class="b5gX" x="60" y="296">deterministic, auditable</text>
+
+        <text class="b5gH" x="330" y="36">2 · Router</text>
+        <rect x="350" y="56" width="180" height="44" rx="10" fill="#1D3D3C"/>
+        <text class="b5gT" x="374" y="83">classify</text>
+        <rect x="330" y="170" width="105" height="44" rx="10" fill="#BEB4FD"/>
+        <text class="b5gI" x="352" y="197">stats</text>
+        <rect x="455" y="170" width="105" height="44" rx="10" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b5gI" x="474" y="197">fallback</text>
+        <line class="b5gArr" x1="410" y1="100" x2="386" y2="162"/>
+        <line class="b5gArr" x1="470" y1="100" x2="502" y2="162"/>
+        <text class="b5gX" x="330" y="278">conditional edges:</text>
+        <text class="b5gX" x="330" y="296">a function picks the path</text>
+
+        <text class="b5gH" x="620" y="36">3 · Agent</text>
+        <rect x="640" y="56" width="180" height="44" rx="10" fill="#1D3D3C"/>
+        <text class="b5gT" x="664" y="83">model</text>
+        <rect x="640" y="170" width="180" height="44" rx="10" fill="#8F84F2"/>
+        <text class="b5gT" x="664" y="197">tools</text>
+        <line class="b5gArr" x1="700" y1="100" x2="700" y2="162"/>
+        <line class="b5gArr" x1="760" y1="162" x2="760" y2="100"/>
+        <text class="b5gX" x="620" y="278">a cycle: loops until the</text>
+        <text class="b5gX" x="620" y="296">model stops asking for tools</text>
+
+        <rect x="40" y="308" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b5gN" x="64" y="320">create_agent IS shape 3, prebuilt. LangGraph lets you build all three - and mix them.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - chain, router, agent: three shapes, one graph API</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why graphs - the shapes create_agent cannot draw<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>create_agent gives you exactly one control flow: model → tools → model, repeat. It is the right default - but the moment DataDesk needs anything else, you are fighting the abstraction instead of using it:</p>
+        <ul>
+          <li><strong>Routers:</strong> "stats questions go to the CSV agent, docs questions go to retrieval, small talk gets a cheap model." A classifier in front of specialists - not expressible as one agent loop.</li>
+          <li><strong>Deterministic segments:</strong> "ALWAYS validate the SQL before running it." Fixed steps the model cannot skip - a workflow edge, not a model choice.</li>
+          <li><strong>Cycles with YOUR exit condition:</strong> "retry the extraction until the schema validates, max 3 times." You own the loop counter, not the model.</li>
+          <li><strong>Parallel paths:</strong> "profile all 12 tables at once, then merge." Fan-out and fan-in.</li>
+        </ul>
+        <p>The 2026 division of labor: <strong>start at create_agent, eject to LangGraph when the shape demands it.</strong> Because create_agent runs ON LangGraph, ejecting is a refactor, not a rewrite - your tools, middleware lessons and model swap all carry over.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Here are 3 AI features on my team's wishlist: [list 3 real ones]. For each, tell me which control-flow shape it needs - fixed chain, router, cycle/agent, or parallel fan-out - and draw it as a 5-line ASCII graph. One sentence on why.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The four primitives - the entire vocabulary<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Everything in LangGraph is built from four ideas. Learn these and you have learned the framework:</p>
+        <table class="clean">
+          <thead><tr><th>Primitive</th><th>What it is</th><th>In code</th></tr></thead>
+          <tbody>
+            <tr><td><strong>State</strong></td><td>One typed, shared document every node reads and writes - a TypedDict, dataclass, or Pydantic model</td><td><code>class State(TypedDict): ...</code></td></tr>
+            <tr><td><strong>Nodes</strong></td><td>Plain Python functions: take the state, return a PARTIAL update (only the keys you changed)</td><td><code>def step(state): return {"route": "stats"}</code></td></tr>
+            <tr><td><strong>Edges</strong></td><td>Fixed arrows: after node A, always node B. START and END are built-in endpoints</td><td><code>add_edge("a", "b")</code></td></tr>
+            <tr><td><strong>Conditional edges</strong></td><td>A routing function reads the state and returns the NAME of the next node</td><td><code>add_conditional_edges("a", pick, {...})</code></td></tr>
+          </tbody>
+        </table>
+        <p>Two details that prevent 90% of beginner bugs: nodes return <strong>partial updates</strong>, never the whole state (LangGraph merges them for you), and routing functions return <strong>strings</strong> - node names - not node objects.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The whiteboard that compiled.</strong> A data team designed their pipeline-triage assistant as boxes and arrows in a design review: classify → (sql_check | doc_search) → summarize. The LangGraph file that shipped two days later had exactly those node names. When an auditor later asked "what can this system do?", they printed the graph. The diagram IS the code - that is the property you are buying tonight.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Command, the functional API, and when to eject<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Command - update and go in one move.</strong> A node can return <code>Command(update={"route": "stats"}, goto="stats")</code> instead of relying on a separate conditional edge - state change and routing decision travel together. Cleaner when the node that computes the decision should also act on it.</li>
+          <li><strong>Send - the map-reduce edge.</strong> A conditional edge can return a list of <code>Send("worker", {...})</code> objects to fan one item of work out to N parallel node runs, each with its own payload. This is the engine under session b9's map-reduce pattern - namecheck now, hands-on later.</li>
+          <li><strong>The functional API</strong> (<code>@entrypoint</code> / <code>@task</code>) wraps ordinary Python control flow - ifs, loops - and still gets checkpointing. It suits "mostly normal code with a few LLM calls"; the graph API suits systems you want to draw, inspect, and gate. This course teaches the graph API; know the other exists.</li>
+          <li><strong>The eject checklist.</strong> Move from create_agent down to LangGraph when you need: custom control flow (routers, validation steps, retry loops with your exit condition), deterministic segments the model must not skip, or multi-agent coordination. Stay at create_agent when the tool-calling loop plus middleware covers it - altitude is a feature, not a compromise.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: READING A GRAPH LIKE CODE ============ -->
+  <section class="section" id="reading-graphs">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the graph-api build sequence + langgraph 1.2 node options</span>
+      <h2>Reading a graph like code <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Every LangGraph file, from tutorials to Uber-scale production, is the same five-call build sequence. Once you can spot it, unfamiliar codebases open like a map.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The build sequence - the whole API in five calls<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Say it as a sentence: <strong>declare the state, register the nodes, wire the edges, compile.</strong> In code:</p>
+        <div class="prompt-box good"><span class="label">★ The five-call skeleton - every LangGraph file ever</span>from langgraph.graph import StateGraph, START, END
+
+g = StateGraph(DataDeskState)          # 1 · the shared state schema
+g.add_node("classify", classify)       # 2 · functions become nodes
+g.add_edge(START, "classify")          # 3 · fixed arrows
+g.add_conditional_edges(               # 4 · a function picks the path
+    "classify", pick_route,
+    {"stats": "stats", "other": "fallback"})
+graph = g.compile()                    # 5 · build it - returns a runnable</div>
+        <p>Reading order for someone else's graph: find the <code>StateGraph(...)</code> call to learn the state schema, scan the <code>add_node</code> lines for the cast of characters, then follow edges from <code>START</code>. The <code>compile()</code> call is where the later superpowers plug in - <code>compile(checkpointer=...)</code> is next week's entire session in one argument.</p>
+        <div class="callout tip">
+          <strong>Naming discipline</strong>
+          Node names are strings you will see again in traces, interrupts and diagrams. Name them like verbs in a runbook ("classify", "draft", "save_report"), not like variables ("node1", "llm_call_2") - future-you reads these under incident pressure.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Reducers, multiple schemas, and the 1.2 node options<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Reducers - how updates merge.</strong> By default a returned key OVERWRITES the old value. Annotate a key with a reducer to change that: <code>messages: Annotated[list, add_messages]</code> makes message updates APPEND (and dedupe by id) instead of replace. That one annotation is why every node can return just its new message and the conversation still accumulates. create_agent uses exactly this under the hood.</li>
+          <li><strong>Multiple schemas.</strong> A graph can declare separate input and output schemas, and nodes can use private state channels the caller never sees - useful when internal bookkeeping (retry counts, routing labels) should not leak into your API.</li>
+          <li><strong>Per-node timeouts + error handlers (langgraph 1.2).</strong> Nodes can now carry their own timeout and an error handler, so one slow or flaky step fails alone instead of hanging the whole run. Pair with b4's retry middleware thinking: retries at the agent altitude, timeouts at the node altitude.</li>
+          <li><strong>State typing choices.</strong> TypedDict is the lightweight default; dataclasses add defaults; Pydantic models add runtime validation at a small speed cost. Start TypedDict, upgrade the day bad state actually bites.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk gets a spine <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">DataDesk v2: a router graph that reads each question, sends stats questions to your existing b3 create_agent (now demoted to one node among peers), and answers everything else with a plain model call. Three nodes, one conditional edge, about 40 lines.</p>
+
+    <div class="steps">
+      <div class="step"><p>Open your DataDesk project. Confirm <code>pip install "langgraph&gt;=1.2,&lt;2"</code> and that your b3 file exposes <code>agent</code> (the create_agent object) importably.</p></div>
+      <div class="step"><p>Define <code>DataDeskState</code>: a TypedDict with <code>messages</code> (annotated with <code>add_messages</code>) and <code>route</code>. This is the shared document all nodes will pass around.</p></div>
+      <div class="step"><p>Write three node functions: <code>classify</code> (asks the model for one word - stats, docs or other - and writes it to <code>route</code>), <code>stats_agent</code> (wraps your b3 agent), and <code>fallback</code> (plain model answer).</p></div>
+      <div class="step"><p>Wire it: START → classify, conditional edges off <code>pick_route</code>, both specialists → END. Compile.</p></div>
+      <div class="step"><p>Run the three test questions below and watch <code>route</code> differ per question - a stats question exercises your whole b3 agent inside one node; a haiku request never touches it. That divergence is the moment: control flow is yours now.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ datadesk_v2.py - the whole file</span>from typing import TypedDict, Annotated
+from langchain.chat_models import init_chat_model
+from langgraph.graph import StateGraph, START, END
+from langgraph.graph.message import add_messages
+from datadesk_v1 import agent            # your b3 create_agent, unchanged
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # or "ollama:llama3.1"
+
+class DataDeskState(TypedDict):
+    messages: Annotated[list, add_messages]
+    route: str
+
+def classify(state: DataDeskState):
+    q = state["messages"][-1].content
+    verdict = model.invoke("Reply with exactly one word - stats, docs or other. "
+                           f"Which kind of question is this: {q}")
+    return {"route": verdict.content.strip().lower()}
+
+def stats_agent(state: DataDeskState):
+    result = agent.invoke({"messages": state["messages"]})
+    return {"messages": result["messages"][-1:]}
+
+def fallback(state: DataDeskState):
+    return {"messages": [model.invoke(state["messages"])]}
+
+def pick_route(state: DataDeskState) -&gt; str:
+    return state["route"] if state["route"] in ("stats", "docs") else "other"
+
+g = StateGraph(DataDeskState)
+g.add_node("classify", classify)
+g.add_node("stats", stats_agent)
+g.add_node("fallback", fallback)
+g.add_edge(START, "classify")
+g.add_conditional_edges("classify", pick_route,
+    {"stats": "stats", "docs": "fallback", "other": "fallback"})  # docs gets a real home in b8
+g.add_edge("stats", END)
+g.add_edge("fallback", END)
+graph = g.compile()
+
+for q in ["What is the median of the amount column in data.csv?",
+          "Where is our data dictionary kept?",
+          "Write me a haiku about dashboards"]:
+    out = graph.invoke({"messages": [{"role": "user", "content": q}]})
+    print(f"{q[:40]:42} route={out['route']:6} {out['messages'][-1].content[:60]}")</div>
+
+    <div class="callout tip">
+      <strong>If the router misroutes</strong>
+      Small local models sometimes answer "Stats." with punctuation - that is why the code lowercases and strips, and why <code>pick_route</code> defaults anything unrecognized to "other". Defensive routing is production thinking, not demo polish.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Draw what you built <span class="tag demo">★ 8 min · build your own</span></h2>
+    </div>
+    <p class="lede">A compiled graph knows its own shape. Print it, trace one run through the printed picture, and prove the engine swap still holds at this altitude.</p>
+
+    <div class="steps">
+      <div class="step"><p>Add two lines to the bottom of datadesk_v2.py and re-run - the compiled structure appears as a Mermaid diagram (paste it into any Mermaid renderer) or straight ASCII in your terminal.</p></div>
+      <div class="step"><p>Trace last demo's haiku question through the printed diagram with your finger: START → classify → fallback → END. The stats branch never fired. What you drew is what ran - no hidden steps.</p></div>
+      <div class="step"><p>Engine-swap test: flip the <code>init_chat_model</code> line to the other engine and re-run all three questions. The graph, the routing logic and the diagram are engine-agnostic - only answer quality and speed change.</p></div>
+      <div class="step"><p>Keep the printed diagram. In b6 the same picture grows a checkpointer; in b7 a pause gate appears between two of these boxes.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Two lines to see the machine</span>print(graph.get_graph().draw_mermaid())   # paste into a Mermaid renderer
+graph.get_graph().print_ascii()           # or straight to the terminal</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The diagram in the design review.</strong> Teams that ship agents to regulated environments increasingly attach the rendered graph to change requests: reviewers approve a shape, not a prose description. Your two-line print is the toy version of a real governance artifact - the leader track's a4 audience is being taught to ASK for this exact picture.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish DataDesk v2 if you did not complete it live, on both engines. Commit it - b6 builds directly on this file.</li>
+      <li>Add a fourth node: <code>sql_guard</code>, a deterministic (no-LLM) node that runs after <code>stats</code> and refuses to pass along any answer containing "DROP" or "DELETE". Fixed edge in, fixed edge out - your first workflow segment inside an agent system.</li>
+      <li>Rewrite <code>classify</code> to return <code>Command(update={"route": ...}, goto=...)</code> instead of using a conditional edge (self-study card 1c). Decide which style you prefer and write one sentence why.</li>
+      <li>Print the Mermaid diagram before and after your changes and diff the two pictures - feel the "diagram is the code" property directly.</li>
+      <li>Optional reading: the LangGraph graph-api concepts page on docs.langchain.com - after tonight it reads as a reference, not a tutorial.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph graph-api docs</span><span class="note">Parts 1-2 · StateGraph, nodes, edges, conditional edges, START/END, compile, reducers</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Academy: LangGraph Essentials</span><span class="note">Whole session · the four primitives + build sequence are its core module, taught here on DataDesk</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangGraph (M1)</span><span class="note">Demo 1 covers the router-graph build; M1's chatbot variant left as an exercise pattern</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · A LangGraph node is...</p>
+      <button class="qopt" type="button">A · A subclass of BaseNode with a run() method</button>
+      <button class="qopt" type="button">B · A plain function that takes the state and returns a partial update - only the keys it changed</button>
+      <button class="qopt" type="button">C · A separate process that owns its own copy of the state</button>
+      <p class="qwhy">No classes, no magic: functions in, partial dict updates out, LangGraph merges them (via reducers where declared). Returning the whole state is the classic beginner bug.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · How does execution decide between the stats node and the fallback node in DataDesk v2?</p>
+      <button class="qopt" type="button">A · The model outputs the node object to run next</button>
+      <button class="qopt" type="button">B · LangGraph tries both and keeps the better answer</button>
+      <button class="qopt" type="button">C · A conditional edge: a routing function reads the state and returns the NAME of the next node</button>
+      <p class="qwhy">add_conditional_edges registers a plain function that returns a string. The model only wrote "stats" into state; YOUR function turned that into control flow.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · When should you eject from create_agent down to LangGraph?</p>
+      <button class="qopt" type="button">A · When you need custom control flow, deterministic segments, or multi-agent coordination</button>
+      <button class="qopt" type="button">B · Always - create_agent is only for prototypes</button>
+      <button class="qopt" type="button">C · Never - LangGraph is being deprecated in favor of create_agent</button>
+      <p class="qwhy">create_agent is production-grade for the tool-loop shape and runs ON LangGraph. Eject when the SHAPE no longer fits - routers, guaranteed steps, cycles you control, multiple agents.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The four primitives</b><span>State (shared typed dict) · Nodes (functions, partial updates) · Edges (fixed) · Conditional edges (routing functions).</span></div>
+      <div class="cheat-item"><b>The build sequence</b><span>StateGraph(State) → add_node → add_edge / add_conditional_edges → compile(). Every LangGraph file, ever.</span></div>
+      <div class="cheat-item"><b>Three shapes</b><span>Chain (fixed), router (conditional), agent (cycle). create_agent = the cycle, prebuilt. Mix freely.</span></div>
+      <div class="cheat-item"><b>Reducers</b><span>Default: overwrite. Annotated[list, add_messages] = append. Nodes return only what changed.</span></div>
+      <div class="cheat-item"><b>Command / Send</b><span>Command(update=..., goto=...) = state change + routing in one. Send() = map-reduce fan-out (b9).</span></div>
+      <div class="cheat-item"><b>See the machine</b><span>graph.get_graph().draw_mermaid() or .print_ascii() - the diagram IS the code.</span></div>
+      <div class="cheat-item"><b>Eject checklist</b><span>Custom control flow · deterministic must-run steps · multi-agent. Otherwise stay at create_agent.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v2: router graph wrapping the b3 agent as one node. Next: b6 gives it memory that survives a restart.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 5 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b4-middleware.html">← Prev: Middleware</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="b6-state-memory-persistence.html">Next: State, memory, persistence →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

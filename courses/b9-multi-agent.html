@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 9 · Multi-agent and subgraphs - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 9 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 9 of 10</div>
+    <h1>Multi-agent <span class="accent">and subgraphs</span></h1>
+    <p class="sub">The hardest session in the track, and it opens with a warning: multi-agent multiplies cost AND failure modes, and the worst failure is quiet - one agent's fiction becoming the next agent's input. Tonight DataDesk hires an analyst and a writer, you watch a supervisor route between them, and then you deliberately break the team to learn why checkers exist.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · your b7 DataDesk graph running</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Where we are</span>
+      <span class="a2" style="flex:4">3-18 · Patterns + the honest gate</span>
+      <span class="a3" style="flex:5">18-43 · Build-along: DataDesk hires an analyst</span>
+      <span class="a4" style="flex:1">43-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">DataDesk can compute (b1-b4), runs on a graph with state and persistence (b5-b6), pauses for human approval (b7), and reads the wiki with citations (b8). One agent, many tools. Tonight we ask the question every architecture review eventually asks: when is one agent not enough - and what does splitting it actually cost?</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A supervisor graph routing between an analyst agent and a writer agent, a live reproduction of the cascading-error failure (and the 20-line checker that catches it), Send() map-reduce for parallel fan-out, and a decision gate that will stop you from shipping multi-agent where one agent would do.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHEN ONE AGENT IS NOT ENOUGH ============ -->
+  <section class="section" id="when-multi">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Academy Intro to LangGraph M4 + the multi-agent docs</span>
+      <h2>When one agent is not enough <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Multi-agent is an organizational design decision, not a power-up. You are hiring - and every hire adds handoffs, cost, and new ways to fail. The gate comes before the pattern.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Supervisor pattern org chart: a supervisor agent routes to an analyst agent and a writer agent, each with a narrow tool list">
+        <style>
+          .b9sT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b9sI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b9sX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b9sW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b9sN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b9sArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b9sAh); }
+        </style>
+        <defs>
+          <marker id="b9sAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="330" y="30" width="220" height="60" rx="12" fill="#132D2D"/>
+        <text class="b9sT" x="354" y="56">Supervisor</text>
+        <text class="b9sW" x="354" y="76">routes · sequences · stops</text>
+        <rect x="110" y="150" width="240" height="60" rx="12" fill="#1D3D3C"/>
+        <text class="b9sT" x="134" y="176">Analyst agent</text>
+        <text class="b9sW" x="134" y="196">finds numbers, only numbers</text>
+        <rect x="530" y="150" width="240" height="60" rx="12" fill="#8F84F2"/>
+        <text class="b9sT" x="554" y="176">Writer agent</text>
+        <text class="b9sW" x="554" y="196">prose from findings, no tools</text>
+        <line class="b9sArr" x1="380" y1="94" x2="260" y2="142"/>
+        <line class="b9sArr" x1="500" y1="94" x2="620" y2="142"/>
+        <line class="b9sArr" x1="300" y1="146" x2="410" y2="96"/>
+        <line class="b9sArr" x1="580" y1="146" x2="470" y2="96"/>
+        <rect x="110" y="234" width="240" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b9sI" x="134" y="256">tools: csv_stats,</text>
+        <text class="b9sI" x="134" y="274">column_mean, search_docs</text>
+        <rect x="530" y="234" width="240" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b9sI" x="554" y="256">tools: none</text>
+        <text class="b9sI" x="554" y="274">words in, words out</text>
+        <text class="b9sX" x="614" y="52">each specialist keeps a</text>
+        <text class="b9sX" x="614" y="70">NARROW mandate + tool list</text>
+        <rect x="110" y="306" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b9sN" x="134" y="318">Every arrow is a handoff - and every handoff can carry a confident mistake downstream.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the supervisor pattern: an org chart, with failure modes on every arrow</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The honest gate: what multi-agent costs before it pays<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Say the costs out loud before any pattern: every extra agent multiplies model calls (the supervisor thinks, then the specialist thinks, then the supervisor thinks again), multiplies latency, and - the dangerous one - multiplies <strong>failure surface</strong>. The signature multi-agent failure is the <strong>cascading error</strong>: agent A states a wrong number with total confidence, agent B receives it as ground truth and polishes it into a beautiful paragraph. No stack trace. No exception. Just fluent, formatted fiction.</p>
+        <ul>
+          <li><strong>Reach for multi-agent when:</strong> the job needs genuinely distinct specialisms (different system prompts, different tools, different guardrails), or genuinely parallel workstreams (Part 2's Send).</li>
+          <li><strong>Do not reach for it when:</strong> one agent with a better prompt and a longer tool list would do. That describes most cases you will meet.</li>
+          <li><strong>The test:</strong> if you cannot write each agent's job description in one sentence without overlap, you are not splitting work - you are duplicating confusion at 2x token cost.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>I am considering splitting my single AI agent into multiple agents for this job: [describe the job]. Argue AGAINST the split first: what would one well-prompted agent with all the tools do worse, concretely? Only then tell me if a split is justified, and along which one-sentence job descriptions.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The supervisor pattern - a router with employees<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The workhorse multi-agent shape: one <strong>supervisor</strong> node that reads the conversation and decides who works next, plus specialist agents that do the work and report back. In LangGraph terms, each of them is just a node; the supervisor returns a <code>Command(goto=...)</code> naming the next node, and every specialist edge leads back to the supervisor.</p>
+        <ul>
+          <li><strong>Narrow tools per specialist</strong> is the real safety feature: the analyst can read CSVs but cannot draft emails; the writer can draft but cannot touch data. Least privilege, from b7's governance mindset.</li>
+          <li><strong>The supervisor is small.</strong> It routes and stops - it does not do the work. A routing prompt of five lines beats a clever one of fifty.</li>
+          <li><strong>Everything you built still applies:</strong> the supervisor graph compiles with your b6 checkpointer and can carry b7 interrupts. Multi-agent is nodes and edges, not a new framework.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Subgraphs, swarms, hierarchies<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Subgraphs: a graph as a node.</strong> Any compiled LangGraph graph can be added to another graph with <code>add_node("analyst_team", analyst_graph)</code>. That turns tonight's supervisor team into a reusable component - a "team as a lego brick" you can drop into a bigger org chart. State either shares keys with the parent or gets translated at the boundary. This is how multi-agent systems stay reviewable: each subgraph is testable alone.</p>
+        <p><strong>Namechecks:</strong> the <strong>swarm</strong> pattern drops the supervisor - agents hand off directly to each other (fewer hops, harder to audit). <strong>Hierarchical</strong> stacks supervisors of supervisors - org charts for very big jobs, with every layer adding the cascade risk you will demo tonight. Both are edge-wiring variations on what you build in Demo 1; learn them by need, not by default.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FAN-OUT AND THE HARNESS ABOVE ============ -->
+  <section class="section" id="fan-out">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Send() map-reduce + the Deep Agents overview</span>
+      <h2>Fan-out and the harness above <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Not all "more agents" means different specialists. Sometimes it means the SAME work over N items at once - that is Send(), LangGraph's map-reduce. And above all of it sits Deep Agents, a prebuilt harness you should recognize before you hand-roll one.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Send fan-out: a plan node spawns N parallel worker branches, one per item, whose results reduce into a single combine node">
+        <style>
+          .b9fT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b9fI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b9fX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b9fW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b9fN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b9fArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b9fAh); }
+        </style>
+        <defs>
+          <marker id="b9fAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="118" width="190" height="64" rx="12" fill="#132D2D"/>
+        <text class="b9fT" x="64" y="144">plan node</text>
+        <text class="b9fW" x="64" y="164">one Send() per item</text>
+        <rect x="330" y="34" width="220" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b9fT" x="354" y="60">profile march.csv</text>
+        <rect x="330" y="124" width="220" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b9fT" x="354" y="150">profile april.csv</text>
+        <rect x="330" y="214" width="220" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b9fT" x="354" y="240">profile may.csv</text>
+        <line class="b9fArr" x1="234" y1="132" x2="322" y2="66"/>
+        <line class="b9fArr" x1="234" y1="150" x2="322" y2="150"/>
+        <line class="b9fArr" x1="234" y1="168" x2="322" y2="234"/>
+        <rect x="650" y="118" width="190" height="64" rx="12" fill="#1D3D3C"/>
+        <text class="b9fT" x="674" y="144">combine node</text>
+        <text class="b9fW" x="674" y="164">reducer merges results</text>
+        <line class="b9fArr" x1="554" y1="66" x2="642" y2="132"/>
+        <line class="b9fArr" x1="554" y1="150" x2="642" y2="150"/>
+        <line class="b9fArr" x1="554" y1="240" x2="642" y2="168"/>
+        <text class="b9fX" x="330" y="292">same worker node, N parallel copies - N unknown until runtime</text>
+        <rect x="650" y="34" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b9fN" x="674" y="46">Parallelism ≠ specialists:</text>
+        <text class="b9fN" x="674" y="64">same job, many items</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - Send() map-reduce: one node fans out to N parallel branches, results reduce to one</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Send() - map-reduce for graphs<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Normal edges are drawn at build time - but "profile every CSV in the folder" has an N you only know at runtime. <code>Send()</code> solves it: a conditional edge returns a LIST of Send objects, each dispatching one worker copy with its own private state. Workers run in parallel; their outputs merge back through a state reducer (your b6 knowledge, doing the reduce half).</p>
+        <div class="prompt-box good"><span class="label">★ The fan-out edge - the whole trick</span>from langgraph.types import Send
+
+def fan_out(state: State):
+    # one Send per item - N decided at runtime
+    return [Send("profile_one", {"csv": path}) for path in state["csv_paths"]]
+
+builder.add_conditional_edges("plan", fan_out)
+# profile_one writes to a list key with a reducer, e.g.:
+#   profiles: Annotated[list, operator.add]
+# so parallel results merge instead of overwrite.</div>
+        <p>Use it for: per-file profiling, per-document summaries, per-segment analyses. It is the cheapest multi-agent win because the workers cannot cascade into each other - they never see each other's output.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Deep Agents - the harness you should not hand-roll<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Overview only - this is a full course of its own.</strong> Deep Agents is LangChain's batteries-included harness for long-running, open-ended work: it ships a planning tool (the agent writes and updates its own todo list), a filesystem for notes and intermediate artifacts, and spawnable subagents for isolated subtasks - prebuilt, on the same LangGraph primitives you now know.</p>
+        <ul>
+          <li><strong>Reach for it when</strong> the job is long-horizon and open-ended - "research this market and draft a report" - where an agent needs to plan, park context, and delegate for hours, not seconds.</li>
+          <li><strong>Do not reach for it</strong> for DataDesk-shaped work: bounded questions, minutes-long runs, tools you enumerated yourself. Tonight's supervisor is the right altitude.</li>
+          <li><strong>It is not magic.</strong> Planning is a tool, the filesystem is state, subagents are subgraphs. You could now build a budget version yourself - which is exactly why you can judge when to buy the prebuilt one.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk hires an analyst <span class="tag demo">★ 14 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Split DataDesk into an analyst (stats tools only) and a writer (no tools), with a supervisor routing between them. One request, watched end to end: "analyze march.csv and draft a summary for the COO".</p>
+
+    <div class="steps">
+      <div class="step"><p>Define the two specialists with <code>create_agent</code> - reuse your existing tools, but split them: analyst gets <code>csv_stats</code>, <code>column_mean</code>, <code>search_docs</code>; writer gets an empty tool list and a style-focused system prompt.</p></div>
+      <div class="step"><p>Write the supervisor node: a plain model call with a five-line routing prompt, returning <code>Command(goto=...)</code> to "analyst", "writer", or END.</p></div>
+      <div class="step"><p>Wire the graph from the file below: START → supervisor, both specialists edge back to supervisor. Compile with your b6 checkpointer if you want the run resumable.</p></div>
+      <div class="step"><p>Run: <em>"Analyze march.csv and draft a short summary for the COO."</em> Stream it and narrate the routing: supervisor → analyst (tool calls fire) → supervisor → writer (prose appears) → supervisor → END.</p></div>
+      <div class="step"><p>Count the model calls versus b3's single agent answering the same request. That ratio - roughly double or more - is the price tag you accepted at the honest gate.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ supervisor.py - the whole team</span>from typing import Literal
+from langgraph.graph import StateGraph, MessagesState, START, END
+from langgraph.types import Command
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # or "ollama:llama3.1"
+
+analyst = create_agent(model=model, tools=[csv_stats, column_mean, search_docs],
+    system_prompt="You are the analyst. Report findings as plain numbered "
+                  "facts with numbers from your tools. No prose, no advice.")
+writer = create_agent(model=model, tools=[],
+    system_prompt="You are the writer. Turn the analyst's facts into a short, "
+                  "clear stakeholder summary. Do not invent numbers.")
+
+def supervisor(state: MessagesState) -> Command[Literal["analyst", "writer", END]]:
+    decision = model.invoke([{"role": "system", "content":
+        "You route a data team. Reply with exactly one word: "
+        "'analyst' if data work is still needed, "
+        "'writer' if findings exist but no summary yet, "
+        "'done' if the request is fully answered."}, *state["messages"]])
+    word = decision.content.strip().lower()
+    return Command(goto=END if word == "done" else word)
+
+def run_analyst(state: MessagesState):
+    return {"messages": [analyst.invoke(state)["messages"][-1]]}
+
+def run_writer(state: MessagesState):
+    return {"messages": [writer.invoke(state)["messages"][-1]]}
+
+builder = StateGraph(MessagesState)
+builder.add_node("supervisor", supervisor)
+builder.add_node("analyst", run_analyst)
+builder.add_node("writer", run_writer)
+builder.add_edge(START, "supervisor")
+builder.add_edge("analyst", "supervisor")
+builder.add_edge("writer", "supervisor")
+team = builder.compile()</div>
+
+    <div class="callout tip">
+      <strong>Local-engine note</strong>
+      The routing word trick works on llama3.1 but is less reliable than Claude - if your supervisor loops, tighten the routing prompt to forbid anything but the three words, or give the supervisor the stronger engine and the workers the free one. Mixing engines per node is one line each; that is the b2 swap paying rent again.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>The cascade experiment <span class="tag demo">★ 8 min · build your own</span></h2>
+    </div>
+    <p class="lede">The leader track teaches cascading errors as a slide (a3). You get to reproduce one in 20 lines - and fix it with a checker node.</p>
+
+    <div class="steps">
+      <div class="step"><p>Seed the failure: make <code>march_bad.csv</code> - copy march.csv and corrupt one revenue figure by 100x. Ask the team to analyze it and draft the COO summary.</p></div>
+      <div class="step"><p>Watch the cascade: the analyst reports the absurd number as fact (its tools said so). The writer - explicitly told not to invent numbers - faithfully polishes the fiction into confident executive prose. Every agent behaved correctly. The SYSTEM failed.</p></div>
+      <div class="step"><p>Name what is missing: nothing between analyst and writer ever asks "is this plausible?". Handoffs carry confidence, not verification.</p></div>
+      <div class="step"><p>Add the fix: a <code>checker</code> node between them - it re-runs <code>csv_stats</code> and asks the model to flag findings that look inconsistent with the raw stats (orders of magnitude, impossible dates). Route: analyst → checker → writer, with checker sending it back to the analyst on failure.</p></div>
+      <div class="step"><p>Re-run on the bad CSV: the checker bounces the finding, the analyst re-examines, and the summary either corrects or flags the anomaly. Twenty lines, and the a3 lesson is now muscle memory: <strong>verify at the handoff, not at the end.</strong></p></div>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>Why this demo is the whole session.</strong> Post-mortems of failed multi-agent deployments rarely find a broken agent - they find a missing checker. McKinsey's "verify every step" lesson and b7's approval gates are the same instinct at different altitudes: trust boundaries between components, human or automated, are what turn a chain of fluent guessers into a system you can defend.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 40-60 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish both demos - the cascade experiment especially. Do not skip watching the writer polish the wrong number; the discomfort is the curriculum.</li>
+      <li>Add a third specialist with ONE narrow job (e.g. a <code>sql_reader</code> with a read-only query tool) and extend the routing prompt. Notice how much of the work is prompt design, not graph code.</li>
+      <li>Build the Send() fan-out: profile 3 CSVs in parallel with a reducer collecting results. Time it against a sequential loop.</li>
+      <li>Run the argue-against-the-split prompt from Part 1 on a real candidate from your backlog. If the split survives the argument, sketch the one-sentence job descriptions.</li>
+      <li>Optional reading: the Deep Agents overview post - read it as "which of tonight's primitives did they prebuild?"</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangGraph (M4)</span><span class="note">Part 1 + Demo 1 · supervisor routing and parallelization; the module's research-assistant capstone is homework-adjacent</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph subgraphs + Send docs</span><span class="note">Part 1 self-study + Part 2 · graphs as nodes, Send map-reduce with reducers, verified patterns</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Deep Agents course + docs</span><span class="note">Overview card only by design · planning + filesystem + subagents as a prebuilt harness; the full course stays with the Academy</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · The right reason to go multi-agent is...</p>
+      <button class="qopt" type="button">A · More agents means more intelligence on the problem</button>
+      <button class="qopt" type="button">B · Single agents cannot use more than a few tools</button>
+      <button class="qopt" type="button">C · Genuinely distinct specialisms or genuinely parallel work - and only after arguing for the single-agent version first</button>
+      <p class="qwhy">The honest gate: multi-agent multiplies cost, latency and failure surface. Distinct job descriptions (different prompts, tools, guardrails) or runtime parallelism justify it; ambition alone does not.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · Send() is for...</p>
+      <button class="qopt" type="button">A · Map-reduce fan-out: dispatching N parallel copies of the same worker node when N is only known at runtime, merged back by a reducer</button>
+      <button class="qopt" type="button">B · Sending messages between two different specialist agents</button>
+      <button class="qopt" type="button">C · Deploying a graph to LangSmith Deployment</button>
+      <p class="qwhy">Send is parallelism, not specialization: same job, many items, private state per worker, results reduced into one key. Specialist-to-specialist routing is the supervisor's job.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · In the cascade experiment, the writer confidently summarized a wrong number. The systemic fix was...</p>
+      <button class="qopt" type="button">A · A stronger model for the writer</button>
+      <button class="qopt" type="button">B · A checker node at the handoff, validating the analyst's claims against the raw data before the writer sees them</button>
+      <button class="qopt" type="button">C · Telling the writer twice not to invent numbers</button>
+      <p class="qwhy">Every agent behaved correctly; the system failed because handoffs carry confidence, not verification. Cascading errors are a topology problem - verify at the handoff, not at the end.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 9 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The honest gate</b><span>Multi-agent multiplies cost AND failure modes. Justify with distinct specialisms or parallelism - argue for one agent first.</span></div>
+      <div class="cheat-item"><b>Cascading errors</b><span>One agent's fiction becomes the next one's input - fluent, formatted, no exception raised. THE multi-agent risk.</span></div>
+      <div class="cheat-item"><b>Supervisor pattern</b><span>Small router node returns Command(goto="analyst"|"writer"|END); specialists edge back to it. Narrow tools per specialist.</span></div>
+      <div class="cheat-item"><b>The checker fix</b><span>Verify at the handoff, not at the end: a checker node between agents validating claims against raw data.</span></div>
+      <div class="cheat-item"><b>Send()</b><span>Conditional edge returns [Send("worker", {...}) for item in items] - N parallel copies, merged by a state reducer.</span></div>
+      <div class="cheat-item"><b>Subgraphs</b><span>add_node("team", compiled_graph) - a graph as a node. Teams become testable, reusable components.</span></div>
+      <div class="cheat-item"><b>Deep Agents</b><span>Prebuilt harness: planning tool + filesystem + subagents, for long-horizon open-ended work. Overview only - not for DataDesk-shaped jobs.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk is now a team: analyst + checker + writer under a supervisor. b10 puts numbers on whether any of this was worth it.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 9 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b8-rag.html">← Prev: RAG the 1.x way</a> &nbsp;·&nbsp; <a href="b10-langsmith.html">Next: LangSmith - trace, eval, ship →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>learn langchain with phoebe - a two-track course on agents that ship</title>
+<link rel="stylesheet" href="assets/style.css?v=1">
+<style>
+  .stats-row { display: flex; gap: 2.4rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .stat b { display: block; font-size: 2.1rem; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: .72rem; opacity: .85; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
+
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .course-card {
+    border: 1px solid var(--hairline);
+    border-top: 4px solid var(--diff, var(--indigo));
+    border-radius: var(--radius);
+    padding: 1.2rem 1.3rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: #fff;
+    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    position: relative;
+  }
+  .course-card:hover { border-color: var(--indigo-soft); border-top-color: var(--diff, var(--indigo)); box-shadow: 0 8px 28px rgba(29,61,60,.12); transform: translateY(-3px); }
+  .course-card .cicon { font-size: 1.7rem; line-height: 1; }
+  .course-card .cnum { font-size: .72rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .1em; }
+  .course-card h3 { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+  .course-card p { font-size: .85rem; color: var(--muted); flex: 1; }
+  .course-card .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+  .diff-legend { display: flex; gap: 1rem; margin-top: 1.6rem; font-size: .74rem; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+  .diff-legend i { display: inline-block; width: .85rem; height: .35rem; border-radius: 999px; margin-right: .35rem; vertical-align: middle; }
+
+  .paths { margin-top: 2.6rem; }
+  .paths h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; }
+  .paths .plede { color: var(--muted); font-size: .92rem; margin-bottom: .8rem; }
+  .path { display: flex; gap: .55rem; align-items: center; padding: .75rem 0; border-bottom: .5px solid var(--hairline); flex-wrap: wrap; }
+  .path:last-child { border-bottom: none; }
+  .path b { min-width: 15.5rem; font-size: .9rem; }
+  .path .pstep { background: var(--indigo-50); color: var(--indigo); border-radius: 999px; padding: .16rem .68rem; font-weight: 700; font-size: .8rem; text-decoration: none; transition: all .12s ease; }
+  .path .pstep:hover { background: var(--indigo); color: #fff; }
+  .path .parr { color: var(--faint); font-weight: 700; }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff,#F4F2FD); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe</div>
+    <h1>Two tracks from agent-curious to agents that ship</h1>
+    <p class="sub">A leader track that teaches you to think, question, and decide about AI agents without a line of code - and a builder track that grows one real assistant, DataDesk, from a 40-line loop to a multi-agent system with memory, approval gates, and an eval suite. LangChain 1.x + LangGraph, taught from the official docs and Academy curricula.</p>
+    <div class="stats-row">
+      <div class="stat"><b data-count="2">2</b><span>tracks</span></div>
+      <div class="stat"><b data-count="16">16</b><span>sessions</span></div>
+      <div class="stat"><b data-count="1">1</b><span>running project</span></div>
+      <div class="stat"><b data-count="45">45</b><span>min per session</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>The leader track 🤝 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· for C-level, managers &amp; curious minds · 6 x 45 min · no code, ever</span></h2>
+      <p class="plede">Thinking mode: what agents are, how they fail, how to govern them, and how to make the build-buy-fund decisions - each session ends with questions to ask your data team.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/a1-autonomy-ladder.html" style="--diff:#34D399">
+        <span class="cicon">🪜</span>
+        <span class="cnum">Leader 1 · easy</span>
+        <h3>Chatbot, robot, or colleague? The autonomy ladder</h3>
+        <p>Workflows vs agents in plain English, the RPA hybrid pattern, and the agent-washing screen for vendor pitches.</p>
+        <span class="meta"><span class="pill amber">▶ Leaders start here</span></span>
+      </a>
+      <a class="course-card" href="courses/a2-speaking-agent.html" style="--diff:#34D399">
+        <span class="cicon">🗣️</span>
+        <span class="cnum">Leader 2 · easy</span>
+        <h3>Speaking agent: the vocabulary bridge</h3>
+        <p>The 22 terms that end nodding-along meetings - each framed as the question it lets you ask your team.</p>
+        <span class="meta"><span class="pill light">Glossary session</span></span>
+      </a>
+      <a class="course-card" href="courses/a3-when-agents-go-wrong.html" style="--diff:#FBBF24">
+        <span class="cicon">🔥</span>
+        <span class="cnum">Leader 3 · medium</span>
+        <h3>When agents go wrong: the failure brief</h3>
+        <p>Replit's deleted database, Klarna's reversal, runaway bills - and why failures are governance gaps, not model gaps.</p>
+        <span class="meta"><span class="pill light">Pre-mortem exercise</span></span>
+      </a>
+      <a class="course-card" href="courses/a4-trifecta-governance.html" style="--diff:#FBBF24">
+        <span class="cicon">🛡️</span>
+        <span class="cnum">Leader 4 · medium</span>
+        <h3>The lethal trifecta and the governance stack</h3>
+        <p>The one security rule every leader can retain, plus approval gates, spend caps, and audit trails that actually work.</p>
+        <span class="meta"><span class="pill light">Approval-matrix exercise</span></span>
+      </a>
+      <a class="course-card" href="courses/a5-build-buy-blend.html" style="--diff:#FB923C">
+        <span class="cicon">💸</span>
+        <span class="cnum">Leader 5 · deciding</span>
+        <h3>Build, buy, or blend: the investment decision</h3>
+        <p>Real cost ranges, the 1M-conversation crossover, and how to read a vendor whose framework is free.</p>
+        <span class="meta"><span class="pill light">Score-the-pitch exercise</span></span>
+      </a>
+      <a class="course-card" href="courses/a6-proving-it.html" style="--diff:#FB923C">
+        <span class="cicon">📊</span>
+        <span class="cnum">Leader 6 · deciding</span>
+        <h3>Proving it: ROI and the honest scorecard</h3>
+        <p>Klarna as best case AND cautionary tale, the believer and skeptic numbers, and the 5-metric scorecard to demand.</p>
+        <span class="meta"><span class="pill light">Scorecard exercise</span></span>
+      </a>
+    </div>
+
+    <div class="paths">
+      <h2>The builder track 🛠️ <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· for practitioners · 10 x 45 min · Claude API or local Ollama</span></h2>
+      <p class="plede">One growing artifact: DataDesk, a data-team assistant. Every session upgrades the same code - and every capability is built by hand first, so the framework never gets to be magic.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/b1-need-a-framework.html" style="--diff:#34D399">
+        <span class="cicon">🧭</span>
+        <span class="cnum">Builder 1 · easy</span>
+        <h3>Do you even need a framework?</h3>
+        <p>Build an agent with no framework, rebuild it in three lines of LangChain 1.x, and learn the honest alternatives card.</p>
+        <span class="meta"><span class="pill amber">▶ Builders start here</span></span>
+      </a>
+      <a class="course-card" href="courses/b2-models-messages-tools.html" style="--diff:#34D399">
+        <span class="cicon">🧱</span>
+        <span class="cnum">Builder 2 · easy</span>
+        <h3>Models, messages, tools</h3>
+        <p>init_chat_model, the Claude ↔ Ollama one-line swap, content blocks, and structured output DataDesk can validate.</p>
+        <span class="meta"><span class="pill light">DataDesk v0.2</span></span>
+      </a>
+      <a class="course-card" href="courses/b3-create-agent.html" style="--diff:#FBBF24">
+        <span class="cicon">🤖</span>
+        <span class="cnum">Builder 3 · medium</span>
+        <h3>create_agent, properly</h3>
+        <p>Inside the 1.x harness: multi-tool agents, system prompts as constitutions, and streaming that feels alive.</p>
+        <span class="meta"><span class="pill light">DataDesk v1</span></span>
+      </a>
+      <a class="course-card" href="courses/b4-middleware.html" style="--diff:#FBBF24">
+        <span class="cicon">🧅</span>
+        <span class="cnum">Builder 4 · medium</span>
+        <h3>Middleware: the production layer</h3>
+        <p>PII scrubbing, summarization, retries, Claude-to-local fallback - and the yanked-release lesson in pinning versions.</p>
+        <span class="meta"><span class="pill light">DataDesk grows armor</span></span>
+      </a>
+      <a class="course-card" href="courses/b5-langgraph-mental-model.html" style="--diff:#FB923C">
+        <span class="cicon">🕸️</span>
+        <span class="cnum">Builder 5 · hands-on</span>
+        <h3>The LangGraph mental model</h3>
+        <p>State, nodes, edges, routers - the graph under everything, and when to eject from create_agent down to it.</p>
+        <span class="meta"><span class="pill light">DataDesk gets a spine</span></span>
+      </a>
+      <a class="course-card" href="courses/b6-state-memory-persistence.html" style="--diff:#FB923C">
+        <span class="cicon">💾</span>
+        <span class="cnum">Builder 6 · hands-on</span>
+        <h3>State, memory, persistence</h3>
+        <p>Checkpointers, thread identity, and the resurrection moment: kill the process, restart, and the conversation continues.</p>
+        <span class="meta"><span class="pill light">DataDesk v2</span></span>
+      </a>
+      <a class="course-card" href="courses/b7-hitl-time-travel.html" style="--diff:#FB923C">
+        <span class="cicon">🚦</span>
+        <span class="cnum">Builder 7 · hands-on</span>
+        <h3>Human-in-the-loop and time travel</h3>
+        <p>Approval gates before write-actions (approve, edit, reject) and rewinding a thread to fork a what-if.</p>
+        <span class="meta"><span class="pill light">Governance, in code</span></span>
+      </a>
+      <a class="course-card" href="courses/b8-rag.html" style="--diff:#FBBF24">
+        <span class="cicon">📚</span>
+        <span class="cnum">Builder 8 · medium</span>
+        <h3>RAG the 1.x way</h3>
+        <p>Retrieval as a tool the agent chooses to call: DataDesk reads the team wiki, cites its sources, and admits gaps.</p>
+        <span class="meta"><span class="pill light">DataDesk reads docs</span></span>
+      </a>
+      <a class="course-card" href="courses/b9-multi-agent.html" style="--diff:#F87171">
+        <span class="cicon">👥</span>
+        <span class="cnum">Builder 9 · hardest</span>
+        <h3>Multi-agent and subgraphs</h3>
+        <p>Supervisor, specialists, Send fan-out - plus the cascade experiment that shows exactly why checkers exist.</p>
+        <span class="meta"><span class="pill light">DataDesk hires an analyst</span></span>
+      </a>
+      <a class="course-card" href="courses/b10-langsmith.html" style="--diff:#F87171">
+        <span class="cicon">🎓</span>
+        <span class="cnum">Builder 10 · hardest</span>
+        <h3>LangSmith: trace, eval, ship</h3>
+        <p>Tracing in two env vars, an eval suite with an LLM judge, shipping options - and DataDesk's graduation checklist.</p>
+        <span class="meta"><span class="pill light">DataDesk graduates</span></span>
+      </a>
+    </div>
+    <div class="diff-legend">
+      <span><i style="background:#34D399"></i>easy - everyone</span>
+      <span><i style="background:#FBBF24"></i>medium</span>
+      <span><i style="background:#FB923C"></i>hands-on / deciding</span>
+      <span><i style="background:#F87171"></i>hardest</span>
+    </div>
+
+    <div class="paths">
+      <h2>Choose your path 🗺️</h2>
+      <p class="plede">Two doors, one course. Leaders never see code; builders never sit through governance theory they have not felt in a demo first.</p>
+      <div class="path"><b>🤝 Leader (no code, ever)</b>
+        <a class="pstep" href="courses/a1-autonomy-ladder.html">a1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a2-speaking-agent.html">a2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a3-when-agents-go-wrong.html">a3</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a4-trifecta-governance.html">a4</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a5-build-buy-blend.html">a5</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a6-proving-it.html">a6</a>
+      </div>
+      <div class="path"><b>🛠️ Builder (grow DataDesk)</b>
+        <a class="pstep" href="courses/b1-need-a-framework.html">b1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b2-models-messages-tools.html">b2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b3-create-agent.html">b3</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b4-middleware.html">b4</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b5-langgraph-mental-model.html">b5</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b6-state-memory-persistence.html">b6</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b7-hitl-time-travel.html">b7</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b8-rag.html">b8</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b9-multi-agent.html">b9</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b10-langsmith.html">b10</a>
+      </div>
+      <div class="path"><b>🌱 Curious follower (a taste)</b>
+        <a class="pstep" href="courses/a1-autonomy-ladder.html">a1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a2-speaking-agent.html">a2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b1-need-a-framework.html">b1</a>
+      </div>
+      <div class="path"><b>🚀 Full journey (lead AND build)</b>
+        <a class="pstep" href="courses/a1-autonomy-ladder.html">a1-a6</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b1-need-a-framework.html">b1-b10</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">Both tracks at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>learn-langchain-with-phoebe · by Phoebe Fu · sources: <a href="https://docs.langchain.com">docs.langchain.com</a> + <a href="https://academy.langchain.com">LangChain Academy</a></span>
+  </footer>
+</main>
+
+<script>
+window.MINDMAP_DATA = {
+  title: "Learn\nLangChain",
+  centerColor: "#132D2D",
+  sessions: [
+    { label: "Autonomy\nladder", href: "courses/a1-autonomy-ladder.html", color: "#34D399",
+      concepts: [
+        { label: "Workflow vs agent", href: "courses/a1-autonomy-ladder.html" },
+        { label: "Agent washing", href: "courses/a1-autonomy-ladder.html" },
+        { label: "Start simple", href: "courses/a1-autonomy-ladder.html" } ] },
+    { label: "Speaking\nagent", href: "courses/a2-speaking-agent.html", color: "#34D399",
+      concepts: [
+        { label: "22-term bridge", href: "courses/a2-speaking-agent.html" },
+        { label: "Traces = audit trail", href: "courses/a2-speaking-agent.html" } ] },
+    { label: "Agents gone\nwrong", href: "courses/a3-when-agents-go-wrong.html", color: "#FBBF24",
+      concepts: [
+        { label: "Replit story", href: "courses/a3-when-agents-go-wrong.html" },
+        { label: "Cascading errors", href: "courses/a3-when-agents-go-wrong.html" },
+        { label: "Pre-mortem", href: "courses/a3-when-agents-go-wrong.html" } ] },
+    { label: "Trifecta +\ngovernance", href: "courses/a4-trifecta-governance.html", color: "#FBBF24",
+      concepts: [
+        { label: "Lethal trifecta", href: "courses/a4-trifecta-governance.html" },
+        { label: "Rule of Two", href: "courses/a4-trifecta-governance.html" },
+        { label: "Approval matrix", href: "courses/a4-trifecta-governance.html" } ] },
+    { label: "Build, buy\nor blend", href: "courses/a5-build-buy-blend.html", color: "#FB923C",
+      concepts: [
+        { label: "Three doors", href: "courses/a5-build-buy-blend.html" },
+        { label: "TCO crossover", href: "courses/a5-build-buy-blend.html" } ] },
+    { label: "Proving\nit", href: "courses/a6-proving-it.html", color: "#FB923C",
+      concepts: [
+        { label: "Klarna both ways", href: "courses/a6-proving-it.html" },
+        { label: "Honest scorecard", href: "courses/a6-proving-it.html" } ] },
+    { label: "Need a\nframework?", href: "courses/b1-need-a-framework.html", color: "#34D399",
+      concepts: [
+        { label: "Agent = loop", href: "courses/b1-need-a-framework.html" },
+        { label: "The 2026 stack", href: "courses/b1-need-a-framework.html" },
+        { label: "Alternatives card", href: "courses/b1-need-a-framework.html" } ] },
+    { label: "Models, msgs,\ntools", href: "courses/b2-models-messages-tools.html", color: "#34D399",
+      concepts: [
+        { label: "One-line swap", href: "courses/b2-models-messages-tools.html" },
+        { label: "Content blocks", href: "courses/b2-models-messages-tools.html" },
+        { label: "Structured output", href: "courses/b2-models-messages-tools.html" } ] },
+    { label: "create_agent\nproperly", href: "courses/b3-create-agent.html", color: "#FBBF24",
+      concepts: [
+        { label: "The harness", href: "courses/b3-create-agent.html" },
+        { label: "Streaming", href: "courses/b3-create-agent.html" } ] },
+    { label: "Middleware", href: "courses/b4-middleware.html", color: "#FBBF24",
+      concepts: [
+        { label: "Built-in five", href: "courses/b4-middleware.html" },
+        { label: "Model fallback", href: "courses/b4-middleware.html" },
+        { label: "Pin your versions", href: "courses/b4-middleware.html" } ] },
+    { label: "LangGraph\nmental model", href: "courses/b5-langgraph-mental-model.html", color: "#FB923C",
+      concepts: [
+        { label: "State/nodes/edges", href: "courses/b5-langgraph-mental-model.html" },
+        { label: "Routers", href: "courses/b5-langgraph-mental-model.html" },
+        { label: "The eject path", href: "courses/b5-langgraph-mental-model.html" } ] },
+    { label: "Memory +\npersistence", href: "courses/b6-state-memory-persistence.html", color: "#FB923C",
+      concepts: [
+        { label: "Checkpointers", href: "courses/b6-state-memory-persistence.html" },
+        { label: "thread_id", href: "courses/b6-state-memory-persistence.html" },
+        { label: "Long-term store", href: "courses/b6-state-memory-persistence.html" } ] },
+    { label: "HITL +\ntime travel", href: "courses/b7-hitl-time-travel.html", color: "#FB923C",
+      concepts: [
+        { label: "Interrupts", href: "courses/b7-hitl-time-travel.html" },
+        { label: "Approve-edit-reject", href: "courses/b7-hitl-time-travel.html" },
+        { label: "Fork a what-if", href: "courses/b7-hitl-time-travel.html" } ] },
+    { label: "RAG the\n1.x way", href: "courses/b8-rag.html", color: "#FBBF24",
+      concepts: [
+        { label: "Retrieval as tool", href: "courses/b8-rag.html" },
+        { label: "Grounding rules", href: "courses/b8-rag.html" } ] },
+    { label: "Multi-agent", href: "courses/b9-multi-agent.html", color: "#F87171",
+      concepts: [
+        { label: "Supervisor", href: "courses/b9-multi-agent.html" },
+        { label: "Send fan-out", href: "courses/b9-multi-agent.html" },
+        { label: "Cascade + checker", href: "courses/b9-multi-agent.html" } ] },
+    { label: "LangSmith", href: "courses/b10-langsmith.html", color: "#F87171",
+      concepts: [
+        { label: "Two env vars", href: "courses/b10-langsmith.html" },
+        { label: "LLM-as-judge", href: "courses/b10-langsmith.html" },
+        { label: "Graduation", href: "courses/b10-langsmith.html" } ] }
+  ]
+};
+</script>
+<script src="assets/mindmap.js?v=1"></script>
+<script src="assets/app.js?v=1"></script>
+</body>
+</html>

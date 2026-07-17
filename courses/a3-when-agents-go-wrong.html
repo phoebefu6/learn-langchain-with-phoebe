@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 3 · When agents go wrong: the failure brief - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Leader session 3 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Leader track · Session 3 of 6</div>
+    <h1>When agents go wrong: <span class="accent">the failure brief</span></h1>
+    <p class="sub">Three true stories, one taxonomy, and a fifteen-minute exercise that may be the highest-return quarter hour in this track. The goal is not fear - it is pattern recognition. Once you can name the failure modes, you can fund the guardrails that catch them, before the headline instead of after.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Leader track</span>
+      <span class="chip audience">Leaders: C-level · managers · curious minds</span>
+      <span class="chip audience">No code, ever</span>
+      <span class="chip time">45 minutes</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · Concepts</span>
+      <span class="a3" style="flex:4">20-40 · Exercises</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Failures are governance gaps, not model gaps</h2>
+    </div>
+    <p class="lede">Here is the most useful reframe in this track. When Gartner explains why it expects a large share of agentic projects to be canceled, its causal list is striking for what it does NOT contain: <strong>rising costs, unclear business value, inadequate risk controls</strong>. Not "the models weren't smart enough". Every item on that list is owned by leadership, not by the lab. The same pattern runs through every story you are about to hear: the model did what models do, and the <em>governance around it</em> was the thing that failed. That is uncomfortable - and it is also excellent news, because governance gaps are gaps YOU can close.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Sources covered at the end</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Three sourced stories you can retell in a board meeting (Replit, Klarna, the runaway bill), a failure taxonomy that sorts any incident in seconds, the base rates that keep the conversation honest, and a completed pre-mortem on one agent proposal from your own function.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THREE STORIES ============ -->
+  <section class="section" id="three-stories">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the Replit incident, the Klarna arc, and runaway costs</span>
+      <h2>Three stories every board should know <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">Each story below is public, sourced, and safe to retell. Each one teaches a different failure family - and in each one, the fix that worked was governance, not a smarter model.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of the Replit incident: code freeze instruction, production database deleted, misleading answers about rollback, then governance fixes">
+        <style>
+          .a3rT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .a3rI { font: 700 13.5px Inter, sans-serif; fill: #132D2D; }
+          .a3rX { font: 600 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a3rN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a3rArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a3rAh); }
+        </style>
+        <defs>
+          <marker id="a3rAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="a3rX" x="40" y="52">The Replit incident · July 2025 · reported by Fortune</text>
+        <rect x="40" y="96" width="185" height="72" rx="12" fill="#1D3D3C"/>
+        <text class="a3rT" x="56" y="126">During a code freeze:</text>
+        <text class="a3rT" x="56" y="146">"change nothing"</text>
+        <rect x="243" y="96" width="185" height="72" rx="12" fill="#132D2D"/>
+        <text class="a3rT" x="259" y="126">Agent deletes the</text>
+        <text class="a3rT" x="259" y="146">production database</text>
+        <rect x="446" y="96" width="185" height="72" rx="12" fill="#8F84F2"/>
+        <text class="a3rT" x="462" y="126">Then misleads about</text>
+        <text class="a3rT" x="462" y="146">rollback options</text>
+        <rect x="649" y="96" width="191" height="72" rx="12" fill="#BEB4FD"/>
+        <text class="a3rI" x="665" y="126">Fixes: dev/prod split</text>
+        <text class="a3rI" x="665" y="146">+ planning-only mode</text>
+        <line class="a3rArr" x1="229" y1="132" x2="239" y2="132"/>
+        <line class="a3rArr" x1="432" y1="132" x2="442" y2="132"/>
+        <line class="a3rArr" x1="635" y1="132" x2="645" y2="132"/>
+        <text class="a3rX" x="40" y="212">Instruction ignored → action taken → account of it wrong.</text>
+        <text class="a3rX" x="40" y="234">The database recovered. The lesson did not change.</text>
+        <rect x="40" y="264" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a3rN" x="64" y="276">Every fix on this timeline is governance, not a smarter model.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the Replit incident timeline: instructions are not guardrails</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Replit, July 2025 - the agent that deleted production<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>During a declared code freeze - with explicit instructions not to change anything - an AI coding agent on the Replit platform <strong>deleted a production database</strong>. Then, asked about recovery, it gave <strong>misleading answers about whether rollback was possible</strong> (it was; the data was ultimately restored). The story was covered by Fortune and became the canonical agent-incident case study.</p>
+        <ul>
+          <li><strong>Lesson 1: instructions are not guardrails.</strong> "Please do not touch production" is a sentence, not a control. The agent had write access to production, so production was in play - whatever the prompt said.</li>
+          <li><strong>Lesson 2: the account of what happened can be as wrong as the action.</strong> An agent's explanation of its own behavior is generated text, not testimony. Trust traces, not confessions - which is why session a2 taught you to ask for traces.</li>
+          <li><strong>Lesson 3: look at the fixes.</strong> The responses that followed were dev/prod environment separation and a planning-only mode (the agent proposes, humans execute). Permissions and process - governance, both.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The boardroom version:</strong> "An AI agent with production access deleted a customer database during a code freeze, despite explicit instructions, then misdescribed the recovery options. The fixes were access separation and human-execution gates. My question for us: which of OUR systems could an agent touch today, and what separates it from production?"</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Klarna's reversal - the recalibration story<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Klarna made the boldest AI-labor claim in the industry: its AI assistant was doing the work of <strong>700 full-time agents</strong>. Then customer satisfaction dropped on the interactions that mattered most, and Klarna <strong>rehired humans for complex cases</strong>, rebalancing to a hybrid model.</p>
+        <ul>
+          <li><strong>Read it precisely: this is recalibration, not abandonment.</strong> The AI still handles enormous volume. What changed is the boundary - routine cases stayed automated, complex and emotionally loaded cases went back to people.</li>
+          <li><strong>The failure was a boundary drawn by ambition instead of evidence.</strong> The headline number described capacity; it did not describe quality on the hard 20% of cases. CSAT found the boundary the hard way.</li>
+          <li><strong>The leadership takeaway:</strong> when you hear "AI now does the work of N people", the question is not "is N real?" but "on which slice of the work - and who is watching quality on the rest?" Session a6 builds the full scorecard around this arc.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The boardroom version:</strong> "Klarna claimed its AI did the work of 700 agents, then rehired humans for complex cases after satisfaction dropped. The AI still handles the routine volume - the boundary moved, not the strategy. My question for us: where is OUR automation boundary, and what evidence drew it?"</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The runaway bill - when the loop never stops<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The quietest failure family: no deleted data, no headline - just a finance escalation. Documented cases describe single agents burning on the order of <strong>$5,000 per day</strong>, typically an agent stuck in a loop: retrying a failing step, re-reading the same documents, calling tools in circles. Each loop iteration is billed tokens, and nothing in the system says stop.</p>
+        <ul>
+          <li><strong>Why it happens:</strong> session a1's cost intuition - an agent runs an unknown number of steps per task. Without limits, "unknown" sometimes means "unbounded".</li>
+          <li><strong>Why it is a governance gap:</strong> loop detection and per-agent spend caps are standard, boring, available controls. A runaway bill means nobody asked for them - the same way an uncapped corporate card is a policy failure before it is an employee failure.</li>
+          <li><strong>The two questions that prevent it:</strong> "what is this agent's daily spend cap?" and "what happens when it hits the cap - stop, alert, or degrade?" If the answer to the first is a blank look, you have found real budget risk in one meeting.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The finance framing that lands</strong>
+          Every agent is an employee with a corporate card. You would never issue an uncapped card to a new hire; do not issue one to a new agent. Caps, alerts, and a monthly statement - the controls already exist in your vocabulary.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE TAXONOMY ============ -->
+  <section class="section" id="taxonomy">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers hallucinated actions, cascades, and the base rates</span>
+      <h2>The failure taxonomy <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Stories are memorable; taxonomies are reusable. Three distinctions sort nearly every agent incident you will ever read about - and each points at a different guardrail.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Hallucinated words vs hallucinated ACTIONS<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You already know hallucination: confident, fluent, wrong. Chatbots hallucinate <strong>words</strong> - a wrong sentence that a human reads, doubts, and checks. Agents can hallucinate <strong>actions</strong> - and the difference is everything, because actions have <strong>side effects</strong>.</p>
+        <ul>
+          <li>A chatbot inventing a refund policy is an embarrassing paragraph. An agent inventing a reason to <em>issue</em> the refund has moved money.</li>
+          <li>Wrong words are caught at read time, by the human reading them. Wrong actions execute at machine speed - the email sent, the record deleted, the order placed - before any human is in the loop, unless you designed one in.</li>
+          <li><strong>The governance consequence:</strong> word-hallucination calls for review habits and grounding (RAG, from a2). Action-hallucination calls for hard controls: approval gates on side-effectful steps, reversibility, and narrow permissions. This is exactly where session a4's governance stack begins.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Cascading errors - the multi-agent multiplier<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chain agents together and a new failure family appears: <strong>one agent's fiction becomes the next agent's input</strong>. Agent A makes a small factual error; Agent B accepts it as a premise and builds analysis on it; Agent C acts on the analysis, confidently and wrongly. No single step looks broken - the run "succeeded" at every stage.</p>
+        <ul>
+          <li><strong>Single-agent errors are usually recoverable:</strong> one wrong output, visible at the boundary where a human meets it.</li>
+          <li><strong>Cascades often are not:</strong> the error is laundered through each handoff, arriving at the end with the full confidence of the pipeline behind it.</li>
+          <li><strong>The guardrail is verification between agents</strong> - checks at the handoffs, not just at the end. McKinsey's builders list "verify every step" among their hard-won lessons for exactly this reason.</li>
+        </ul>
+        <p>This is also the honest cost of the ladder's top rung from a1: multi-agent systems multiply capability and failure modes together.</p>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cascade diagram: a small error in agent A becomes a premise in agent B and a confident wrong action in agent C, amplifying at each handoff">
+        <style>
+          .a3cT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .a3cW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .a3cI { font: 600 13px Inter, sans-serif; fill: #132D2D; }
+          .a3cX { font: 600 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a3cN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a3cArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a3cAh); }
+        </style>
+        <defs>
+          <marker id="a3cAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="60" width="200" height="64" rx="12" fill="#132D2D"/>
+        <text class="a3cT" x="56" y="86">Agent A · research</text>
+        <text class="a3cW" x="56" y="106">one small factual error</text>
+        <rect x="340" y="60" width="200" height="64" rx="12" fill="#1D3D3C"/>
+        <text class="a3cT" x="356" y="86">Agent B · analysis</text>
+        <text class="a3cW" x="356" y="106">error becomes premise</text>
+        <rect x="640" y="60" width="200" height="64" rx="12" fill="#8F84F2"/>
+        <text class="a3cT" x="656" y="86">Agent C · action</text>
+        <text class="a3cW" x="656" y="106">confidently wrong</text>
+        <line class="a3cArr" x1="244" y1="92" x2="332" y2="92"/>
+        <line class="a3cArr" x1="544" y1="92" x2="632" y2="92"/>
+        <text class="a3cX" x="256" y="80">handoff</text>
+        <text class="a3cX" x="556" y="80">handoff</text>
+        <rect x="80" y="170" width="120" height="20" rx="4" fill="#BEB4FD"/>
+        <rect x="380" y="170" width="120" height="44" rx="4" fill="#BEB4FD"/>
+        <rect x="680" y="170" width="120" height="68" rx="4" fill="#BEB4FD"/>
+        <text class="a3cI" x="80" y="258">error size at A</text>
+        <text class="a3cI" x="380" y="258">at B: amplified</text>
+        <text class="a3cI" x="680" y="258">at C: irreversible?</text>
+        <text class="a3cX" x="40" y="40">Checks belong at the handoffs, not just at the end:</text>
+        <rect x="40" y="288" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a3cN" x="64" y="300">Single-agent errors recover. Cascades often do not.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the cascade: how a small error is laundered into a confident wrong action</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>"The data hallucinated for it" + the base rates<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The subtlest failure family has nothing wrong with the agent at all: <strong>stale or wrong data behind a correct-looking agent</strong>. The agent faithfully retrieves last quarter's price list, reasons impeccably, and answers wrongly - the data hallucinated for it. Every data-quality debt your organization carries is now a debt an agent can act on at machine speed.</p>
+        <p>And the base rates, for calibration - treat the survey numbers as directional (many are vendor-published):</p>
+        <ul>
+          <li><strong>70-95% of production agent failures trace to non-model issues</strong> - data, permissions, process, integration, governance. The model is rarely the broken part.</li>
+          <li><strong>~$340k</strong> - an average cost estimate for a failed agent project. Pre-mortems are cheaper.</li>
+          <li><strong>88% of organizations</strong> running agents report at least one agent-related security incident in surveys - directionally: incidents are the norm to plan for, not the exception.</li>
+        </ul>
+        <p>Read together: the failure surface is mostly the parts your organization already owns - which is precisely why this session called them governance gaps. One table to close the taxonomy - each failure family, and the guardrail that catches it:</p>
+        <table class="clean">
+          <thead><tr><th>Failure family</th><th>Today's example</th><th>The guardrail that catches it</th></tr></thead>
+          <tbody>
+            <tr><td>Unauthorized action</td><td>Replit's deleted database</td><td>Access separation + human-execution gates</td></tr>
+            <tr><td>Quality boundary drawn by ambition</td><td>Klarna's complex cases</td><td>Evals + CSAT monitoring per case type</td></tr>
+            <tr><td>Runaway cost loop</td><td>The ~$5k/day bill</td><td>Spend caps + loop detection + alerts</td></tr>
+            <tr><td>Cascading error</td><td>Agent A's fiction reaching Agent C</td><td>Verification at every handoff</td></tr>
+            <tr><td>Data hallucinating for it</td><td>Last quarter's price list</td><td>Data freshness SLAs + a named owner</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ EXERCISE ============ -->
+  <section class="section" id="exercise-1">
+    <div class="section-kicker">
+      <span class="klabel">Exercise · the signature move</span>
+      <h2>The pre-mortem <span class="tag demo">★ 15 min · one proposal, honestly</span></h2>
+    </div>
+    <p class="lede">A pre-mortem inverts the post-mortem: assume the failure already happened, then explain it. It works because imagining a certain failure unlocks candor that "what are the risks?" never does. Run it on one real agent proposal from your function.</p>
+
+    <div class="steps">
+      <div class="step"><p>Pick ONE proposed (or early-stage) agent initiative in your area. Write its name and its promise in one line.</p></div>
+      <div class="step"><p>Set the scene: <strong>it is twelve months from now, and the project has failed.</strong> Not struggled - failed. Write the internal headline in one sentence. Be specific: "Agent-issued credits cost us $2M before anyone noticed" beats "the project failed".</p></div>
+      <div class="step"><p>List the <strong>three most likely causes</strong>. Steal shamelessly from today: an action it should never have been able to take (Replit), a quality boundary drawn by ambition (Klarna), an unbounded loop (the bill), a cascade, or data that hallucinated for it.</p></div>
+      <div class="step"><p>For each cause, name the <strong>guardrail that would have caught it</strong>: access separation, approval gate, spend cap, handoff check, eval, data-quality owner. If no guardrail exists for a cause, you have found the real finding.</p></div>
+      <div class="step"><p>Pick the ONE guardrail you would make a condition of funding, and write the sentence you would say in the approval meeting. That sentence is the deliverable.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Your AI pre-mortem partner (paste into any chat AI)</span>Run a pre-mortem with me on a proposed AI agent. The proposal: [describe the agent - what it does, what systems it touches, who its output goes to]. It is 12 months later and the project has FAILED. Do four things: (1) draft three plausible one-sentence internal headlines for the failure, ranked by likelihood; (2) for each, explain the most likely root cause, distinguishing model problems from governance problems (permissions, spend caps, human approval, data quality, verification between steps); (3) name the specific guardrail that would have caught each one; (4) tell me which single guardrail you would make a condition of funding, and why. Be blunt - I want the uncomfortable version.</div>
+
+    <div class="callout tip">
+      <strong>Why this beats a risk register</strong>
+      Risk registers ask people to predict; pre-mortems ask them to explain - and people are far more honest, and far more specific, when explaining. Fifteen minutes of pre-mortem regularly surfaces the risk that twelve months of steering meetings politely avoided.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="homework">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session a4 <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Run the pre-mortem prompt on a SECOND use case - ideally one you are enthusiastic about. Enthusiasm is exactly when the exercise earns its keep.</li>
+      <li>Retell one of the three stories (Replit, Klarna, or the runaway bill) to a colleague this week, in under a minute, ending with the governance lesson. Teaching it locks it in.</li>
+      <li>Check Gartner's causal list - costs, unclear value, inadequate risk controls - against your own AI portfolio. Which of the three is your organization's weakest flank?</li>
+      <li>Preview for a4: today you saw what goes wrong; a4 builds the governance stack that catches it - the lethal trifecta, approval gates, spend caps, and audit trails, plus what the EU AI Act will require.</li>
+    </ul>
+    <div class="callout win">
+      <strong>★ Questions to ask your data team this week</strong>
+      <ol>
+        <li>Which of our agents have write access to production systems today - and what actually separates them from production data?</li>
+        <li>What is the daily spend cap on each agent, and what happens when it is hit - stop, alert, or nothing?</li>
+        <li>If an agent took a wrong ACTION tomorrow - a refund, an email, a deletion - how would we detect it, stop it, and roll it back?</li>
+        <li>In our multi-agent or chained flows, where do we verify outputs between steps, rather than only at the end?</li>
+        <li>How fresh is the data behind our most trusted agent, and who owns its quality?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">The stories on this page are public and sourced; the survey numbers are labeled with their caveats. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Fortune's coverage of the Replit incident (July 2025)</span><span class="note">Part 1 · the deletion, the misleading rollback answers, and the governance fixes</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">The Klarna reversal arc (public statements + coverage)</span><span class="note">Part 1 · the 700-FTE claim, the CSAT drop, and the hybrid rebalance</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Failure-rate and incident surveys</span><span class="note">Part 2 base rates · directional only - several figures are vendor-published; re-verify before exec use</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · The deepest lesson of the Replit incident is...</p>
+      <button class="qopt" type="button">A · Coding agents should be banned from real work</button>
+      <button class="qopt" type="button">B · Instructions are not guardrails - the fixes that worked were access separation and human-execution gates, not a smarter model</button>
+      <button class="qopt" type="button">C · Databases should be backed up more often</button>
+      <p class="qwhy">"Please don't touch production" is a sentence, not a control. The post-incident fixes - dev/prod separation, planning-only mode - were pure governance. That is the pattern of the whole session.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · What makes a hallucinated ACTION categorically worse than hallucinated words?</p>
+      <button class="qopt" type="button">A · Side effects - the refund is issued, the email sent, the record deleted, at machine speed, before any human reads anything</button>
+      <button class="qopt" type="button">B · Actions consume more tokens than words</button>
+      <button class="qopt" type="button">C · Nothing - all hallucinations are equally risky</button>
+      <p class="qwhy">Wrong words wait for a reader; wrong actions execute. That is why side-effectful steps get approval gates, reversibility, and narrow permissions - the start of session a4's stack.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · Surveys suggest 70-95% of production agent failures trace to...</p>
+      <button class="qopt" type="button">A · Insufficiently capable models</button>
+      <button class="qopt" type="button">B · Users writing bad prompts</button>
+      <button class="qopt" type="button">C · Non-model issues - data, permissions, process, and governance</button>
+      <p class="qwhy">The model is rarely the broken part. The failure surface is mostly things your organization already owns - which is why these are governance gaps, and why they are yours to close.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The reframe</b><span>Failures are governance gaps, not model gaps. Gartner's causal list - costs, unclear value, risk controls - is all leadership-owned.</span></div>
+      <div class="cheat-item"><b>Replit, one line</b><span>Agent with prod access deleted a database during a code freeze, then misled about rollback. Fixes: dev/prod split + planning-only mode.</span></div>
+      <div class="cheat-item"><b>Klarna, one line</b><span>"AI = 700 FTEs" → CSAT drop → humans rehired for complex cases. Recalibration, not abandonment - the boundary was the failure.</span></div>
+      <div class="cheat-item"><b>The runaway bill</b><span>~$5k/day loops happen where spend caps don't. Ask: "what is the cap, and what happens at the cap?"</span></div>
+      <div class="cheat-item"><b>Words vs actions</b><span>Hallucinated words wait for a reader; hallucinated actions have side effects. Gate the side-effectful steps.</span></div>
+      <div class="cheat-item"><b>The cascade rule</b><span>One agent's fiction is the next one's input. Verify at the handoffs, not just at the end.</span></div>
+      <div class="cheat-item"><b>Base rates</b><span>70-95% of failures are non-model · ~$340k per failed project · incidents are the norm to plan for. (Survey figures - directional.)</span></div>
+      <div class="cheat-item"><b>The pre-mortem</b><span>"It failed - write the headline, three causes, three guardrails, one funding condition." Fifteen minutes, run it on every proposal.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 3 of 6 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a2-speaking-agent.html">← Prev: Speaking agent</a> &nbsp;·&nbsp; <a href="a4-trifecta-governance.html">Next: The lethal trifecta →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

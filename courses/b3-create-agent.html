@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 3 · create_agent, properly - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 3 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 3 of 10</div>
+    <h1>create_agent, <span class="accent">properly</span></h1>
+    <p class="sub">You have used create_agent twice without looking inside. Tonight we open it: the b1 while-loop industrialized on the LangGraph runtime, a system prompt that works as DataDesk's constitution, three tools the model chooses between on its own, and streaming that makes the whole thing feel alive.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">DataDesk v0.2 from b2 · both engines ready</span>
+      <span class="chip time">45 minutes</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:5">3-18 · Concepts: harness + streaming</span>
+      <span class="a3" style="flex:8">18-42 · Build-along: DataDesk v1</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">v0.2 can X-ray its own messages and parse messy asks into typed forms. But it still has one tool and a one-line system prompt, and it answers in a single silent blob. Tonight it becomes v1: multi-tool, properly governed, streaming. This is the last session on the high-level API before b4 adds the production layer - so we make sure you know exactly what the high-level API is doing for you.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A mental X-ray of create_agent (model node ↔ tool node on LangGraph rails), a system prompt you can defend in review, DataDesk v1 chaining two tools on its own judgment, and token-by-token streaming on both engines.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: INSIDE THE HARNESS ============ -->
+  <section class="section" id="inside-harness">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the agents / create_agent docs</span>
+      <h2>Inside the harness <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">create_agent is not magic and it is not a black box. It is your b1 while-loop rebuilt as two nodes on the LangGraph runtime - and that one implementation choice is why checkpoints, streaming and human-in-the-loop show up later without rewrites.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="create_agent internals: a model node and a tool node looping on LangGraph runtime rails, with checkpointing, streaming and human-in-the-loop surfaces provided by the rails for free">
+        <style>
+          .b3cT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b3cI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b3cW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b3cS { font: 400 12.5px Inter, sans-serif; fill: #132D2D; }
+          .b3cX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .b3cN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b3cArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b3cAh); }
+        </style>
+        <defs>
+          <marker id="b3cAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="30" width="560" height="220" rx="16" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b3cI" x="64" y="58">LangGraph runtime rails</text>
+        <rect x="80" y="90" width="200" height="64" rx="12" fill="#132D2D"/>
+        <text class="b3cT" x="104" y="118">model node</text>
+        <text class="b3cW" x="104" y="136">decides: answer or tool?</text>
+        <rect x="360" y="90" width="200" height="64" rx="12" fill="#8F84F2"/>
+        <text class="b3cT" x="384" y="118">tool node</text>
+        <text class="b3cW" x="384" y="136">runs the requested tool</text>
+        <path class="b3cArr" d="M 288 108 L 352 108"/>
+        <path class="b3cArr" d="M 352 138 L 288 138"/>
+        <text class="b3cX" x="296" y="98">tool_call</text>
+        <text class="b3cX" x="296" y="158">result</text>
+        <rect x="80" y="180" width="480" height="44" rx="10" fill="#1D3D3C"/>
+        <text class="b3cT" x="104" y="207">exit: no tool requested → final answer</text>
+        <rect x="640" y="30" width="210" height="220" rx="16" fill="#BEB4FD"/>
+        <text class="b3cI" x="664" y="58">free, from the rails</text>
+        <text class="b3cS" x="664" y="88">· checkpoints (b6)</text>
+        <text class="b3cS" x="664" y="114">· streaming (tonight)</text>
+        <text class="b3cS" x="664" y="140">· HITL surfaces (b7)</text>
+        <text class="b3cS" x="664" y="166">· time travel (b7)</text>
+        <text class="b3cS" x="664" y="196">none of it needs a</text>
+        <text class="b3cS" x="664" y="214">rewrite of your agent</text>
+        <rect x="40" y="290" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b3cN" x="64" y="302">Your b1 while-loop, industrialized: same two beats, now running on rails you can eject down to.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - create_agent internals: model node ↔ tool node on runtime rails</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What create_agent actually runs<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Line up the b1 scratch loop against the diagram and the mapping is one-to-one:</p>
+        <ul>
+          <li><strong>Your while-loop body</strong> → the <strong>model node</strong>: call the model with the message stack, inspect the reply for tool calls.</li>
+          <li><strong>Your "run the function, append the result" branch</strong> → the <strong>tool node</strong>: execute, wrap the result as a tool message, hand back.</li>
+          <li><strong>Your break statement</strong> → the exit edge: no tool requested means the answer is final.</li>
+        </ul>
+        <p>The difference is where it runs. Your loop ran on bare Python; this loop runs on the LangGraph runtime, which is why persistence, streaming, interrupts and time travel are configuration rather than construction. You paid one abstraction layer and bought four production features - that trade is the honest pitch, and now you can audit it.</p>
+        <div class="callout tip">
+          <strong>Vocabulary that saves confusion</strong>
+          "Agent = model + harness." The model decides; the harness (loop, tools, state, rails) is everything around the decision. create_agent is a harness factory. When people argue about "agent quality" they are usually arguing about harness quality.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The system prompt is DataDesk's constitution<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>system_prompt</code> parameter is the highest-leverage string in your codebase: it rides at the top of the stack on every single turn. For an agent, it needs three sections a chat prompt does not:</p>
+        <ul>
+          <li><strong>Role:</strong> who it is and for whom. "You are DataDesk, a data team assistant" scopes the persona and the tone.</li>
+          <li><strong>Tool guidance:</strong> when to reach for which tool, and what to do first. "Use list_datasets before guessing a path" prevents an entire class of silent failures.</li>
+          <li><strong>Refusal rules:</strong> what it must NOT do. "If the data cannot answer, say 'not in the data' - never estimate" is the line between an assistant and a liability in front of a stakeholder.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Here is my agent's system prompt: [paste yours]. Attack it: give me 3 user messages that would make an agent with this prompt do something embarrassing in front of a data-literate stakeholder. Then propose the minimal edit that blocks each.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The agent that invented a column.</strong> A team's assistant was asked for "churn by region" on a dataset with no region column. Without a refusal rule it averaged something plausible and presented it confidently. One sentence in the system prompt - cite your tool, or say "not in the data" - turned the same failure into a trust-building answer.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Where the defaults end and LangGraph begins<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>create_agent's defaults carry you far: single agent, flat tool list, linear conversation, middleware for cross-cutting concerns (b4). You eject down to raw LangGraph (b5) when the SHAPE of the flow itself must change:</p>
+        <table class="clean">
+          <thead><tr><th>Need</th><th>Stay on create_agent</th><th>Eject to LangGraph</th></tr></thead>
+          <tbody>
+            <tr><td>More tools, better prompt</td><td>Yes - just configuration</td><td></td></tr>
+            <tr><td>PII scrubbing, retries, summarization</td><td>Yes - middleware, b4</td><td></td></tr>
+            <tr><td>Branching flows, custom routing</td><td></td><td>Yes - you own the graph, b5</td></tr>
+            <tr><td>Multi-agent teams, map-reduce</td><td></td><td>Yes - b9</td></tr>
+          </tbody>
+        </table>
+        <p>Because create_agent already runs ON LangGraph, ejecting is a rewrite of the wiring, not the parts: your tools, prompt and middleware all carry over. That is the payoff of the b1 stack diagram.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: STREAMING AND UX ============ -->
+  <section class="section" id="streaming">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the streaming docs</span>
+      <h2>Streaming and the user experience <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">A 20-second silent wait reads as broken; the same 20 seconds with visible progress reads as thinking. Streaming is not decoration - for agents that use tools, it is the difference between users trusting the system and users killing the tab.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>invoke vs stream - and the two modes that matter<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>invoke</code> blocks until everything - tool calls included - is done, then returns the full result. <code>stream</code> yields as work happens, and the <code>stream_mode</code> argument picks what "work" means:</p>
+        <table class="clean">
+          <thead><tr><th>Mode</th><th>You receive</th><th>Build with it</th></tr></thead>
+          <tbody>
+            <tr><td><code>stream_mode="messages"</code></td><td>Message chunks - tokens as the model generates them</td><td>The typing effect: chat UIs, CLIs, anything human-facing</td></tr>
+            <tr><td><code>stream_mode="updates"</code></td><td>One update per agent step - model node fired, tool node fired, with payloads</td><td>Progress panes: "calling csv_stats...", logs, debugging tool choice</td></tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><strong>Rule of thumb:</strong> humans watching the answer want <code>messages</code>; humans (or logs) watching the AGENT want <code>updates</code>. Production UIs often consume both.</li>
+          <li><strong>It is the rails again:</strong> streaming comes from the LangGraph runtime underneath - the same events will keep working unchanged when you eject to raw graphs in b5.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Perceived latency is the metric</strong>
+          Time-to-first-token, not time-to-full-answer, is what users judge. Streaming does not make the agent faster - it makes the wait legible. For tool-using agents where the model pauses mid-answer, the updates narration covers exactly the seconds the token stream goes quiet.
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The support-bot team that shipped the progress pane first.</strong> A team instrumenting a tool-heavy agent found users abandoned sessions during tool calls, not during generation. They shipped the updates-mode progress pane a sprint before the polished typing effect - abandonment dropped, and the typing effect became a nice-to-have instead of a rescue mission.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Multi-tool agents - how the model chooses<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>With three tools bound, nothing routes but the model's own reading of your tool descriptions against the user's question. There is no dispatcher to configure - <strong>the descriptions ARE the router.</strong></p>
+        <ul>
+          <li><strong>Name + docstring do the work:</strong> <code>column_mean</code> with "Mean of a numeric column in a CSV file" gets chosen for "average order value". A vague description sends the model to the wrong tool, and no amount of model quality fully compensates.</li>
+          <li><strong>Overlap is the enemy:</strong> if two tools plausibly answer the same question, the model will be inconsistent between runs. Sharpen the boundary in the docstrings ("use X for single columns, Y for whole-file stats") before reaching for anything fancier.</li>
+          <li><strong>Chaining is free:</strong> the loop just keeps going - tool result comes back, the model decides it needs a second tool, the loop runs again. You never wrote "first call list_datasets, then column_mean"; the model plans that. Demo 1 shows it live.</li>
+          <li><strong>When descriptions stop being enough</strong> (dozens of tools, hard business rules about routing), that is a graph-shape problem: conditional edges in b5, supervisor patterns in b9.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk v1 <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Three tools, a constitution-grade system prompt, and a question that forces the model to chain two tools on its own judgment. This file is the trunk every later session grows from.</p>
+
+    <div class="steps">
+      <div class="step"><p>Add two tools next to <code>csv_stats</code>: <code>column_mean(path, column)</code> and a <code>list_datasets()</code> stub returning a dict of the CSVs DataDesk may touch. The stub matters - it is the catalog seam where a real metadata store plugs in later.</p></div>
+      <div class="step"><p>Replace the one-liner system prompt with the constitution below: role, tool guidance, refusal rules. Read it out loud - if a sentence would embarrass you in design review, fix it now.</p></div>
+      <div class="step"><p>Ask the two-tool question: "What is the average order value in the orders data, and how many rows is that over?" - it cannot be answered without <code>list_datasets</code> (or <code>csv_stats</code>) AND <code>column_mean</code>.</p></div>
+      <div class="step"><p>Watch the loop decide: which tool fired first? Did it cite the tools in the answer, as instructed? Nothing you wrote sequenced those calls - the model planned the chain.</p></div>
+      <div class="step"><p>Stress the refusal rule: ask for "churn by region". There is no such column - v1 must answer "not in the data", not improvise. If it improvises, tighten the prompt and re-run.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ datadesk_v1.py - the whole file</span>from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from langchain.tools import tool
+
+@tool
+def csv_stats(path: str) -&gt; dict:
+    """Row count, columns and date range of a CSV file."""
+    ...  # unchanged from b1
+
+@tool
+def column_mean(path: str, column: str) -&gt; float:
+    """Mean of a single numeric column in a CSV file."""
+    ...  # ~3 lines of pandas
+
+@tool
+def list_datasets() -&gt; dict:
+    """Datasets DataDesk can access, as name -&gt; CSV path."""
+    return {"orders": "data/orders.csv", "signups": "data/signups.csv"}
+
+SYSTEM = """You are DataDesk, a data team assistant.
+Be precise. Cite which tool produced every number you report.
+Call list_datasets first when the user names a dataset loosely.
+If the data cannot answer, say "not in the data" - never estimate."""
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # or "ollama:llama3.1"
+agent = create_agent(model=model,
+                     tools=[csv_stats, column_mean, list_datasets],
+                     system_prompt=SYSTEM)
+
+out = agent.invoke({"messages": [{"role": "user",
+    "content": "What is the average order value in the orders data, "
+               "and how many rows is that over?"}]})
+print(out["messages"][-1].content)</div>
+
+    <div class="callout tip">
+      <strong>If the model only calls one tool</strong>
+      Usually a docstring problem, not a model problem. Check that <code>column_mean</code>'s description says "single numeric column" - vague descriptions make the model try to do everything with <code>csv_stats</code>.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Make it feel alive <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">Same v1 file, three changed lines. First tokens as they generate, then the agent's own heartbeat - tool calls visible as they happen - and finally the engine-swap test to prove the streaming code is engine-agnostic.</p>
+
+    <div class="steps">
+      <div class="step"><p>Swap <code>invoke</code> for <code>stream</code> with <code>stream_mode="messages"</code> and print tokens as they arrive. Run the v1 question again - the typing effect appears, tool pauses and all.</p></div>
+      <div class="step"><p>Now run the same call with <code>stream_mode="updates"</code>. Each yielded update is one agent step: watch the model node hand off to the tool node and back - your Part 1 diagram, printed live.</p></div>
+      <div class="step"><p>Narrate what a user would see in each mode: <code>messages</code> is the answer being typed; <code>updates</code> is "DataDesk is checking list_datasets...". Decide which your future UI needs. (Often: both.)</p></div>
+      <div class="step"><p>Engine-swap test: flip the model line to <code>"ollama:llama3.1"</code> and re-run both modes. Streaming code untouched. Local tokens arrive at your GPU's pace - feel the latency difference you would be shipping.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ The three changed lines</span>question = {"messages": [{"role": "user",
+    "content": "What is the average order value in the orders data?"}]}
+
+# Mode 1: tokens as they generate - the typing effect
+for token, meta in agent.stream(question, stream_mode="messages"):
+    print(token.text, end="", flush=True)
+
+# Mode 2: one update per agent step - the agent's heartbeat
+for update in agent.stream(question, stream_mode="updates"):
+    print("STEP:", list(update.keys()))   # model → tools → model</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The demo that failed silently and the one that did not.</strong> Two teams demoed agents to the same executive. Team A's answer took 25 silent seconds; the exec reached for their phone and the moment died. Team B streamed the tool narration - "checking the orders dataset... computing the mean..." - and the exec leaned in and asked what else it could check. Identical model, identical latency. The stream made the wait legible.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish DataDesk v1 with all three tools if you did not complete it live, and make the refusal test ("churn by region") pass reliably on both engines.</li>
+      <li>Add a fourth tool of your own - <code>column_max</code>, <code>null_count</code>, whatever your real work needs - and verify the model routes to it from the docstring alone.</li>
+      <li>Run the system-prompt attack prompt from Part 1 against your constitution and patch the best hole it finds.</li>
+      <li>Time a hard question under <code>invoke</code> vs <code>stream</code> and note when you FELT the answer had started. Bring the number - it becomes the UX argument in b7's approval-gate design.</li>
+      <li>Optional reading: the create_agent + streaming pages at docs.langchain.com - the diagrams there are the ones you just built by hand.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain docs: agents / create_agent</span><span class="note">Part 1 · the harness internals, system_prompt, multi-tool binding</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain docs: streaming</span><span class="note">Part 2 + Demo 2 · messages vs updates modes on the runtime rails</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangChain (M1 project)</span><span class="note">DataDesk v1 is the module's agent project, on our own domain and both engines</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What is create_agent actually running under the hood?</p>
+      <button class="qopt" type="button">A · A proprietary planner that replaces the agent loop</button>
+      <button class="qopt" type="button">B · A model node and a tool node looping on the LangGraph runtime - your b1 while-loop, industrialized, which is why checkpoints, streaming and HITL come free</button>
+      <button class="qopt" type="button">C · A separate server process per tool</button>
+      <p class="qwhy">Same two beats as your scratch loop, running on rails. The rails are what you actually bought - and they are why b5's eject-to-LangGraph is a rewiring, not a rewrite.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · With three tools bound, what decides which tool handles a question?</p>
+      <button class="qopt" type="button">A · The order of the tools list</button>
+      <button class="qopt" type="button">B · A routing table you configure per question type</button>
+      <button class="qopt" type="button">C · The model, reading your tool names and docstrings against the question - the descriptions ARE the router</button>
+      <p class="qwhy">No dispatcher exists to configure. Sharp, non-overlapping docstrings are the routing layer - which is why "gets stats" is a production incident waiting to happen.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Your UI needs a "DataDesk is calling csv_stats..." progress pane. Which streaming mode feeds it?</p>
+      <button class="qopt" type="button">A · stream_mode="updates" - one event per agent step, tool calls included</button>
+      <button class="qopt" type="button">B · stream_mode="messages" - it contains everything</button>
+      <button class="qopt" type="button">C · Neither - progress requires polling a database</button>
+      <p class="qwhy">messages streams the answer's tokens; updates streams the agent's steps. Humans watching the answer want messages; humans watching the agent want updates.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The harness</b><span>create_agent = model node ↔ tool node on LangGraph rails. Your b1 loop, industrialized. Agent = model + harness.</span></div>
+      <div class="cheat-item"><b>Free from the rails</b><span>Checkpoints (b6), streaming (now), HITL (b7), time travel (b7) - configuration, not construction.</span></div>
+      <div class="cheat-item"><b>Constitution format</b><span>system_prompt = role + tool guidance + refusal rules. "Not in the data" beats a confident guess, every time.</span></div>
+      <div class="cheat-item"><b>Descriptions route</b><span>The model picks tools by docstring. Overlapping descriptions = inconsistent routing. Sharpen the boundary first.</span></div>
+      <div class="cheat-item"><b>Streaming modes</b><span>messages = tokens (typing effect) · updates = agent steps (progress pane). UIs often consume both.</span></div>
+      <div class="cheat-item"><b>Eject line</b><span>Config change → stay on create_agent. Flow-shape change (branching, multi-agent) → LangGraph, b5.</span></div>
+      <div class="cheat-item"><b>Engine swap</b><span>init_chat_model("claude-haiku-4-5-20251001") ↔ init_chat_model("ollama:llama3.1") - streaming code unchanged.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v1: three tools, constitution, streaming. Next: b4 wraps it in middleware armor.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 3 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b2-models-messages-tools.html">← Prev: Models, messages, tools</a> &nbsp;·&nbsp; <a href="b4-middleware.html">Next: Middleware, the production layer →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

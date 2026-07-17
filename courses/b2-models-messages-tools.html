@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 2 · Models, messages, tools - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 2 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 2 of 10</div>
+    <h1>Models, messages, <span class="accent">tools</span></h1>
+    <p class="sub">The three primitives under every agent you will ever build. Tonight you learn the one interface that makes Claude and a local model interchangeable, X-ray a conversation down to its typed blocks, and teach DataDesk to turn a messy stakeholder request into a validated form - with zero extra LLM calls.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Both engines from b1 ready · DataDesk v0.1 on disk</span>
+      <span class="chip time">45 minutes</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:5">3-18 · Concepts: interface, messages, tools</span>
+      <span class="a3" style="flex:8">18-42 · Build-along: X-ray + structured output</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">In b1 you built the agent loop by hand, then rebuilt it as DataDesk v0.1: one <code>csv_stats</code> tool inside <code>create_agent</code>. Tonight we open the hood on the three things that loop was juggling - the model interface, the message list, and the tool contract - because every later session (middleware, graphs, memory, evals) manipulates exactly these three objects.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The ability to read any LangChain conversation as a typed message stack, a tool whose schema writes itself from your docstring, and DataDesk v0.2: it now parses "hey can u pull avg order value for the shop data, last quarter-ish?" into a validated Pydantic object your pipeline can actually consume.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: ONE INTERFACE, EVERY MODEL ============ -->
+  <section class="section" id="one-interface">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the models + messages docs</span>
+      <h2>One interface, every model <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">LangChain's oldest promise is also its most defensible: one calling convention across providers. But the promise has fine print - the interface is standardized, the capabilities are not. Knowing exactly where the seam sits is what makes the one-line swap safe instead of naive.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Message flow anatomy: a conversation is a typed stack of system, human, ai and tool messages replayed to the model every turn">
+        <style>
+          .b2mT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b2mI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b2mW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b2mS { font: 400 12.5px Inter, sans-serif; fill: #132D2D; }
+          .b2mX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .b2mN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b2mArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b2mAh); }
+        </style>
+        <defs>
+          <marker id="b2mAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="60" y="28" width="470" height="48" rx="10" fill="#132D2D"/>
+        <text class="b2mT" x="84" y="49">system</text>
+        <text class="b2mW" x="84" y="67">DataDesk's standing orders - set once, never leaves</text>
+        <rect x="60" y="86" width="470" height="48" rx="10" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b2mI" x="84" y="107">human</text>
+        <text class="b2mS" x="84" y="125">the user's question, this turn</text>
+        <rect x="60" y="144" width="470" height="48" rx="10" fill="#8F84F2"/>
+        <text class="b2mT" x="84" y="165">ai</text>
+        <text class="b2mW" x="84" y="183">content_blocks: text · reasoning · tool_call</text>
+        <rect x="60" y="202" width="470" height="48" rx="10" fill="#BEB4FD"/>
+        <text class="b2mI" x="84" y="223">tool</text>
+        <text class="b2mS" x="84" y="241">the result, tied back by tool_call_id</text>
+        <rect x="60" y="260" width="470" height="48" rx="10" fill="#1D3D3C"/>
+        <text class="b2mT" x="84" y="281">ai</text>
+        <text class="b2mW" x="84" y="299">final answer - the loop exits here</text>
+        <line class="b2mArr" x1="580" y1="168" x2="640" y2="168"/>
+        <text class="b2mX" x="650" y="120">the whole stack is ONE list,</text>
+        <text class="b2mX" x="650" y="138">replayed to the model on</text>
+        <text class="b2mX" x="650" y="156">every single turn - models</text>
+        <text class="b2mX" x="650" y="174">are stateless; the list IS</text>
+        <text class="b2mX" x="650" y="192">the conversation</text>
+        <rect x="60" y="328" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b2mN" x="84" y="340">Every LangChain feature you will meet is a transformation of this stack. Learn to read it raw.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - message flow anatomy: a conversation is a typed message stack</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>init_chat_model and the provider-swap contract<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>init_chat_model("claude-haiku-4-5-20251001")</code> and <code>init_chat_model("ollama:llama3.1")</code> return objects with the same surface. What is actually in the contract:</p>
+        <ul>
+          <li><strong>Standardized:</strong> <code>invoke</code> (one call, full reply), <code>stream</code> (chunks as they generate), <code>bind_tools</code> (attach tool schemas), the message types in and out. Your agent code never changes.</li>
+          <li><strong>Provider-specific, on purpose:</strong> what the model can DO. Strict tool schemas, extended thinking, prompt caching, PDF input - those are Claude features. Zero cost and total privacy - those are Ollama features. The swap changes capability, never syntax.</li>
+          <li><strong>The mental model:</strong> LangChain standardizes the plug, not the appliance. Design your agent against the plug; choose the appliance per environment - capability in dev, privacy in the confidential-data path.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>I use two LLM engines behind one interface: a hosted frontier model and a local 8B model. List 5 concrete behaviors that might silently differ when I swap engines even though my code does not change. Rank by how likely each is to bite a data team.</div>
+        <div class="callout tip">
+          <strong>The swap, one more time</strong>
+          <code>init_chat_model("claude-haiku-4-5-20251001")</code> ↔ <code>init_chat_model("ollama:llama3.1")</code>. Every demo tonight ends by running on the other engine. That habit is the course's spine.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Messages anatomy and content_blocks<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Four message roles carry every conversation: <strong>system</strong> (standing orders), <strong>human</strong> (the user), <strong>ai</strong> (the model - text, but also tool calls and reasoning), and <strong>tool</strong> (results going back). The 1.0 upgrade that matters is <code>message.content_blocks</code>:</p>
+        <ul>
+          <li><strong>The problem it solves:</strong> providers disagree about payload shape. Claude returns thinking blocks and citations one way, other providers another way. Pre-1.0 code that reached into raw <code>content</code> broke on every provider swap.</li>
+          <li><strong>The fix:</strong> <code>content_blocks</code> is a provider-agnostic view - a list of typed blocks (<code>text</code>, <code>reasoning</code>, <code>tool_call</code>, citations) with the same shape regardless of engine. Iterate it and you never write provider-specific parsing again.</li>
+          <li><strong>Why a data person should care:</strong> reasoning traces and tool calls are exactly what you log, audit, and eval later (b10). A stable schema for them is infrastructure, not sugar.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The dashboard that broke on a model upgrade.</strong> A team parsed Claude's raw response payload to display tool calls in their internal UI. A provider-side format tweak broke the display for a week. The rewrite to <code>content_blocks</code> was 20 lines - and survived the next three model swaps untouched.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The engine capability envelope<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Same plug, different appliance. Know each engine's envelope before you promise features to stakeholders:</p>
+        <table class="clean">
+          <thead><tr><th></th><th>Claude via langchain-anthropic</th><th>Local via langchain-ollama</th></tr></thead>
+          <tbody>
+            <tr><td>Tool calling</td><td>Excellent, with strict schema mode</td><td>Works ONLY on tool-tuned models (llama3.1 yes; many models no)</td></tr>
+            <tr><td>Extended thinking</td><td>Yes - visible as reasoning blocks</td><td>Model-dependent, often absent</td></tr>
+            <tr><td>Prompt caching</td><td>Yes - big savings on long system prompts</td><td>Not applicable (no per-token bill)</td></tr>
+            <tr><td>Image / PDF input</td><td>Yes</td><td>Model-dependent, usually no</td></tr>
+            <tr><td>Token-usage metadata</td><td>Full usage returned per call</td><td>None - budget dashboards go blind</td></tr>
+            <tr><td>Cost / privacy</td><td>Per token · Anthropic ToS</td><td>Free · nothing leaves the machine</td></tr>
+          </tbody>
+        </table>
+        <p>Design rule for DataDesk: features may light up on Claude and degrade on Ollama, but the code path stays identical. If a feature is envelope-dependent (say, PDF ingestion), guard it, do not fork the codebase.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: TOOLS AND STRUCTURED OUTPUT ============ -->
+  <section class="section" id="tools-structured">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the tools + structured output docs</span>
+      <h2>Tools and structured output <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Tools are how the model reaches into your world; structured output is how its answers reach into your pipelines. Both are contracts, and both are written in the same place: your function signatures and Pydantic models.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tool-call round trip: the @tool decorator turns signature and docstring into a schema, the model emits a tool_call block, your Python runs, the result returns as a tool message">
+        <style>
+          .b2tT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b2tI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b2tW { font: 400 12px Inter, sans-serif; fill: #EBE8FE; }
+          .b2tS { font: 400 12px Inter, sans-serif; fill: #132D2D; }
+          .b2tN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b2tArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b2tAh); }
+        </style>
+        <defs>
+          <marker id="b2tAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="40" width="240" height="70" rx="12" fill="#8F84F2"/>
+        <text class="b2tT" x="64" y="68">@tool csv_stats</text>
+        <text class="b2tW" x="64" y="88">signature + docstring in your code</text>
+        <rect x="330" y="40" width="220" height="70" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b2tI" x="354" y="68">JSON schema</text>
+        <text class="b2tS" x="354" y="88">generated - never hand-written</text>
+        <rect x="600" y="40" width="240" height="70" rx="12" fill="#132D2D"/>
+        <text class="b2tT" x="624" y="68">model emits tool_call</text>
+        <text class="b2tW" x="624" y="88">a typed block: name + args</text>
+        <rect x="600" y="180" width="240" height="70" rx="12" fill="#BEB4FD"/>
+        <text class="b2tI" x="624" y="208">your Python runs</text>
+        <text class="b2tS" x="624" y="228">the model never executes code</text>
+        <rect x="330" y="180" width="220" height="70" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b2tI" x="354" y="208">tool message back</text>
+        <text class="b2tS" x="354" y="228">result, tied by tool_call_id</text>
+        <rect x="40" y="180" width="240" height="70" rx="12" fill="#1D3D3C"/>
+        <text class="b2tT" x="64" y="208">final answer</text>
+        <text class="b2tW" x="64" y="228">grounded in the real result</text>
+        <line class="b2tArr" x1="288" y1="75" x2="322" y2="75"/>
+        <line class="b2tArr" x1="558" y1="75" x2="592" y2="75"/>
+        <line class="b2tArr" x1="720" y1="118" x2="720" y2="172"/>
+        <line class="b2tArr" x1="592" y1="215" x2="558" y2="215"/>
+        <line class="b2tArr" x1="322" y1="215" x2="288" y2="215"/>
+        <rect x="40" y="290" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b2tN" x="64" y="302">The docstring IS the model's manual for your tool. Write it like prompt engineering, because it is.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the tool-call round trip, with the schema generated from your code</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The @tool decorator - schema from signature<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In b1 you hand-wrote a JSON schema for <code>csv_stats</code>. The <code>@tool</code> decorator from <code>langchain.tools</code> generates it: parameter names and types from the signature, the description from the docstring. Three consequences worth money:</p>
+        <ul>
+          <li><strong>Good docstrings ARE prompt engineering.</strong> "Row count, columns and date range of a CSV file" tells the model exactly when to reach for this tool. A lazy docstring like "gets stats" produces wrong tool choices you will misdiagnose as model stupidity.</li>
+          <li><strong>Type hints are enforced upstream.</strong> <code>path: str</code> means the model is told to send a string. Bad inputs get caught at the schema boundary, not deep in your pandas code.</li>
+          <li><strong>One decorator, both engines.</strong> The same decorated function binds to Claude and to a tool-tuned Ollama model. Capability envelope applies: on a non-tool-tuned local model, <code>bind_tools</code> simply cannot work.</li>
+        </ul>
+        <div class="prompt-box bad"><span class="label">The docstring that causes 2am pages</span>@tool
+def csv_stats(path: str) -&gt; dict:
+    """gets stats"""    # which stats? of what? when should the model call it?</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Structured output - in the main loop, no second call<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Free text is for humans; your scripts need fields. Pass a Pydantic model as <code>response_format</code> to <code>create_agent</code> and the final answer arrives as a validated object:</p>
+        <ul>
+          <li><strong>The 1.x win:</strong> the structured response is generated in the agent's main loop. The 0.x pattern - run the agent, then fire a second LLM call to reformat the answer - is gone. One loop, fewer tokens, no drift between the answer and its structured version.</li>
+          <li><strong>Validation is Pydantic's, not the model's:</strong> if the model emits a field that fails your types, you find out immediately, at the boundary, with a Python exception you can catch.</li>
+          <li><strong>Read it from</strong> <code>result["structured_response"]</code> - it sits alongside the normal message list, so you keep the conversational trace too.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>When structured output beats free text<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The decision rule is one sentence: <strong>if anything other than a human reads the answer, structure it.</strong></p>
+        <table class="clean">
+          <thead><tr><th>Consumer of the answer</th><th>Format</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>A human, reading in chat</td><td>Free text</td><td>"Explain why signups dipped in March"</td></tr>
+            <tr><td>A script, a pipeline, a dashboard</td><td>Pydantic via response_format</td><td>DataRequest(dataset, metric, date_range)</td></tr>
+            <tr><td>A downstream tool call</td><td>Structured - always</td><td>Parsed request feeding csv_stats</td></tr>
+            <tr><td>An audit log or eval suite</td><td>Structured - always</td><td>Verdicts with reason codes, b10</td></tr>
+          </tbody>
+        </table>
+        <p>Heuristic for data teams: every "can you pull me..." message from a stakeholder is secretly a form. Tonight's Demo 2 makes that literal.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>X-ray a conversation <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">You will send one message, bind one tool, and read the raw typed blocks the model actually returns - on both engines. After this, no LangChain response is ever opaque to you again.</p>
+
+    <div class="steps">
+      <div class="step"><p>In your DataDesk folder from b1, create <code>xray.py</code> with the script below. It uses your existing <code>csv_stats</code> function body.</p></div>
+      <div class="step"><p>Run it on the Claude engine. First X-ray: a plain reply - expect a single <code>text</code> block (and, if extended thinking is on, a <code>reasoning</code> block before it).</p></div>
+      <div class="step"><p>Second X-ray: the tool-armed call. Find the <code>tool_call</code> block - name and arguments, exactly the schema your docstring generated. This block is what the while-loop from b1 was pattern-matching on.</p></div>
+      <div class="step"><p>Now the swap: change one line to <code>init_chat_model("ollama:llama3.1")</code> and re-run. Diff what changes: block shapes identical, capability different - likely no reasoning block, and no token-usage metadata at all.</p></div>
+      <div class="step"><p>Say the conclusion out loud: <strong>content_blocks is the same language on both engines; the engines just have different vocabularies.</strong></p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ xray.py - the whole script</span>from langchain.chat_models import init_chat_model
+from langchain.tools import tool
+
+@tool
+def csv_stats(path: str) -&gt; dict:
+    """Row count, columns and date range of a CSV file."""
+    ...  # your b1 function body, unchanged
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # swap: "ollama:llama3.1"
+
+# X-ray 1: plain reply
+reply = model.invoke("In two sentences: why do data teams version their datasets?")
+for block in reply.content_blocks:
+    print("[1]", block["type"], "·", str(block)[:90])
+
+# X-ray 2: tool-armed reply
+armed = model.bind_tools([csv_stats])
+ask = armed.invoke("How many rows does data.csv have?")
+for block in ask.content_blocks:
+    print("[2]", block["type"], "·", str(block)[:90])   # expect a tool_call block</div>
+
+    <div class="callout tip">
+      <strong>If the Ollama run has no tool_call block</strong>
+      Check the model: <code>bind_tools</code> only works on tool-tuned models. <code>llama3.1</code> qualifies; many pulls do not. This is the capability envelope from Part 1, live.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>DataDesk learns to fill forms <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">A stakeholder writes "hey can u pull avg order value for the shop data, last quarter-ish? thx". DataDesk v0.2 turns that into a validated DataRequest object - dataset, metric, date_range - ready to feed a real pipeline.</p>
+
+    <div class="steps">
+      <div class="step"><p>Define the form: a Pydantic <code>DataRequest</code> model with <code>dataset</code>, <code>metric</code>, <code>date_range</code>. This class IS the contract between vague humans and exact pipelines.</p></div>
+      <div class="step"><p>Pass it to <code>create_agent</code> as <code>response_format=DataRequest</code>. No parsing prompt, no second LLM call - the structured answer is produced inside the main loop.</p></div>
+      <div class="step"><p>Invoke with the messy request. Print <code>result["structured_response"]</code> - three clean validated fields out of one sloppy sentence.</p></div>
+      <div class="step"><p>Validate the win: feed <code>req.dataset</code> into <code>csv_stats</code> directly. The agent's answer just became an argument to your code - that handoff is the whole point of structured output.</p></div>
+      <div class="step"><p>Engine-swap test: same file on <code>ollama:llama3.1</code>. Local models are sloppier at edge cases - watch whether "last quarter-ish" survives. That gap is eval material for b10.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ DataDesk v0.2 - the whole file</span>from pydantic import BaseModel
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from langchain.tools import tool
+
+@tool
+def csv_stats(path: str) -&gt; dict:
+    """Row count, columns and date range of a CSV file."""
+    ...  # unchanged from b1
+
+class DataRequest(BaseModel):
+    dataset: str      # which dataset the stakeholder means
+    metric: str       # what they want computed
+    date_range: str   # the window, normalized
+
+agent = create_agent(
+    model=init_chat_model("claude-haiku-4-5-20251001"),   # or "ollama:llama3.1"
+    tools=[csv_stats],
+    system_prompt="You are DataDesk, a data team assistant. Be precise.",
+    response_format=DataRequest,
+)
+
+result = agent.invoke({"messages": [{"role": "user",
+    "content": "hey can u pull avg order value for the shop data, last quarter-ish? thx"}]})
+req = result["structured_response"]
+print(req.dataset, "·", req.metric, "·", req.date_range)</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The intake queue that stopped being a queue.</strong> A data team's #data-requests channel averaged two clarification round trips per ask. They put a structured-output parser in front: every request became a typed object or a single auto-generated question ("which dataset - orders or web analytics?"). Clarification round trips dropped by half before anyone touched a model bigger than Haiku.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Run both demos on BOTH engines if you did not finish live. The X-ray diff is the habit that makes b4's fallback middleware feel obvious.</li>
+      <li>Rewrite the docstring of <code>csv_stats</code> three ways (terse, precise, over-long) and X-ray which one the model picks correctly for three different questions. Bring your winner to b3.</li>
+      <li>Extend <code>DataRequest</code> with an optional <code>group_by</code> field and test it on two real requests from your own backlog or inbox.</li>
+      <li>Skim your last five stakeholder asks: which were secretly forms? Note the fields - that list is DataDesk's future intake schema.</li>
+      <li>Optional reading: the messages + content blocks pages at docs.langchain.com - now you can read them as documentation of things you have printed.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain docs: models, messages, tools</span><span class="note">Parts 1-2 · init_chat_model, content_blocks, @tool, response_format</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangChain (M1)</span><span class="note">Model + tool foundations covered; the module's agent project completes in b3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">langchain-anthropic + langchain-ollama integration docs</span><span class="note">Capability envelope table + both engine paths in every demo</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What exactly does init_chat_model standardize across Claude and Ollama?</p>
+      <button class="qopt" type="button">A · Everything - the models become equivalent</button>
+      <button class="qopt" type="button">B · Only the authentication method</button>
+      <button class="qopt" type="button">C · The interface (invoke, stream, bind_tools, message types) - capabilities like thinking, caching and PDF input stay provider-specific</button>
+      <p class="qwhy">LangChain standardizes the plug, not the appliance. The swap changes capability, never syntax - which is why you test on both engines every session.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · Why read message.content_blocks instead of the raw provider payload?</p>
+      <button class="qopt" type="button">A · It is a provider-agnostic view of text, reasoning and tool calls - the same typed shape on every engine</button>
+      <button class="qopt" type="button">B · It is faster to compute</button>
+      <button class="qopt" type="button">C · Raw payloads are encrypted in 1.x</button>
+      <p class="qwhy">Reasoning traces and tool calls differ per provider in the raw payload. content_blocks gives them one stable schema - which is also what you log and eval later.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · How does structured output work in LangChain 1.x agents?</p>
+      <button class="qopt" type="button">A · A second LLM call reformats the final answer into JSON</button>
+      <button class="qopt" type="button">B · The structured response is generated in the agent's main loop - pass a Pydantic model as response_format, read result["structured_response"]</button>
+      <button class="qopt" type="button">C · You must write a regex parser per model</button>
+      <p class="qwhy">The extra-call pattern is the 0.x museum. One loop, validated at the boundary by Pydantic, no drift between answer and structure.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The contract</b><span>init_chat_model standardizes invoke / stream / bind_tools + message types. Capabilities stay per-provider.</span></div>
+      <div class="cheat-item"><b>Message stack</b><span>system → human → ai → tool → ai. One list, replayed every turn. The model is stateless; the list is the conversation.</span></div>
+      <div class="cheat-item"><b>content_blocks</b><span>Provider-agnostic typed view: text, reasoning, tool_call. Iterate this, never the raw payload.</span></div>
+      <div class="cheat-item"><b>@tool rule</b><span>Schema from signature + docstring. The docstring is the model's manual - write it like prompt engineering.</span></div>
+      <div class="cheat-item"><b>Structured output</b><span>response_format=YourPydanticModel on create_agent · read result["structured_response"] · main loop, no second call.</span></div>
+      <div class="cheat-item"><b>When to structure</b><span>If anything other than a human reads the answer, structure it. Stakeholder asks are secretly forms.</span></div>
+      <div class="cheat-item"><b>Envelope watch</b><span>Ollama: tools only on tool-tuned models, no usage metadata. Claude: strict tools, thinking, caching, PDFs.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v0.2 parses messy asks into DataRequest. Next: b3 gives it more tools and a real system prompt.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 2 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b1-need-a-framework.html">← Prev: Do you even need a framework?</a> &nbsp;·&nbsp; <a href="b3-create-agent.html">Next: create_agent, properly →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

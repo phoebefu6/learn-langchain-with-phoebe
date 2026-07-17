@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 2 · Speaking agent: the vocabulary bridge - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Leader session 2 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Leader track · Session 2 of 6</div>
+    <h1>Speaking agent: <span class="accent">the vocabulary bridge</span></h1>
+    <p class="sub">The meeting where you nod along ends this week. Twenty-two terms cover essentially every agent conversation you will sit in this year - and each one, translated properly, is not jargon but a question you become able to ask. That reframe is the whole session: vocabulary as leverage, not homework.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Leader track</span>
+      <span class="chip audience">Leaders: C-level · managers · curious minds</span>
+      <span class="chip audience">No code, ever</span>
+      <span class="chip time">45 minutes</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · Concepts</span>
+      <span class="a3" style="flex:4">20-40 · Exercises</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why vocabulary is a leadership tool</h2>
+    </div>
+    <p class="lede">There is a specific moment this session retires: the status update rolls past - "we added HITL gates after the evals caught a tool-calling regression" - and you nod, and you make a mental note to look it up later, and later never comes. The cost of that nod is not embarrassment; it is <strong>every question you did not ask</strong>. Each term below is presented three ways: the word, the plain-English meaning, and the question it lets you ask. The third column is the one that changes your meetings.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Sources covered at the end</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The six words that describe the machine itself, the four governance words and the four plumbing words that describe running it, a full 22-term table you can keep beside your calendar, and two exercises that turn a real status update into plain English - plus your first three questions for your own project.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE MACHINE ============ -->
+  <section class="section" id="machine-words">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the core anatomy every agent shares</span>
+      <h2>The machine, in six words <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Every agent system - whatever the vendor, whatever the framework - is built from the same handful of parts. Six words describe the whole machine. Learn these six and every architecture diagram becomes readable.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent anatomy: model, tools and state inside a guardrails fence, with a human approval gate to the side">
+        <style>
+          .a2mT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a2mI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .a2mW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .a2mX { font: 600 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a2mN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a2mArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a2mAh); }
+        </style>
+        <defs>
+          <marker id="a2mAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="40" width="560" height="240" rx="16" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a2mI" x="64" y="70">Guardrails - the fence around everything</text>
+        <rect x="80" y="96" width="180" height="56" rx="12" fill="#132D2D"/>
+        <text class="a2mT" x="102" y="130">Model (LLM)</text>
+        <rect x="360" y="96" width="180" height="56" rx="12" fill="#8F84F2"/>
+        <text class="a2mT" x="382" y="120">Tools</text>
+        <text class="a2mW" x="382" y="140">search · SQL · email</text>
+        <rect x="80" y="196" width="180" height="56" rx="12" fill="#1D3D3C"/>
+        <text class="a2mT" x="102" y="220">State</text>
+        <text class="a2mW" x="102" y="240">what it remembers</text>
+        <line class="a2mArr" x1="268" y1="124" x2="352" y2="124"/>
+        <line class="a2mArr" x1="450" y1="160" x2="270" y2="216"/>
+        <line class="a2mArr" x1="170" y1="188" x2="170" y2="160"/>
+        <text class="a2mX" x="286" y="112">asks for</text>
+        <text class="a2mX" x="330" y="204">result saved</text>
+        <rect x="650" y="96" width="200" height="56" rx="12" fill="#BEB4FD"/>
+        <text class="a2mI" x="672" y="130">Human approval</text>
+        <line class="a2mArr" x1="608" y1="124" x2="642" y2="124"/>
+        <text class="a2mX" x="650" y="176">risky actions pause</text>
+        <text class="a2mX" x="650" y="194">here first (HITL)</text>
+        <rect x="40" y="296" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a2mN" x="64" y="308">Every term today names one part of this one picture.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the anatomy every agent shares: model + tools + state, fenced by guardrails</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>LLM · agent · workflow - the identity words<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>LLM</strong> - the large language model: the text engine that predicts the next word astonishingly well. The engine, not the vehicle. <em>The question it lets you ask: "which model is this running on, and what does each use cost us?"</em></li>
+          <li><strong>Agent</strong> - a system where the model chooses its own steps and tools (session a1's definition, now one word). <em>"What exactly is it allowed to decide on its own?"</em></li>
+          <li><strong>Workflow</strong> - a fixed flowchart with a model filling in text at some steps. <em>"Did we fix the steps in advance, or does the model pick them?"</em></li>
+        </ul>
+        <p>Notice the pattern already: the plain meaning is nice to have, but the question is what you take into the room. That pattern holds for all 22 terms.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>I am a business leader. For each of these terms - LLM, agent, workflow, orchestration, tool calling, state - give me: (1) a one-sentence plain-English definition, (2) one question the term equips me to ask my data team, and (3) what a worrying answer to that question sounds like. No code, business examples only.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Orchestration · tool calling · state - the moving parts<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Orchestration</strong> - the code that sequences models, tools, and checks into one system; the conductor. <em>"Who is conducting - our code, or the model itself?"</em> (That is the workflow/agent question wearing engineering clothes.)</li>
+          <li><strong>Tool calling</strong> - the model asking to run a real function: search the wiki, query the database, send the email. Tool calling is where AI stops writing about the world and starts acting on it. <em>"What can it actually DO, beyond producing text?"</em></li>
+          <li><strong>State</strong> - everything the system remembers mid-task: the conversation so far, tool results, progress. <em>"What happens if it fails halfway through - do we resume, restart, or lose the work?"</em> This single question routinely reveals whether a system was built for demos or for production.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The question that found the gap.</strong> A operations director (anonymized org) asked exactly the state question - "what happens if it fails halfway?" - in a project review. Silence, then honesty: a failure at step four of five meant starting over, including re-sending one customer email. The fix took a sprint. The question took ten seconds.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: OPERATIONS WORDS ============ -->
+  <section class="section" id="operations-words">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the governance four + the plumbing four + the full table</span>
+      <h2>The operations words <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">Six words describe the machine; the rest describe running it responsibly. Four are governance words - your words, as a leader. Four are plumbing words that explain most of the sentences engineers say. The remaining eight live in the full table below.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>HITL · evals · traces · observability - the governance four<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>HITL (human-in-the-loop)</strong> - mandatory human approval at defined points; the machine pauses, a person signs off. <em>"Where exactly does a human sign off - and who is that human?"</em></li>
+          <li><strong>Evals</strong> - automated tests that score AI output quality, run repeatedly. The AI equivalent of financial controls. <em>"How do we know it is still good next month, not just in the demo?"</em></li>
+          <li><strong>Traces</strong> - the step-by-step record of one run: every decision, every tool call, in order. <em>"Show me exactly what it did last Tuesday."</em> If your team can answer that in minutes, you have real observability. If not, you have a black box with a logo.</li>
+          <li><strong>Observability</strong> - dashboards and alerts over ALL runs: costs, errors, quality drift. <em>"Would we notice if it degraded quietly - or would customers tell us first?"</em></li>
+        </ul>
+        <p>These four are not technical trivia. They are the same four instincts you already apply to finance: approval limits, controls, audit trails, and monitoring. The vocabulary is new; the governance is not.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>RAG · context window · token · MCP - the plumbing four<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>RAG (retrieval-augmented generation)</strong> - fetch relevant passages from YOUR documents first, then answer from those. <em>"Is it answering from our data, or from its general memory?"</em> The difference decides whether the answer is grounded or merely plausible.</li>
+          <li><strong>Context window</strong> - how much text the model can consider at once. Finite, like working memory. <em>"On long tasks, what falls out of its memory - and does anything important?"</em></li>
+          <li><strong>Token</strong> - the billing unit; roughly three-quarters of a word. <em>"What actually drives our bill - and which use case is the expensive one?"</em></li>
+          <li><strong>MCP (Model Context Protocol)</strong> - an open standard for plugging tools and data sources into AI systems; USB for AI tools. <em>"Are our integrations standard and reusable, or is every one a custom build we will pay to maintain?"</em></li>
+        </ul>
+        <div class="callout tip">
+          <strong>A gentle rule for meetings</strong>
+          One new question per meeting is plenty. Asking "show me a trace" once, and meaning it, does more for your credibility than ten definitions recited perfectly.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The full 22-term table - keep it beside your calendar<span class="mini">6 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The remaining eight terms - guardrails, prompt injection, the lethal trifecta (session a4 is built around it), hallucination, LLM-as-judge, checkpointing, agent washing, multi-agent - complete the set. The whole vocabulary, one line each:</p>
+        <table class="clean">
+          <thead><tr><th>Term</th><th>Plain English</th><th>The question it lets you ask</th></tr></thead>
+          <tbody>
+            <tr><td>LLM</td><td>The text engine that predicts the next word, astonishingly well</td><td>"Which model, and what does each use cost?"</td></tr>
+            <tr><td>Agent</td><td>A system where the model chooses its own steps and tools</td><td>"What is it allowed to decide alone?"</td></tr>
+            <tr><td>Workflow</td><td>A fixed flowchart; the model fills in text at some steps</td><td>"Did we fix the steps, or does the model?"</td></tr>
+            <tr><td>Orchestration</td><td>The code that sequences models, tools, and checks</td><td>"Who is conducting - our code or the model?"</td></tr>
+            <tr><td>Tool calling</td><td>The model asking to run a real function (search, SQL, email)</td><td>"What can it actually DO beyond text?"</td></tr>
+            <tr><td>State</td><td>Everything the system remembers mid-task</td><td>"What happens if it fails halfway?"</td></tr>
+            <tr><td>HITL</td><td>Mandatory human approval at defined points</td><td>"Where does a human sign off, and who?"</td></tr>
+            <tr><td>Evals</td><td>Automated tests that score AI output quality</td><td>"How do we know it is still good next month?"</td></tr>
+            <tr><td>Traces</td><td>The step-by-step record of one run</td><td>"Show me what it did last Tuesday."</td></tr>
+            <tr><td>Observability</td><td>Dashboards and alerts across all runs</td><td>"Would we notice quiet degradation?"</td></tr>
+            <tr><td>RAG</td><td>Fetch our documents first, then answer from them</td><td>"Our data, or its general memory?"</td></tr>
+            <tr><td>Context window</td><td>How much text the model can consider at once</td><td>"What falls out of memory on long tasks?"</td></tr>
+            <tr><td>Token</td><td>The billing unit; roughly three-quarters of a word</td><td>"What actually drives our bill?"</td></tr>
+            <tr><td>MCP</td><td>Open standard for plugging tools into AI systems</td><td>"Standard integrations, or bespoke builds?"</td></tr>
+            <tr><td>Guardrails</td><td>Hard limits on what the system may do or say</td><td>"What can it NEVER do, by construction?"</td></tr>
+            <tr><td>Prompt injection</td><td>Malicious text that hijacks the model's instructions</td><td>"Can outside text give our agent orders?"</td></tr>
+            <tr><td>Lethal trifecta</td><td>Private data + untrusted content + external comms in one agent</td><td>"Do any of ours have all three?" (session a4)</td></tr>
+            <tr><td>Hallucination</td><td>Confident, fluent, wrong</td><td>"How do we catch it before customers do?"</td></tr>
+            <tr><td>LLM-as-judge</td><td>Using one model to grade another's output</td><td>"Who grades the grader?"</td></tr>
+            <tr><td>Checkpointing</td><td>Saving state so a run can pause, resume, or undo</td><td>"Can we stop it mid-flight and rewind?"</td></tr>
+            <tr><td>Agent washing</td><td>Relabeling chatbots or RPA as "agents"</td><td>"Does the model actually choose the steps?"</td></tr>
+            <tr><td>Multi-agent</td><td>Several agents handing work to each other</td><td>"What happens when one feeds errors to the next?"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A trace: one agent run drawn as five numbered steps with a magnifier over step three - the audit trail auditors will ask for">
+        <style>
+          .a2tT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .a2tI { font: 700 13.5px Inter, sans-serif; fill: #132D2D; }
+          .a2tX { font: 600 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a2tN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a2tArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a2tAh); }
+          .a2tMag { stroke: #D85522; stroke-width: 3; fill: none; }
+        </style>
+        <defs>
+          <marker id="a2tAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="a2tX" x="40" y="52">One run of one agent, replayed step by step:</text>
+        <rect x="40" y="120" width="140" height="64" rx="12" fill="#132D2D"/>
+        <text class="a2tT" x="56" y="146">1 · Question</text>
+        <text class="a2tT" x="56" y="166">received</text>
+        <rect x="200" y="120" width="140" height="64" rx="12" fill="#1D3D3C"/>
+        <text class="a2tT" x="216" y="146">2 · Searched</text>
+        <text class="a2tT" x="216" y="166">policy docs</text>
+        <rect x="360" y="120" width="140" height="64" rx="12" fill="#8F84F2"/>
+        <text class="a2tT" x="376" y="146">3 · Queried</text>
+        <text class="a2tT" x="376" y="166">orders DB</text>
+        <rect x="520" y="120" width="140" height="64" rx="12" fill="#1D3D3C"/>
+        <text class="a2tT" x="536" y="146">4 · Drafted</text>
+        <text class="a2tT" x="536" y="166">the reply</text>
+        <rect x="680" y="120" width="140" height="64" rx="12" fill="#BEB4FD"/>
+        <text class="a2tI" x="696" y="146">5 · Human</text>
+        <text class="a2tI" x="696" y="166">approved ✓</text>
+        <line class="a2tArr" x1="184" y1="152" x2="196" y2="152"/>
+        <line class="a2tArr" x1="344" y1="152" x2="356" y2="152"/>
+        <line class="a2tArr" x1="504" y1="152" x2="516" y2="152"/>
+        <line class="a2tArr" x1="664" y1="152" x2="676" y2="152"/>
+        <circle class="a2tMag" cx="430" cy="78" r="22"/>
+        <line class="a2tMag" x1="446" y1="94" x2="466" y2="114"/>
+        <text class="a2tX" x="464" y="70">zoom into any step:</text>
+        <text class="a2tX" x="464" y="88">inputs, outputs, cost</text>
+        <rect x="40" y="252" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a2tN" x="64" y="264">This is the audit trail your auditors will ask for.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a trace: one run, every step, replayable on demand</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ EXERCISE 1 ============ -->
+  <section class="section" id="exercise-1">
+    <div class="section-kicker">
+      <span class="klabel">Exercise 1 of 2</span>
+      <h2>Decode the status update <span class="tag demo">★ 12 min · glossary in hand</span></h2>
+    </div>
+    <p class="lede">Here is a realistic, anonymized engineering status update - the kind that produces the nod. Your job is to translate it, line by line, until there is nothing left to nod at.</p>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><em>"The agent kept blowing past the context window on long threads, so we added a summarization step in the orchestration layer and moved document lookup to RAG over the policy wiki. Evals caught a tool-calling regression after the model swap - traces show it hallucinating a refund tool that doesn't exist - so we've put a HITL gate on anything touching payments until the new guardrails land."</em></p>
+    </div>
+
+    <div class="steps">
+      <div class="step"><p>Read it once at normal speed and notice, honestly, which phrases blur past. Those are your terms for today.</p></div>
+      <div class="step"><p>Underline every glossary term: context window, orchestration, RAG, evals, tool calling, traces, hallucinating, HITL, guardrails. Nine terms in three sentences - a normal density.</p></div>
+      <div class="step"><p>Translate line by line with the table. Line 1: it forgot things on long conversations, so they compress the history and now fetch policy answers from our own wiki. Continue for lines 2 and 3 yourself.</p></div>
+      <div class="step"><p>Write the one-sentence executive version. Something like: "the system had a memory limit and briefly invented a payment action; tests caught it, and payments now require human sign-off until the fix ships."</p></div>
+      <div class="step"><p>Now the leadership move: find the question hiding in it. (Strong candidate: "the evals caught it - AFTER how many production runs?")</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Your AI decoding partner (paste into any chat AI)</span>I am a business leader learning agent vocabulary. Here is a status update from my engineering team: [paste the update]. Do three things: (1) translate it line by line into plain business English, (2) list the 3 most important follow-up questions I should ask, and (3) for each question, tell me what a reassuring answer sounds like versus a worrying one. Keep it free of jargon unless you define it in the same sentence.</div>
+  </section>
+
+  <!-- ============ EXERCISE 2 ============ -->
+  <section class="section" id="exercise-2">
+    <div class="section-kicker">
+      <span class="klabel">Exercise 2 of 2</span>
+      <h2>Your first three questions <span class="tag demo">★ 8 min · your real project</span></h2>
+    </div>
+    <p class="lede">Vocabulary you have not used within a week evaporates. Pick three terms and spend them on your actual project before Friday.</p>
+
+    <div class="steps">
+      <div class="step"><p>Pick the ONE live (or proposed) AI initiative in your organization you care most about. Write its name at the top of a page.</p></div>
+      <div class="step"><p>Scan the 22-term table's third column and pick the three questions that make your stomach tighten slightly when you imagine the answer. That feeling is good judgment - trust it.</p></div>
+      <div class="step"><p>Rewrite each question in your project's language. Not "show me a trace" but "show me the trace of what the onboarding assistant did for the customer who complained last week."</p></div>
+      <div class="step"><p>Put them in the agenda of your next review meeting - as curiosity, not audit. "I've been learning the vocabulary and I'd love to see..." opens doors that "I require..." closes.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Why three, not twenty-two</strong>
+      Three questions asked well, in context, with follow-ups, will teach you more about your project's real state than a completed glossary quiz. The table is a menu, not a checklist.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="homework">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session a3 <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Read the full 22-term table once, slowly, and mark the terms you could not yet explain to a colleague over coffee. Re-read only those.</li>
+      <li>Run the decoding-partner prompt on one REAL status update, email, or slide from your own inbox. This is the exercise that makes it stick.</li>
+      <li>Ask your three questions from Exercise 2 in an actual meeting this week, and note which answer surprised you.</li>
+      <li>Preview for a3: skim the "lethal trifecta" row in the table. Next session's failure stories will make it vivid; session a4 makes it actionable.</li>
+    </ul>
+    <div class="callout win">
+      <strong>★ Questions to ask your data team this week</strong>
+      <ol>
+        <li>Can I see a trace of one real run of our most important agent or workflow - every step, every tool call?</li>
+        <li>Which of our AI systems have evals today, when did they last fail, and what happened next?</li>
+        <li>Where are our human-in-the-loop points, and who exactly is the human at each one?</li>
+        <li>On our longest-running tasks, what falls out of the context window - and does anything important?</li>
+        <li>Are our tool integrations built on a standard like MCP, or is each one a custom build we maintain alone?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">Every definition on this page is grounded in the official docs and published engineering guidance - simplified in wording, never in meaning. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Anthropic's agent definitions and glossary framing</span><span class="note">Parts 1-2 · workflow, agent, tool calling, guardrails, the building-effective-agents vocabulary</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">MCP (Model Context Protocol) documentation</span><span class="note">Part 2 · what MCP standardizes and the integrations question it unlocks</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">LangSmith docs (traces, observability, evals)</span><span class="note">Part 2 covers the concepts; the builder track's b10 covers the product in depth</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · The term "state" equips you to ask which leadership question?</p>
+      <button class="qopt" type="button">A · "Which US state hosts our data center?"</button>
+      <button class="qopt" type="button">B · "How many parameters does the model have?"</button>
+      <button class="qopt" type="button">C · "What happens if it fails halfway through - resume, restart, or lose the work?"</button>
+      <p class="qwhy">State is everything the system remembers mid-task. The halfway-failure question routinely separates demo-grade systems from production-grade ones - in ten seconds.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · A trace is best described as...</p>
+      <button class="qopt" type="button">A · The step-by-step record of one run - "show me exactly what it did last Tuesday"</button>
+      <button class="qopt" type="button">B · A summary dashboard of monthly AI spend</button>
+      <button class="qopt" type="button">C · The document listing which tools an agent may use</button>
+      <p class="qwhy">One run, every step, every tool call, replayable. It is the audit trail your auditors will ask for - and the single most useful thing to request in a review.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · Your team says the assistant "uses RAG over the policy wiki". That means...</p>
+      <button class="qopt" type="button">A · It was retrained from scratch on the policy wiki</button>
+      <button class="qopt" type="button">B · It fetches relevant wiki passages first, then answers from those - our data, not its general memory</button>
+      <button class="qopt" type="button">C · It can edit the policy wiki autonomously</button>
+      <p class="qwhy">RAG = retrieve first, then generate from what was retrieved. No retraining, no editing rights - and the reason its answers can cite your actual policies.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The reframe</b><span>Every term = a question you become able to ask. The third column of the table is the whole session.</span></div>
+      <div class="cheat-item"><b>The machine, six words</b><span>LLM · agent · workflow · orchestration · tool calling · state. One anatomy picture covers them all.</span></div>
+      <div class="cheat-item"><b>The governance four</b><span>HITL, evals, traces, observability = approval limits, controls, audit trails, monitoring. You already govern this way.</span></div>
+      <div class="cheat-item"><b>The plumbing four</b><span>RAG (our data?), context window (what's forgotten?), token (what drives cost?), MCP (standard or bespoke?).</span></div>
+      <div class="cheat-item"><b>The state question</b><span>"What happens if it fails halfway?" - ten seconds to reveal demo-grade vs production-grade.</span></div>
+      <div class="cheat-item"><b>The trace request</b><span>"Show me exactly what it did last Tuesday." Minutes to answer = observability. Days = black box.</span></div>
+      <div class="cheat-item"><b>Meeting discipline</b><span>One new question per meeting, asked with curiosity. Three well-spent questions beat a perfect glossary.</span></div>
+      <div class="cheat-item"><b>Coming next</b><span>a3 tells the failure stories; a4 turns "lethal trifecta" and "guardrails" into your governance stack.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 2 of 6 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a1-autonomy-ladder.html">← Prev: The autonomy ladder</a> &nbsp;·&nbsp; <a href="a3-when-agents-go-wrong.html">Next: When agents go wrong →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

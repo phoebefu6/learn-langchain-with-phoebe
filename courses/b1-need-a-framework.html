@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 1 · Do you even need a framework? - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 1 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 1 of 10</div>
+    <h1>Do you even <span class="accent">need a framework?</span></h1>
+    <p class="sub">The most honest way to start a LangChain course: build a working agent with NO framework at all, feel exactly where it hurts, then watch the framework earn its keep - or not. By the end you will know when LangChain is the right call and when it is overhead.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · Claude API or local Ollama</span>
+      <span class="chip time">Start here</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-18 · The terrain</span>
+      <span class="a3" style="flex:5">18-42 · Build-along: agent from scratch</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How this track works</h2>
+    </div>
+    <p class="lede">Ten sessions, one growing artifact: <strong>DataDesk</strong>, a data-team assistant that starts tonight as 40 lines of Python and graduates in session b10 with memory, approval gates, retrieval over your docs, a colleague agent, and an eval suite. Every session upgrades the same code. Two LLM paths run through the whole track - the Claude API for capability, a local Ollama model for zero-cost privacy - and switching between them is one line, which is itself the first thing LangChain has to prove to you.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A tool-calling agent you wrote yourself with zero framework (so agents are never magic again), the same agent rebuilt in three lines of LangChain 1.x, a decision card for framework vs raw SDK vs the alternatives, and a map of the 2026 LangChain stack that makes every later session make sense.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHAT AN AGENT ACTUALLY IS ============ -->
+  <section class="section" id="what-agent-is">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Anthropic's "Building effective agents" + Academy foundations</span>
+      <h2>What an agent actually is <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Strip the hype and an agent is a while-loop: a model, a list of tools, and a loop that keeps calling the model until it stops asking to use tools. Everything else - state, memory, approval gates, multi-agent - is engineering around that loop. Tonight you write the loop yourself.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The agent loop: model decides, tool runs, result returns to model, until done">
+        <style>
+          .b1aT { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+          .b1aI { font: 700 16px Inter, sans-serif; fill: #132D2D; }
+          .b1aX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .b1aN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b1aArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b1aAh); }
+        </style>
+        <defs>
+          <marker id="b1aAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="60" y="40" width="200" height="56" rx="12" fill="#1D3D3C"/>
+        <text class="b1aT" x="92" y="74">1 · Model thinks</text>
+        <rect x="420" y="40" width="200" height="56" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b1aI" x="446" y="74">2 · Asks for a tool</text>
+        <rect x="420" y="150" width="200" height="56" rx="12" fill="#8F84F2"/>
+        <text class="b1aT" x="452" y="184">3 · Tool runs</text>
+        <rect x="60" y="150" width="200" height="56" rx="12" fill="#132D2D"/>
+        <text class="b1aT" x="84" y="184">4 · Result goes back</text>
+        <line class="b1aArr" x1="268" y1="68" x2="412" y2="68"/>
+        <line class="b1aArr" x1="520" y1="104" x2="520" y2="142"/>
+        <line class="b1aArr" x1="412" y1="178" x2="268" y2="178"/>
+        <line class="b1aArr" x1="160" y1="142" x2="160" y2="104"/>
+        <rect x="680" y="88" width="170" height="56" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b1aI" x="706" y="122">Done: answer</text>
+        <text class="b1aX" x="680" y="164">loop exits when the model</text>
+        <text class="b1aX" x="680" y="182">stops requesting tools</text>
+        <rect x="60" y="228" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b1aN" x="84" y="240">The whole secret: it is a while-loop. You will have written one within the hour.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the agent loop, the one diagram behind every framework</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Workflow or agent - the definition that pays rent<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Anthropic's engineering team drew the line the whole industry now uses. A <strong>workflow</strong> is LLM steps orchestrated through predefined code paths - YOU wrote the flowchart, the model fills in text. An <strong>agent</strong> is a system where the model dynamically directs its own process and tool use - IT decides the steps.</p>
+        <ul>
+          <li><strong>Workflow example:</strong> "summarize ticket → classify → route" - three fixed steps, model inside each.</li>
+          <li><strong>Agent example:</strong> "resolve this ticket" - the model decides whether to search docs, query the database, escalate, or answer.</li>
+          <li><strong>The rule that saves money:</strong> agents trade latency and cost for flexibility. Start with a single LLM call; move to a workflow when steps are predictable; reach for an agent only when you genuinely cannot predict the steps. Add complexity only when it demonstrably improves outcomes.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Here are 4 tasks from my week: [list 4 real tasks]. For each, tell me: single LLM call, fixed workflow, or agent - and WHY, in one sentence each. Be stingy: recommend the simplest thing that works.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The invoice pipeline that did not need an agent.</strong> A finance team scoped an "invoice agent". On inspection: every invoice takes the same five steps. They shipped a workflow - five fixed nodes, model in two of them - in a week. Same team's contract-review problem, where every contract needs different digging, became their first real agent. Right tool, both times.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The autonomy ladder - where costs and risks climb<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Rules/RPA → single LLM call → workflow → agent → multi-agent. Each rung up buys flexibility and costs predictability, auditability, latency, and tokens. McKinsey's teams, after 50+ agentic builds, put it bluntly: agents aren't always the answer, and low-variance standardized processes are better served by rules or plain automation. The leader track's session a1 teaches this ladder to your boss - useful to know what they are being told.</p>
+        <table class="clean">
+          <thead><tr><th>Rung</th><th>Right when</th><th>Watch out</th></tr></thead>
+          <tbody>
+            <tr><td>Single LLM call</td><td>One transformation: summarize, draft, classify</td><td>Usually enough - start here</td></tr>
+            <tr><td>Workflow</td><td>Predictable multi-step, same shape every time</td><td>Hidden variance breaks fixed paths</td></tr>
+            <tr><td>Agent</td><td>Steps genuinely unpredictable, tools needed</td><td>Cost, latency, compounding errors</td></tr>
+            <tr><td>Multi-agent</td><td>Distinct specialisms or parallel workstreams</td><td>Cascading errors - session b9</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE 2026 STACK MAP ============ -->
+  <section class="section" id="stack-map">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the 1.0 announcement + docs architecture</span>
+      <h2>The LangChain stack, 2026 edition <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">"LangChain" is four things wearing one trench coat. Getting the layers straight now means never being confused by a tutorial, a blog post, or a rename again.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The LangChain stack: LangGraph runtime at the bottom, langchain create_agent above it, Deep Agents on top, LangSmith alongside as the paid observability layer">
+        <style>
+          .b1sT { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+          .b1sI { font: 700 16px Inter, sans-serif; fill: #132D2D; }
+          .b1sX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b1sW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b1sN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+        </style>
+        <rect x="40" y="210" width="540" height="56" rx="12" fill="#132D2D"/>
+        <text class="b1sT" x="64" y="238">LangGraph</text>
+        <text class="b1sW" x="64" y="256">low-level runtime: graphs, state, persistence, HITL - sessions b5-b9</text>
+        <rect x="40" y="130" width="540" height="56" rx="12" fill="#1D3D3C"/>
+        <text class="b1sT" x="64" y="158">langchain · create_agent</text>
+        <text class="b1sW" x="64" y="176">high-level agents + middleware, built ON LangGraph - sessions b2-b4</text>
+        <rect x="40" y="50" width="540" height="56" rx="12" fill="#8F84F2"/>
+        <text class="b1sT" x="64" y="78">Deep Agents</text>
+        <text class="b1sW" x="64" y="96">batteries-included harness for long-running agents - overview in b9</text>
+        <rect x="620" y="50" width="230" height="216" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b1sI" x="644" y="82">LangSmith</text>
+        <text class="b1sX" x="644" y="106">the commercial layer:</text>
+        <text class="b1sX" x="644" y="124">tracing · evals · deploy</text>
+        <text class="b1sX" x="644" y="142">(ex "LangGraph Platform",</text>
+        <text class="b1sX" x="644" y="160">now LangSmith Deployment)</text>
+        <text class="b1sX" x="644" y="184">frameworks = free, MIT</text>
+        <text class="b1sX" x="644" y="202">trust layer = the product</text>
+        <text class="b1sX" x="644" y="226">session b10</text>
+        <rect x="40" y="278" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b1sN" x="64" y="290">Eject downward anytime: create_agent runs ON LangGraph, so checkpoints, streaming and HITL come free.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four products, one trench coat: the 2026 LangChain stack</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What 1.0 changed - and why this course exists now<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>For three years LangChain was famous for two things: being everywhere, and breaking your code every few months. October 2025 changed the deal:</p>
+        <ul>
+          <li><strong>One blessed entry point:</strong> <code>create_agent</code> replaced the zoo of AgentExecutor, create_react_agent and friends. One way to build an agent, documented everywhere.</li>
+          <li><strong>The pipe chains are gone from the main package.</strong> LCEL chains, legacy retrievers and the hub moved to <code>langchain-classic</code>. If a tutorial shows <code>prompt | llm | parser</code>, it is teaching history.</li>
+          <li><strong>A stability promise:</strong> no breaking changes until 2.0. The churn era is officially over - though we pin versions anyway, because two 1.x releases have been yanked for regressions. Trust, with a lockfile.</li>
+          <li><strong>Middleware</strong> became the production story: summarization, PII scrubbing, human approval and retries as composable layers (session b4).</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Version card for this course</strong>
+          Python 3.10+ · pin <code>langchain&gt;=1.3,&lt;2</code> and <code>langgraph&gt;=1.2,&lt;2</code> · docs live at docs.langchain.com (python.langchain.com is the 0.x museum). Naming: "LangGraph Platform" is now "LangSmith Deployment" - update your mental bookmarks.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The honest alternatives card<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A framework you chose without knowing the alternatives is a framework you cannot defend in a design review. The 2026 field, honestly:</p>
+        <table class="clean">
+          <thead><tr><th>Pick</th><th>When it wins</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Raw provider SDK</strong></td><td>Single provider, simple call chains, zero magic wanted. Fastest to debug.</td></tr>
+            <tr><td><strong>PydanticAI</strong></td><td>FastAPI-native teams, type-safety-first, built-in usage limits.</td></tr>
+            <tr><td><strong>CrewAI</strong></td><td>Fastest role-based multi-agent prototyping. Convenience over control.</td></tr>
+            <tr><td><strong>LlamaIndex</strong></td><td>Retrieval quality over messy documents IS the product. Hybrid (LlamaIndex ingestion + LangGraph orchestration) is common.</td></tr>
+            <tr><td><strong>LangChain/LangGraph</strong></td><td>Cycles, persistent state, human approval, durable long-running work, provider swapping, team standardization.</td></tr>
+          </tbody>
+        </table>
+        <p>The criticisms you will hear are real: abstraction overhead, the 0.x churn history, stack traces through framework internals. The 1.0 surface-area cut answers some of it; LangSmith answers the debugging pain (and is the paid product - notice the business model). The best answer is the one you build tonight: know what the framework replaces, and you will know when it earns its keep.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The team that went back to raw SDK - and the one that could not.</strong> A two-person startup shipping one OpenAI-only summarizer ripped LangChain out and was happier: fewer layers, same output. A data platform team running approval-gated agents across Claude, a local model and three databases tried the same rip-out and rebuilt half of LangGraph badly within a month - checkpointing, interrupts, retries. The difference was never taste. It was state.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Is this worth learning? The adoption evidence<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Money:</strong> LangChain Inc raised a $125M Series B at a $1.25B valuation (Oct 2025) - the company is not going anywhere soon.</li>
+          <li><strong>Usage:</strong> the ecosystem pulls roughly 300M downloads a month; LangGraph alone ~35M. 400+ named production deployments; LangChain claims 35% of the Fortune 500 use its products.</li>
+          <li><strong>Named users:</strong> Klarna (support AI, 85M users), Uber (code-migration agents, ~21,000 dev hours saved), LinkedIn (SQL Bot), Elastic, JPMorgan, BlackRock.</li>
+          <li><strong>The counterweight:</strong> a real 2026 discourse of teams migrating simple apps back to raw SDKs, Gartner predicting 40%+ of agentic projects canceled by 2027, and MIT finding most GenAI pilots show no P&amp;L impact. Both currents are true. The skill you are building - knowing WHEN the framework earns its keep - is exactly what separates the successes from the cancellations.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: YOUR TWO ENGINES ============ -->
+  <section class="section" id="two-engines">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers langchain-anthropic + langchain-ollama integration docs</span>
+      <h2>Your two engines: Claude and a local model <span class="tag concept">3 min live</span></h2>
+    </div>
+    <p class="lede">Every build-along in this track runs on either engine. Claude via API when you want maximum capability; a local Ollama model when you want free, private, offline. LangChain's job is to make the difference one line of code.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Setup card - both engines in five minutes<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th></th><th>Claude API path</th><th>Local Ollama path</th></tr></thead>
+          <tbody>
+            <tr><td>Install</td><td><code>pip install langchain-anthropic</code></td><td><code>pip install langchain-ollama</code> + Ollama app</td></tr>
+            <tr><td>Key/model</td><td><code>ANTHROPIC_API_KEY</code> env var</td><td><code>ollama pull llama3.1</code> (or your Hermes from the sibling course)</td></tr>
+            <tr><td>Cost</td><td>Per token - cents for this course</td><td>Free forever</td></tr>
+            <tr><td>Privacy</td><td>Anthropic ToS</td><td>Nothing leaves your machine</td></tr>
+            <tr><td>Tool calling</td><td>Excellent</td><td>Works on tool-tuned models only</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ The one-line swap (the whole pitch, in code)</span>from langchain.chat_models import init_chat_model
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # Claude engine
+# model = init_chat_model("ollama:llama3.1")           # local engine - same everything else</div>
+        <div class="callout tip">
+          <strong>No API key tonight?</strong>
+          The whole session works on the Ollama path. If you took the learn-hermes course, your local Hermes model slots straight in - tool calling included.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Build the agent with no framework <span class="tag demo">★ 14 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">DataDesk v0: a raw-SDK agent that can answer one real question - "how many rows and what date range does our CSV cover?" - by deciding for itself to call a Python tool. Forty lines, no LangChain, no magic left afterwards.</p>
+
+    <div class="steps">
+      <div class="step"><p>Create the project: <code>mkdir datadesk &amp;&amp; cd datadesk</code>, a venv, and <code>pip install anthropic</code> (or use the Ollama path with plain <code>requests</code> to localhost:11434/v1).</p></div>
+      <div class="step"><p>Write one tool: a function <code>csv_stats(path)</code> that returns row count, columns and date range of a CSV as a dict. Use any real, non-confidential CSV you have.</p></div>
+      <div class="step"><p>Write the loop: send the question + tool schema to the model; if the response asks for the tool, run it, append the result, call the model again; when no tool is requested, print the answer. This is the agent loop from Part 1, verbatim.</p></div>
+      <div class="step"><p>Run it and watch the two round trips: model asks for csv_stats → tool runs → model answers with real numbers. Read your own loop code once more. That is an agent. All of it.</p></div>
+      <div class="step"><p>Now break it: ask a question needing TWO tool calls, add a second tool, imagine retries, streaming, memory, approval gates. Count the code you are about to write. Hold that feeling for Demo 2.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ The scratch loop, condensed (Claude path)</span>import anthropic, json
+client = anthropic.Anthropic()
+messages = [{"role": "user", "content": "How many rows and what date range does data.csv cover?"}]
+tools = [{"name": "csv_stats", "description": "Row count, columns, date range of a CSV",
+          "input_schema": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}}]
+
+while True:
+    r = client.messages.create(model="claude-haiku-4-5-20251001", max_tokens=1024,
+                               messages=messages, tools=tools)
+    if r.stop_reason != "tool_use":
+        print(r.content[0].text); break
+    tu = next(b for b in r.content if b.type == "tool_use")
+    result = csv_stats(**tu.input)                      # your function
+    messages.append({"role": "assistant", "content": r.content})
+    messages.append({"role": "user", "content": [{"type": "tool_result",
+                     "tool_use_id": tu.id, "content": json.dumps(result)}]})</div>
+
+    <div class="callout tip">
+      <strong>Data tip</strong>
+      Use a public or synthetic CSV for the demo. Real confidential data belongs on the local-engine path only - that discipline starts in session 1 and never relaxes.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>The same agent in three lines of LangChain <span class="tag demo">★ 8 min · build your own</span></h2>
+    </div>
+    <p class="lede">Same tool, same question, framework edition. Watch what disappears - and check what you gained is worth the layer you added.</p>
+
+    <div class="steps">
+      <div class="step"><p><code>pip install "langchain&gt;=1.3,&lt;2" langchain-anthropic</code> (and/or <code>langchain-ollama</code>).</p></div>
+      <div class="step"><p>Decorate your existing function: <code>@tool</code> above <code>csv_stats</code> - the schema you hand-wrote in Demo 1 is now generated from the signature and docstring.</p></div>
+      <div class="step"><p>Replace your whole loop with <code>create_agent</code> - three lines below. Run the same question. Same answer, two round trips, zero loop code.</p></div>
+      <div class="step"><p>The swap test: change the model line to the other engine (Claude ↔ Ollama) and re-run. One line. Your Demo 1 code would have needed a rewrite of every API call.</p></div>
+      <div class="step"><p>Decision minute: write ONE sentence in your notes - "for DataDesk, the framework is/is not worth it because ...". You will revisit that sentence in b10 with an eval suite in hand.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ DataDesk v0.1 - the whole file</span>from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from langchain.tools import tool
+
+@tool
+def csv_stats(path: str) -> dict:
+    """Row count, columns and date range of a CSV file."""
+    ...  # your Demo 1 function body, unchanged
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # or "ollama:llama3.1"
+agent = create_agent(model=model, tools=[csv_stats],
+                     system_prompt="You are DataDesk, a data team assistant. Be precise.")
+print(agent.invoke({"messages": [{"role": "user",
+      "content": "How many rows and what date range does data.csv cover?"}]}))</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>What you just did is the course.</strong> Sessions b2-b10 are this exact move repeated at higher altitude: meet a real production need (memory, approval, retrieval, evals), feel what it costs by hand, then let the framework carry it - or consciously decide it should not.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish both demos if you did not complete them live - the scratch loop especially. Nobody in this track gets to treat agents as magic.</li>
+      <li>Add a second tool to the scratch version (e.g. <code>column_mean(path, column)</code>) and feel the loop code start to creak. Then add it to the create_agent version in one decorator.</li>
+      <li>Run the autonomy-ladder prompt from Part 1 on four real tasks from your backlog. Bring the most interesting "actually just a workflow" verdict to session b2.</li>
+      <li>Both engines working? Claude key set AND <code>ollama pull llama3.1</code> done - b2 uses the swap constantly.</li>
+      <li>Optional reading: the LangChain 1.0 announcement (langchain.com/blog) - now you can read it as a review of decisions you understand.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Anthropic "Building effective agents"</span><span class="note">Part 1 · workflow vs agent definitions + the start-simple hierarchy</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain 1.0 announcement + migration guide</span><span class="note">Part 2 · create_agent, langchain-classic split, stability promise</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangChain (M1)</span><span class="note">Demo 2 covers the create_agent foundations; full module depth lands in b2-b3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">langchain-anthropic + langchain-ollama docs</span><span class="note">Part 3 setup card + the one-line swap</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">The "do you need a framework" discourse</span><span class="note">Part 2 alternatives card · both sides, sourced in the course map</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · The difference between a workflow and an agent is...</p>
+      <button class="qopt" type="button">A · Agents use better models</button>
+      <button class="qopt" type="button">B · In a workflow YOU fix the steps; in an agent the MODEL directs its own steps and tool use</button>
+      <button class="qopt" type="button">C · Workflows cannot use tools</button>
+      <p class="qwhy">Anthropic's definition, and the one that pays rent: predefined code paths vs model-directed process. It decides cost, risk, and whether you need an agent at all.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · A tutorial shows chains built with the pipe operator: prompt | llm | parser. What do you know?</p>
+      <button class="qopt" type="button">A · It is the current recommended style</button>
+      <button class="qopt" type="button">B · It only works in JavaScript</button>
+      <button class="qopt" type="button">C · It is pre-1.0 LCEL - legacy, now living in langchain-classic; the 1.x way is create_agent + LangGraph</button>
+      <p class="qwhy">LCEL chains left the main package in 1.0. Reading a tutorial's LangChain era at a glance is a real 2026 skill.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · When does the framework genuinely earn its keep over a raw SDK?</p>
+      <button class="qopt" type="button">A · When you need persistent state, human approval gates, provider swapping, or durable multi-step work</button>
+      <button class="qopt" type="button">B · Always - frameworks are best practice</button>
+      <button class="qopt" type="button">C · Never - real engineers use raw APIs</button>
+      <p class="qwhy">Both extremes fail design reviews. The honest answer is the list in A - and you now know it from writing the raw loop yourself.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>An agent is</b><span>model + tools + a while-loop that runs until the model stops asking for tools. No magic.</span></div>
+      <div class="cheat-item"><b>Workflow vs agent</b><span>You fix the steps vs the model directs them. Start simple; climb the ladder only when variance demands it.</span></div>
+      <div class="cheat-item"><b>The 2026 stack</b><span>LangGraph (runtime) → langchain create_agent (high level) → Deep Agents (harness). LangSmith = paid trust layer.</span></div>
+      <div class="cheat-item"><b>Version card</b><span>Python 3.10+ · pin langchain&gt;=1.3,&lt;2 · docs.langchain.com · pipe chains = legacy (langchain-classic).</span></div>
+      <div class="cheat-item"><b>The one-line swap</b><span>init_chat_model("claude-haiku-4-5-20251001") ↔ init_chat_model("ollama:llama3.1").</span></div>
+      <div class="cheat-item"><b>create_agent minimum</b><span>create_agent(model=..., tools=[...], system_prompt=...) - your Demo 2 file is the template.</span></div>
+      <div class="cheat-item"><b>Alternatives card</b><span>Raw SDK: simple + single provider · PydanticAI: types-first · CrewAI: fast multi-agent · LlamaIndex: retrieval-first.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v0.1 lives. Next: b2 teaches it messages, content blocks, and structured output.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 1 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b2-models-messages-tools.html">Next: Models, messages, tools →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

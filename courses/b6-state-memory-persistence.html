@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 6 · State, memory, persistence - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 6 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 6 of 10</div>
+    <h1>State, memory, <span class="accent">persistence</span></h1>
+    <p class="sub">DataDesk v2 has a spine but total amnesia: every run starts from nothing, and a crash mid-run loses everything. Tonight one compile argument fixes both. Checkpointers save every step; thread_id gives conversations an identity; a Store lets learned facts cross conversations. This is the foundation session - approval gates, time travel and fault tolerance in b7 are all THIS feature wearing different hats.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · langgraph&gt;=1.2 · your b5 datadesk_v2.py</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-18 · Checkpoints + two memories</span>
+      <span class="a3" style="flex:5">18-42 · Build-along: DataDesk remembers</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The most load-bearing session in the track</h2>
+    </div>
+    <p class="lede">Persistence looks like a convenience feature - "the bot remembers" - and is actually the load-bearing wall of production agents. Because LangGraph checkpoints the full state after every super-step, you get, from the same mechanism: conversations that resume, crashes that cost nothing, humans who can pause and approve (b7), and a rewindable history you can debug from (b7). One argument to <code>compile()</code> buys all of it, on the graph you already built.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      DataDesk v3: conversations with identity (thread_id), a checkpoint ladder you can climb from laptop to production (InMemorySaver → SqliteSaver → PostgresSaver), a resurrection you performed yourself - kill the process, restart, the conversation continues - and a cross-thread Store that remembers your taste in statistics.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE AMNESIA PROBLEM ============ -->
+  <section class="section" id="amnesia">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers LangGraph persistence docs</span>
+      <h2>The amnesia problem <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">A graph run is a series of super-steps. A checkpointer photographs the full state after each one and files the photo under a thread_id. Everything else tonight is consequences of that sentence.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of checkpoints saved along a run, a crash after checkpoint 2, and a resume arrow continuing from the last saved checkpoint">
+        <style>
+          .b6pT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .b6pI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .b6pX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b6pW { font: 400 12px Inter, sans-serif; fill: #EBE8FE; }
+          .b6pN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b6pArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b6pAh); }
+        </style>
+        <defs>
+          <marker id="b6pAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b6pI" x="40" y="36">thread_id = "phoebe-monday"</text>
+        <rect x="40" y="56" width="150" height="60" rx="10" fill="#1D3D3C"/>
+        <text class="b6pT" x="58" y="82">ckpt 0</text>
+        <text class="b6pW" x="58" y="102">input saved</text>
+        <rect x="250" y="56" width="150" height="60" rx="10" fill="#1D3D3C"/>
+        <text class="b6pT" x="268" y="82">ckpt 1</text>
+        <text class="b6pW" x="268" y="102">after classify</text>
+        <rect x="460" y="56" width="150" height="60" rx="10" fill="#8F84F2"/>
+        <text class="b6pT" x="478" y="82">ckpt 2</text>
+        <text class="b6pW" x="478" y="102">after stats</text>
+        <line class="b6pArr" x1="194" y1="86" x2="242" y2="86"/>
+        <line class="b6pArr" x1="404" y1="86" x2="452" y2="86"/>
+        <rect x="670" y="56" width="120" height="60" rx="10" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b6pI" x="688" y="82">💥 crash</text>
+        <text class="b6pX" x="688" y="102">process dies</text>
+        <line class="b6pArr" x1="614" y1="86" x2="662" y2="86"/>
+        <rect x="460" y="176" width="330" height="60" rx="10" fill="#132D2D"/>
+        <text class="b6pT" x="484" y="202">restart · same thread_id</text>
+        <text class="b6pW" x="484" y="222">loads ckpt 2, continues - nothing lost</text>
+        <path class="b6pArr" d="M 535 120 C 535 150, 535 158, 535 168"/>
+        <rect x="40" y="262" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b6pN" x="64" y="274">Every super-step = one checkpoint. Resume = load the last photo and keep walking.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - checkpoints along a run: the crash costs nothing</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Checkpointers and thread_id - conversations get an identity<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Compile with a checkpointer and pass a thread_id at invoke time - that is the whole API surface:</p>
+        <div class="prompt-box good"><span class="label">★ The two lines that end amnesia</span>graph = g.compile(checkpointer=InMemorySaver())
+graph.invoke({"messages": [...]},
+             config={"configurable": {"thread_id": "phoebe-monday"}})</div>
+        <ul>
+          <li><strong>thread_id is a conversation's name.</strong> Same id = same accumulated state, so follow-up questions ("and the median of that column?") resolve. New id = clean slate. In an app, thread_id maps to a user session, a ticket, a pipeline run.</li>
+          <li><strong>The ladder is a deployment decision, not a code change:</strong></li>
+        </ul>
+        <table class="clean">
+          <thead><tr><th>Checkpointer</th><th>Lives in</th><th>Use for</th></tr></thead>
+          <tbody>
+            <tr><td><code>InMemorySaver</code></td><td>Process RAM (langgraph.checkpoint.memory)</td><td>Notebooks, tests - dies with the process</td></tr>
+            <tr><td><code>SqliteSaver</code></td><td>A local .db file</td><td>Local dev, single-machine tools - survives restarts</td></tr>
+            <tr><td><code>PostgresSaver</code> / <code>AsyncPostgresSaver</code></td><td>Your Postgres</td><td>Production - shared, concurrent, operable</td></tr>
+          </tbody>
+        </table>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>My team runs: a) a Slack data-helpdesk bot, b) a nightly pipeline-triage agent, c) a notebook where I poke at agents. For each, tell me which checkpointer rung fits and what the thread_id should MAP TO in that system. One line each.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Resume = durable execution in one concept<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Because the checkpoint is written AFTER each super-step, a crash mid-run only loses the step in flight. Invoke again with the same thread_id and LangGraph loads the latest checkpoint and continues - it does not replay finished work, does not re-bill you for completed model calls, does not lose the conversation. The industry name is <strong>durable execution</strong>; the mental model is a video game save file.</p>
+        <ul>
+          <li><strong>What this quietly buys you:</strong> long-running agents that survive deploys, laptop-lid-close resilience in dev, and the ability to park a run for hours - which is exactly how b7's human approval gates will work (a pause is just a checkpoint nobody has resumed yet).</li>
+          <li><strong>The honest cost:</strong> every super-step writes state to storage. For chatty graphs with fat states that is real I/O - one reason state should carry references (a path, an id) rather than payloads (the whole CSV).</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The overnight backfill that shrugged off a deploy.</strong> A data team ran a 4-hour agent job profiling hundreds of tables. Mid-run, the platform team deployed and every pod restarted. With a Postgres checkpointer the job resumed from table 212 of 400 as if nothing happened. The same job a month earlier, pre-checkpointer, had restarted from table 1 - twice in one night.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What exactly gets saved - and how to look at it<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>The full state, every super-step.</strong> A checkpoint holds the complete state values (all channels, not a diff), plus metadata: which nodes ran, what is scheduled next, a unique checkpoint_id. That completeness is what makes b7's time travel possible - any checkpoint is a valid restart point.</li>
+          <li><strong>History is a list you can read.</strong> <code>graph.get_state(config)</code> returns the current snapshot; <code>graph.get_state_history(config)</code> yields every checkpoint of the thread, newest first. Print a few after tonight's demo - seeing your conversation as a stack of snapshots makes b7 obvious before it is taught.</li>
+          <li><strong>Checkpoints are per-thread.</strong> Two thread_ids never share checkpoint state. Cross-thread sharing is a different tool - the Store, in Part 2.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: TWO MEMORIES ============ -->
+  <section class="section" id="two-memories">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers LangGraph memory docs (short-term vs long-term, Store)</span>
+      <h2>Two memories, not one <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">"Memory" hides two different products. Short-term memory is the thread: this conversation's accumulated state. Long-term memory is the Store: facts that outlive any conversation. Confusing them is the most common memory design bug.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-box memory architecture: thread-scoped checkpoints on the left, cross-thread store on the right, with a graph node reading from both">
+        <style>
+          .b6mT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b6mI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b6mX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b6mW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b6mN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b6mArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b6mAh); }
+        </style>
+        <defs>
+          <marker id="b6mAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="40" width="330" height="170" rx="12" fill="#1D3D3C"/>
+        <text class="b6mT" x="64" y="72">Short-term · the thread</text>
+        <text class="b6mW" x="64" y="100">checkpointed state: messages, route</text>
+        <text class="b6mW" x="64" y="122">scoped by thread_id</text>
+        <text class="b6mW" x="64" y="144">lives in the checkpointer</text>
+        <text class="b6mW" x="64" y="166">"what we said in THIS conversation"</text>
+        <rect x="510" y="40" width="330" height="170" rx="12" fill="#8F84F2"/>
+        <text class="b6mT" x="534" y="72">Long-term · the Store</text>
+        <text class="b6mW" x="534" y="100">facts filed by namespace + key</text>
+        <text class="b6mW" x="534" y="122">crosses ALL threads</text>
+        <text class="b6mW" x="534" y="144">user prefs, learned context</text>
+        <text class="b6mW" x="534" y="166">"what we know about Phoebe"</text>
+        <rect x="355" y="230" width="170" height="48" rx="10" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b6mI" x="382" y="259">your node</text>
+        <line class="b6mArr" x1="400" y1="228" x2="240" y2="214"/>
+        <line class="b6mArr" x1="480" y1="228" x2="640" y2="214"/>
+        <rect x="40" y="264" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b6mN" x="64" y="276">A node reads both: the thread for context, the Store for taste.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - thread checkpoints vs cross-thread store: two memories, two jobs</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The Store - facts that cross conversations<span class="mini">6 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The Store is a namespaced key-value memory, passed at compile time alongside the checkpointer. Any node can read or write it, from any thread:</p>
+        <div class="prompt-box good"><span class="label">★ The Store API - put, get, search</span>from langgraph.store.memory import InMemoryStore
+
+store = InMemoryStore()
+graph = g.compile(checkpointer=saver, store=store)
+
+store.put(("users", "phoebe"), "prefs",
+          {"style": "prefers medians over means"})
+item = store.get(("users", "phoebe"), "prefs")     # item.value is your dict
+store.search(("users", "phoebe"))                  # list what we know</div>
+        <ul>
+          <li><strong>Namespaces are tuples</strong> - ("users", "phoebe") - so one Store cleanly holds many users, teams, or projects. Design them like folder paths.</li>
+          <li><strong>The division of labor:</strong> a fact belongs in the Store when it should be true in the NEXT conversation too. "The amount column we discussed" = thread. "Phoebe prefers medians" = Store.</li>
+          <li><strong>Production swap:</strong> like checkpointers, InMemoryStore has database-backed siblings - same API, deployment-grade storage. The code you write tonight is the code you ship.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Long histories and memory schemas<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Threads get fat.</strong> Checkpointing preserves every message, and models have context limits and per-token prices. The standard moves: trim (keep the last N messages), or summarize (compress old turns into a running summary message). You already met the productized version - b4's SummarizationMiddleware does exactly this at the create_agent altitude; at graph level you own the policy in a node.</li>
+          <li><strong>Two shapes of long-term memory.</strong> A <strong>profile</strong> is one document per subject, updated in place ("phoebe.prefs" - tonight's demo). A <strong>collection</strong> is many small records searched at recall time (every stats caveat DataDesk ever learned). Profiles are simpler and stay consistent; collections scale further but need retrieval discipline - which is b8's topic wearing a memory hat.</li>
+          <li><strong>Write policy matters more than storage.</strong> Decide WHEN memories get saved: explicitly ("remember this"), on a schedule (end of thread), or model-decided (a memory tool). Start explicit - model-decided writes are how bots end up "remembering" things users never said.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk remembers <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Three acts: give conversations identity with InMemorySaver, climb one ladder rung to SqliteSaver, then the beat this session exists for - kill the process and watch the conversation survive.</p>
+
+    <div class="steps">
+      <div class="step"><p>Compile your b5 graph with <code>InMemorySaver()</code>. Ask on thread "phoebe-monday": "The amount column in data.csv - what is its mean?" then follow up: "And the median of that same column?" The pronoun resolves - state is accumulating.</p></div>
+      <div class="step"><p>Switch to <code>thread_id="fresh-start"</code> and ask the follow-up alone. DataDesk has no idea what "that same column" is. Threads are isolation, working as designed.</p></div>
+      <div class="step"><p>Climb one rung: <code>pip install langgraph-checkpoint-sqlite</code>, swap InMemorySaver for SqliteSaver - the compile line is the only change. Run one turn on "phoebe-monday".</p></div>
+      <div class="step"><p>The resurrection: kill the process (Ctrl+C - be dramatic about it). Run the file again, same thread_id, and ask "So which of the two should I report?" It answers with full memory of a conversation from a process that no longer exists. That .db file on disk IS the conversation.</p></div>
+      <div class="step"><p>Look at the evidence: <code>graph.get_state(cfg)</code> - print the snapshot and count the messages. Then peek at history with <code>get_state_history</code> - the stack of photos from Part 1's diagram, real on your machine.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ datadesk_v3.py - memory in nine effective lines</span>import sqlite3
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+from datadesk_v2 import g                  # your b5 StateGraph, pre-compile
+
+# act 1 - identity (dies with the process)
+graph = g.compile(checkpointer=InMemorySaver())
+cfg = {"configurable": {"thread_id": "phoebe-monday"}}
+graph.invoke({"messages": [{"role": "user", "content":
+    "The amount column in data.csv - what is its mean?"}]}, cfg)
+graph.invoke({"messages": [{"role": "user", "content":
+    "And the median of that same column?"}]}, cfg)   # pronoun resolves
+
+# act 2 - one line up the ladder (survives the process)
+saver = SqliteSaver(sqlite3.connect("datadesk.db", check_same_thread=False))
+graph = g.compile(checkpointer=saver)
+# run a turn, Ctrl+C, rerun the file, then ask on the SAME thread_id:
+out = graph.invoke({"messages": [{"role": "user", "content":
+    "So which of the two should I report?"}]}, cfg)
+print(out["messages"][-1].content)          # it remembers Monday</div>
+
+    <div class="callout tip">
+      <strong>Why not InMemorySaver for the kill test?</strong>
+      Because it genuinely dies with the process - that is not a flaw, it is the rung's job description. The one-line swap to SqliteSaver IS the lesson: persistence depth is a deployment decision, and the graph never changes.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>DataDesk learns your taste <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">Long-term memory: teach DataDesk one preference in one conversation, then watch a brand-new conversation already know it. DataDesk v3 complete.</p>
+
+    <div class="steps">
+      <div class="step"><p>Create an <code>InMemoryStore</code> and pass it at compile: <code>g.compile(checkpointer=saver, store=store)</code>.</p></div>
+      <div class="step"><p>Upgrade the <code>stats</code> node: add the injected <code>store</code> parameter, read the ("users", "phoebe") prefs, and prepend any found preference as a system hint before calling the b3 agent.</p></div>
+      <div class="step"><p>Write the memory: <code>store.put(("users", "phoebe"), "prefs", {"style": "prefers medians over means"})</code> - explicitly for now; a "remember this" tool is homework.</p></div>
+      <div class="step"><p>Open a brand NEW thread_id and ask "Give me the typical value of amount in data.csv". The answer leads with the median - a fact from outside this conversation just shaped it. Cross-thread memory, working.</p></div>
+      <div class="step"><p>Peek behind the curtain: <code>store.search(("users", "phoebe"))</code> - list exactly what DataDesk knows about you. Memory you can audit is memory you can govern.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ The store-aware node + the cross-thread test</span>from langgraph.store.memory import InMemoryStore
+from langgraph.store.base import BaseStore
+
+store = InMemoryStore()
+
+def stats_agent(state: DataDeskState, *, store: BaseStore):
+    prefs = store.get(("users", "phoebe"), "prefs")
+    hint = f"User preference: {prefs.value['style']}. " if prefs else ""
+    result = agent.invoke({"messages":
+        [{"role": "system", "content": hint}] + state["messages"]})
+    return {"messages": result["messages"][-1:]}
+
+graph = g.compile(checkpointer=saver, store=store)
+
+# thread A teaches it a taste...
+store.put(("users", "phoebe"), "prefs",
+          {"style": "prefers medians over means"})
+# ...thread B, brand new, already knows
+cfg_b = {"configurable": {"thread_id": "phoebe-tuesday"}}
+graph.invoke({"messages": [{"role": "user", "content":
+    "Give me the typical value of amount in data.csv"}]}, cfg_b)
+print(store.search(("users", "phoebe")))    # audit what it knows</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The analyst bot that stopped re-asking.</strong> A BI team's assistant asked every user, every session, which fiscal calendar to use. Moving that one answer into a per-user Store profile cut the most-complained-about friction in the tool overnight. Long-term memory rarely needs to be clever - it needs to hold the three facts users are tired of repeating.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish both demos if you did not complete them live - the kill-and-resume especially. Do it on both engines; persistence is engine-agnostic and you should SEE that.</li>
+      <li>Add a <code>remember</code> tool to the b3 agent: it takes a short fact string and writes it to ("users", "phoebe") in the Store. Say "remember that our fiscal year starts in February" in one thread, then use it from another.</li>
+      <li>Print <code>len(list(graph.get_state_history(cfg)))</code> after a 5-turn conversation. Reflect: every one of those is a full state snapshot - what does that imply for what you should keep IN state? (Rule from Part 1: references, not payloads.)</li>
+      <li>Sketch (paper is fine) where thread_id would come from in one real system you own - a Slack bot, a ticket tool, a notebook. Bring it to b7; approval gates need exactly this mapping.</li>
+      <li>Optional reading: the persistence page on docs.langchain.com - the time-travel section is a preview of b7.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph persistence docs</span><span class="note">Part 1 + Demo 1 · checkpointers, thread_id, the saver ladder, durable execution, get_state/history</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph memory docs (Store)</span><span class="note">Part 2 + Demo 2 · short vs long-term, namespaces, put/get/search, profile vs collection</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangGraph (M2)</span><span class="note">State schemas + reducers landed in b5; M2's chatbot-with-summarization left as the trimming exercise</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Intro to LangGraph (M5)</span><span class="note">Memory Store covered on DataDesk; M5's full memory-agent build maps to the remember-tool homework</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What does a checkpointer actually save, and when?</p>
+      <button class="qopt" type="button">A · Only the messages list, at the end of a run</button>
+      <button class="qopt" type="button">B · A diff of changed keys, whenever the model responds</button>
+      <button class="qopt" type="button">C · The FULL graph state, after EVERY super-step, filed under the thread_id</button>
+      <p class="qwhy">Full state, every super-step. That completeness is why any checkpoint can be resumed from - and why b7 can rewind to any of them.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · "Phoebe prefers medians over means" should live in...</p>
+      <button class="qopt" type="button">A · The Store - it should be true in the NEXT conversation too, on any thread</button>
+      <button class="qopt" type="button">B · The thread state - memory is memory</button>
+      <button class="qopt" type="button">C · The system prompt, hardcoded</button>
+      <p class="qwhy">Thread state is this conversation; the Store is cross-thread knowledge. The test: should a brand-new thread_id already know it? If yes, Store.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · Your agent crashes 40 minutes into a 60-minute run. With a database checkpointer, resuming means...</p>
+      <button class="qopt" type="button">A · Re-running from the start - crashes invalidate the thread</button>
+      <button class="qopt" type="button">B · Invoking again with the same thread_id - it loads the last checkpoint and continues, finished work is not repeated</button>
+      <button class="qopt" type="button">C · Restoring a manual backup of the messages list</button>
+      <p class="qwhy">Durable execution: the last photo is loaded and the walk continues. You lose at most the super-step in flight - not the 40 minutes.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>End amnesia</b><span>compile(checkpointer=...) + config={"configurable": {"thread_id": "..."}}. Two lines, total.</span></div>
+      <div class="cheat-item"><b>The saver ladder</b><span>InMemorySaver (notebook) → SqliteSaver (local dev) → PostgresSaver/Async (prod). Same graph, one line.</span></div>
+      <div class="cheat-item"><b>What is saved</b><span>FULL state, every super-step, per thread. Keep references in state, not payloads.</span></div>
+      <div class="cheat-item"><b>Durable execution</b><span>Crash → invoke same thread_id → continues from last checkpoint. Finished work never repeats.</span></div>
+      <div class="cheat-item"><b>Two memories</b><span>Thread = this conversation (checkpointer). Store = cross-thread facts (namespace tuple + key).</span></div>
+      <div class="cheat-item"><b>Store API</b><span>store.put(ns, key, dict) · store.get(ns, key).value · store.search(ns). Nodes take store as injected arg.</span></div>
+      <div class="cheat-item"><b>Inspect anytime</b><span>graph.get_state(cfg) = now · graph.get_state_history(cfg) = the whole photo stack (b7 fuel).</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v3: survives restarts, remembers taste. Next: b7 makes it ask permission - and rewind time.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 6 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b5-langgraph-mental-model.html">← Prev: The LangGraph mental model</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="b7-hitl-time-travel.html">Next: Human-in-the-loop and time travel →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 7 · Human-in-the-loop and time travel - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 7 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 7 of 10</div>
+    <h1>Human-in-the-loop and <span class="accent">time travel</span></h1>
+    <p class="sub">Last week's checkpointer was sold as memory. Tonight it cashes in as CONTROL: pause a run before anything irreversible, show a human exactly what is about to happen, let them approve, edit, or reject - then rewind any past run and fork an alternative future from it. DataDesk learns to ask permission before it writes a file, and you learn to debug agents like a video editor.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · langgraph&gt;=1.2 · your b6 datadesk_v3.py</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-18 · Gates + rewind</span>
+      <span class="a3" style="flex:5">18-42 · Build-along: DataDesk asks permission</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where governance becomes code</h2>
+    </div>
+    <p class="lede">The leader track spends a whole session (a4) on WHY agents need human gates - irreversible actions, external sends, spend. Tonight is the HOW, and it is smaller than the leaders imagine: because b6's checkpointer already saves state at every step, "pause here and ask a human" is just a checkpoint nobody has resumed yet. No queues, no callback servers - one compile argument and three verbs: approve, edit, reject. Time travel falls out of the same machinery for free.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      DataDesk v4 with a real approval gate on its first WRITE action (saving report files), the full approve / edit / reject triangle performed live, a rewind of a past conversation replayed step by step, and a forked what-if branch - the debugging move that makes agent failures reproducible.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE APPROVAL GATE ============ -->
+  <section class="section" id="approval-gate">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers LangGraph HITL + breakpoint docs</span>
+      <h2>The approval gate <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">Not every step deserves a gate. The rule: gate where the cost of a mistake exceeds the cost of a delay. Then the mechanics - pause BEFORE the risky node, surface the pending action, resume on a human verdict.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interrupt flow: the agent run pauses at a gate before the save node, a human lane reviews and can approve, edit, or reject, then the run resumes">
+        <style>
+          .b7hT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .b7hI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .b7hX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b7hW { font: 400 12px Inter, sans-serif; fill: #EBE8FE; }
+          .b7hN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b7hArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b7hAh); }
+        </style>
+        <defs>
+          <marker id="b7hAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b7hI" x="40" y="36">Agent lane</text>
+        <rect x="40" y="52" width="150" height="52" rx="10" fill="#1D3D3C"/>
+        <text class="b7hT" x="62" y="83">draft report</text>
+        <rect x="250" y="52" width="170" height="52" rx="10" fill="#D85522"/>
+        <text class="b7hT" x="272" y="76">⏸ gate</text>
+        <text class="b7hW" x="272" y="94">checkpoint, waiting</text>
+        <rect x="480" y="52" width="150" height="52" rx="10" fill="#8F84F2"/>
+        <text class="b7hT" x="502" y="83">save_report</text>
+        <rect x="690" y="52" width="150" height="52" rx="10" fill="#132D2D"/>
+        <text class="b7hT" x="712" y="83">done</text>
+        <line class="b7hArr" x1="194" y1="78" x2="242" y2="78"/>
+        <line class="b7hArr" x1="424" y1="78" x2="472" y2="78"/>
+        <line class="b7hArr" x1="634" y1="78" x2="682" y2="78"/>
+        <text class="b7hI" x="40" y="186">Human lane</text>
+        <rect x="250" y="202" width="380" height="56" rx="10" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b7hI" x="274" y="226">review pending write: path + text</text>
+        <text class="b7hX" x="274" y="246">approve · edit the state first · reject</text>
+        <line class="b7hArr" x1="335" y1="108" x2="335" y2="194"/>
+        <line class="b7hArr" x1="545" y1="194" x2="545" y2="112"/>
+        <text class="b7hX" x="352" y="150">state surfaced</text>
+        <text class="b7hX" x="560" y="150">resume on verdict</text>
+        <rect x="40" y="288" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b7hN" x="64" y="300">The gate is just a checkpoint nobody resumed yet - b6 built this, tonight names it.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the interrupt flow: pause, review, resume</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why gates - the leader's rule arrives in code<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Until tonight DataDesk only READ things: CSVs, questions. Reads are cheap to get wrong - re-run and shrug. The moment an agent WRITES - files, tickets, emails, database rows, money - a wrong action has cleanup cost, and some have no cleanup at all. The rule your architecture should encode:</p>
+        <ul>
+          <li><strong>Gate where mistake cost &gt; delay cost.</strong> Saving a file over last month's report, sending anything external, spending anything - gated. Reformatting a draft the human will read anyway - not gated.</li>
+          <li><strong>The gate must show the ACTUAL action</strong>, not a summary of intent: the exact path, the exact text, the exact recipient. Approving a vibe is not approval.</li>
+          <li><strong>Rejection must be cheap.</strong> If saying no wastes the whole run, reviewers stop saying no. With checkpoints, a reject parks the thread - nothing upstream is lost.</li>
+        </ul>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Here are 5 actions my planned data assistant could take: [list yours, e.g. query a table, save a report, post to Slack, open a Jira ticket, email a stakeholder]. Classify each as gate / no gate using the rule "gate where mistake cost exceeds delay cost", and say what the reviewer must SEE before approving. One line each.</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The July 2025 Replit incident, revisited from the builder's chair.</strong> An agent with write access deleted a production database during a code freeze. Every postmortem take agreed on the same missing artifact: a pause between "the agent wants to run this" and "this ran". That pause is tonight's compile argument. The leader track teaches your executives to demand it; you are about to be the person who can say "it is already there".</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Interrupts and breakpoints - pause, surface, resume<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The static form: name the risky node at compile time. The run stops BEFORE it, mid-flight state saved:</p>
+        <div class="prompt-box good"><span class="label">★ The gate, the peek, and the three verbs</span>graph = g.compile(checkpointer=saver,
+                  interrupt_before=["save_report"])   # the gate
+
+graph.invoke({"messages": [...]}, cfg)   # runs draft, then PAUSES
+
+s = graph.get_state(cfg)
+print(s.next)              # ('save_report',) - what is about to run
+print(s.values["path"])    # the pending write, before it happens
+
+graph.invoke(None, cfg)                          # APPROVE - resume as-is
+graph.update_state(cfg, {"path": "reports/q3.md"})  # EDIT - then resume
+# REJECT - simply never resume; the thread parks, nothing was written</div>
+        <ul>
+          <li><strong>invoke(None, config)</strong> is the resume idiom: "no new input, continue from the checkpoint".</li>
+          <li><strong>update_state</strong> writes a correction into the checkpoint before resuming - the human is briefly a node in the graph.</li>
+          <li><strong>The pause has no timeout.</strong> Approve in three seconds or three days; the checkpoint waits in the database either way. That is why b6 was the prerequisite - no checkpointer, no gate.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Two altitudes: middleware HITL vs graph interrupts, and dynamic gates<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Same concept, two altitudes.</strong> At the create_agent level, b4's <code>HumanInTheLoopMiddleware</code> gates tool calls by name with approve/edit/reject policies - configuration, not construction. At the graph level, tonight's interrupts gate ANY node - including deterministic ones middleware never sees. Because create_agent runs ON LangGraph, both are the same checkpoint mechanics underneath; pick the altitude you are already building at.</li>
+          <li><strong>Dynamic gates.</strong> A node can call <code>interrupt(payload)</code> from INSIDE its own logic - pause only when THIS run needs a human (amount over threshold, confidence under threshold), surfacing exactly the payload the reviewer needs. Resuming feeds the human's answer back into the node via <code>Command(resume=...)</code>. Static gates express policy ("all writes are reviewed"); dynamic gates express judgment ("this write looks risky").</li>
+          <li><strong>Where the human actually clicks.</strong> In production, the paused thread surfaces in your app: a Slack message, a review queue, an inbox row. The graph does not care - it sees only "resumed with a verdict". Your thread_id-mapping homework from b6 is exactly the plumbing this needs.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: TIME TRAVEL ============ -->
+  <section class="section" id="time-travel">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers LangGraph time-travel docs</span>
+      <h2>Time travel <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">b6 taught you that history is a list of full snapshots. Tonight's second trick: any snapshot is a valid launch pad. Replay to reproduce, fork to explore.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of checkpoints with a fork: the main run continues along the top, and an alternative what-if branch forks from checkpoint 3 to a different future">
+        <style>
+          .b7tT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .b7tI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .b7tX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b7tW { font: 400 12px Inter, sans-serif; fill: #EBE8FE; }
+          .b7tN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b7tArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b7tAh); }
+        </style>
+        <defs>
+          <marker id="b7tAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b7tI" x="40" y="36">Main run</text>
+        <rect x="40" y="52" width="130" height="48" rx="10" fill="#1D3D3C"/>
+        <text class="b7tT" x="60" y="81">ckpt 1</text>
+        <rect x="230" y="52" width="130" height="48" rx="10" fill="#1D3D3C"/>
+        <text class="b7tT" x="250" y="81">ckpt 2</text>
+        <rect x="420" y="52" width="130" height="48" rx="10" fill="#8F84F2"/>
+        <text class="b7tT" x="440" y="81">ckpt 3</text>
+        <rect x="610" y="52" width="130" height="48" rx="10" fill="#1D3D3C"/>
+        <text class="b7tT" x="630" y="81">ckpt 4</text>
+        <line class="b7tArr" x1="174" y1="76" x2="222" y2="76"/>
+        <line class="b7tArr" x1="364" y1="76" x2="412" y2="76"/>
+        <line class="b7tArr" x1="554" y1="76" x2="602" y2="76"/>
+        <rect x="610" y="168" width="230" height="64" rx="10" fill="#BEB4FD"/>
+        <text class="b7tI" x="632" y="196">forked future</text>
+        <text class="b7tI" x="632" y="216">"what if I asked differently?"</text>
+        <path class="b7tArr" d="M 485 104 C 505 150, 560 190, 602 198"/>
+        <text class="b7tX" x="420" y="150">update_state on ckpt 3's config</text>
+        <text class="b7tX" x="420" y="168">= a new branch, old one intact</text>
+        <rect x="40" y="248" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b7tN" x="64" y="260">Replay = rerun the same future. Fork = branch a new one. The original never changes.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one past, two futures: replay and fork from checkpoint 3</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Rewind: replay any past, fork any future<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three moves, all built on <code>get_state_history</code>:</p>
+        <ul>
+          <li><strong>Browse:</strong> <code>graph.get_state_history(cfg)</code> yields every checkpoint of the thread, newest first - each with its own config handle.</li>
+          <li><strong>Replay:</strong> <code>graph.invoke(None, past.config)</code> re-executes from that snapshot - same state in, so you watch the same decisions unfold. Reproducing a flaky agent failure stops being folklore.</li>
+          <li><strong>Fork:</strong> <code>graph.update_state(past.config, {...})</code> returns a NEW config - a branch. Run it and you have two futures from one past, comparable side by side. The original history is untouched.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The rename that helps</strong>
+          Stop calling it time travel for a second: it is <strong>git for conversations</strong>. History = log, replay = checkout + run, fork = branch. Every intuition you have about branches transfers.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Debugging with time travel - the incident workflow<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The workflow that changes on-call life, step by step:</p>
+        <ul>
+          <li><strong>Reproduce exactly.</strong> User reports "the agent gave a nonsense answer at 14:32". Pull the thread, list history, replay from the checkpoint before the bad step. No screenshots, no "cannot reproduce" - the state is the repro.</li>
+          <li><strong>Bisect the run.</strong> Replay from successively earlier checkpoints until the answer goes bad - now you know WHICH node's input was already poisoned versus which node did the poisoning.</li>
+          <li><strong>Fork the fix.</strong> Edit the poisoned state (or the prompt/tooling) on a fork and re-run the same future. Fix verified against the real failing case before you ship it - and the original run is preserved as evidence for the postmortem.</li>
+          <li><strong>Know the limits.</strong> Replay re-executes LIVE calls: a model may answer differently, a tool may hit changed data. Determinism grows with how much of the state you pin - another argument for small, explicit state.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk asks permission <span class="tag demo">★ 14 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">DataDesk's first WRITE action - saving a report file - arrives pre-gated. You will run the full triangle: approve and watch the file appear, reject and watch nothing happen, then edit the path mid-pause and approve the corrected write.</p>
+
+    <div class="steps">
+      <div class="step"><p>Create a scratch <code>reports/</code> directory in your DataDesk project. Everything written tonight lands there and nowhere else - gates or not, blast-radius discipline stays.</p></div>
+      <div class="step"><p>Add the report flow to your graph: a <code>draft</code> node (model writes the summary text and proposes a path) and a <code>save_report</code> node (writes the file). Fixed edges: START → draft → save_report → END.</p></div>
+      <div class="step"><p>Compile with the gate: <code>interrupt_before=["save_report"]</code> plus your b6 checkpointer. Run "Save me a one-paragraph summary report of this week". It drafts... and stops. Print <code>get_state(cfg).next</code> - the pending node, visible.</p></div>
+      <div class="step"><p><strong>Approve:</strong> inspect <code>s.values["path"]</code> and the text, then <code>graph.invoke(None, cfg)</code>. The file appears in reports/. <strong>Reject:</strong> re-run on a fresh thread and simply do not resume - confirm no file was written. The no-op IS the feature.</p></div>
+      <div class="step"><p><strong>Edit then approve:</strong> third run, pause, then <code>graph.update_state(cfg, {"path": "reports/week-29-summary.md"})</code> and resume. The file lands at YOUR path, not the model's. You just acted as a node in the graph.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ datadesk_v4.py - the gated write</span>from pathlib import Path
+from typing import TypedDict, Annotated
+from langchain.chat_models import init_chat_model
+from langgraph.graph import StateGraph, START, END
+from langgraph.graph.message import add_messages
+from langgraph.checkpoint.memory import InMemorySaver
+
+model = init_chat_model("claude-haiku-4-5-20251001")   # or "ollama:llama3.1"
+
+class ReportState(TypedDict):
+    messages: Annotated[list, add_messages]
+    path: str
+    text: str
+
+def draft(state: ReportState):
+    r = model.invoke(state["messages"])
+    return {"text": r.content, "path": "reports/summary.md"}
+
+def save_report(state: ReportState):
+    Path(state["path"]).write_text(state["text"])
+    return {"messages": [{"role": "assistant",
+        "content": f"Saved report to {state['path']}"}]}
+
+g = StateGraph(ReportState)
+g.add_node("draft", draft)
+g.add_node("save_report", save_report)
+g.add_edge(START, "draft")
+g.add_edge("draft", "save_report")
+g.add_edge("save_report", END)
+
+graph = g.compile(checkpointer=InMemorySaver(),
+                  interrupt_before=["save_report"])    # the gate
+
+cfg = {"configurable": {"thread_id": "report-1"}}
+graph.invoke({"messages": [{"role": "user", "content":
+    "Save me a one-paragraph summary report of this week"}]}, cfg)
+
+s = graph.get_state(cfg)
+print(s.next, "|", s.values["path"])     # paused; the pending write, visible
+
+graph.update_state(cfg, {"path": "reports/week-29-summary.md"})  # EDIT
+graph.invoke(None, cfg)                                          # APPROVE</div>
+
+    <div class="callout tip">
+      <strong>Wiring it into DataDesk proper</strong>
+      In your real datadesk file, add "report" as a fourth route in the b5 classifier and hang draft → save_report off it. The demo file above isolates the gate so everyone sees the pause with zero routing noise - merge after class.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Rewind Tuesday <span class="tag demo">★ 8 min · build your own</span></h2>
+    </div>
+    <p class="lede">Take a finished conversation, list its photo stack, relaunch from the middle of it twice - once as replay, once as a fork with a different question - and diff the two futures.</p>
+
+    <div class="steps">
+      <div class="step"><p>Use a thread with a few turns on it (this morning's gate run, or your b6 "phoebe-monday"). List its history and print one line per checkpoint: id prefix, what runs next, message count.</p></div>
+      <div class="step"><p>Pick a mid-conversation checkpoint - call it Tuesday. <code>graph.invoke(None, past.config)</code>: the same future re-runs in front of you. Note anything that differs (live model calls may vary - that is a finding, not a bug).</p></div>
+      <div class="step"><p>Fork: <code>update_state(past.config, ...)</code> with a different question, capture the returned config, and run it. Two futures now exist from one past.</p></div>
+      <div class="step"><p>Compare the final answers of the original branch and the fork side by side. This diff - same history, one changed input - is the cleanest prompt-debugging instrument you own from tonight.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Browse, replay, fork</span>history = list(graph.get_state_history(cfg))
+for s in history:
+    print(s.config["configurable"]["checkpoint_id"][:8],
+          s.next, len(s.values.get("messages", [])))
+
+past = history[3]                        # pick a mid-run checkpoint
+graph.invoke(None, past.config)          # REPLAY - rerun the same future
+
+fork_cfg = graph.update_state(past.config, {"messages": [{"role": "user",
+    "content": "Make it an executive bullet list instead"}]})
+graph.invoke(None, fork_cfg)             # FORK - a new future, old one intact</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The flaky Friday agent, caught.</strong> A team's report agent produced a wrong total roughly once a week, never on demand. Once checkpointing landed, the on-call pulled the failing thread, bisected by replay, and found a tool returning a stale cache one node earlier than anyone suspected. Time-to-diagnosis went from "weeks of guessing" to one afternoon - not because anyone got smarter, but because the failure finally sat still.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish the full triangle if you did not complete it live: one approved file, one rejected no-op, one edited path. Keep all three transcripts - they are your governance demo for the a4 audience at work.</li>
+      <li>Merge the gated report flow into datadesk proper as a fourth route ("report") off the b5 classifier. Confirm stats questions still flow ungated - selective gating is the design, not blanket gating.</li>
+      <li>Make the gate dynamic (self-study 1c): move the pause INSIDE save_report with <code>interrupt(...)</code>, but only when the path already exists (an overwrite). New files save freely; overwrites ask. Resume with <code>Command(resume=...)</code>.</li>
+      <li>Run one bisect drill on any old thread: replay from three successively earlier checkpoints and write one sentence on where the answer changed. Speed matters less than doing it once before an incident makes you.</li>
+      <li>Optional reading: the HITL + time-travel pages on docs.langchain.com, and b4's HumanInTheLoopMiddleware notes - now you can see the same checkpoint machinery under both.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph HITL + interrupt docs</span><span class="note">Part 1 + Demo 1 · interrupt_before, get_state, update_state, invoke(None), dynamic interrupt + Command(resume)</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Academy: Intro to LangGraph (M3)</span><span class="note">Whole session · breakpoints, state editing, approve/edit/reject on the running project</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangGraph persistence docs (time travel)</span><span class="note">Part 2 + Demo 2 · get_state_history, replay from checkpoint config, fork via update_state</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Which actions deserve an approval gate?</p>
+      <button class="qopt" type="button">A · All of them - every model step should be reviewed</button>
+      <button class="qopt" type="button">B · Those where the cost of a mistake exceeds the cost of a delay - irreversible actions, external sends, spend</button>
+      <button class="qopt" type="button">C · None, if your prompts are good enough</button>
+      <p class="qwhy">Blanket gating trains reviewers to rubber-stamp; no gating is the Replit incident. The rule is economic: gate where mistakes cost more than waiting does.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · A run is paused at interrupt_before=["save_report"]. What is the resume-as-approved idiom?</p>
+      <button class="qopt" type="button">A · graph.invoke(None, config) - no new input, continue from the checkpoint</button>
+      <button class="qopt" type="button">B · graph.invoke({"approved": True}) with no config</button>
+      <button class="qopt" type="button">C · Restart the process - the graph re-reads the database automatically</button>
+      <p class="qwhy">invoke(None, config) means "continue exactly where the thread paused". Editing first is update_state then the same call; rejecting is simply never making it.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · Forking a thread from a past checkpoint...</p>
+      <button class="qopt" type="button">A · Overwrites the original history from that point on</button>
+      <button class="qopt" type="button">B · Requires exporting and re-importing the thread under a new id</button>
+      <button class="qopt" type="button">C · Creates a new branch via update_state on the past config - the original run stays intact for comparison</button>
+      <p class="qwhy">Git for conversations: update_state on a past checkpoint's config returns a branch config. Two futures, one preserved past - the debugging superpower of the session.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 7 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The gating rule</b><span>Gate where mistake cost &gt; delay cost: irreversible actions, external sends, spend. Show the ACTUAL pending action.</span></div>
+      <div class="cheat-item"><b>Static gate</b><span>compile(checkpointer=..., interrupt_before=["node"]). Pauses BEFORE the node, state saved, no timeout.</span></div>
+      <div class="cheat-item"><b>The three verbs</b><span>Approve = invoke(None, cfg) · Edit = update_state(cfg, {...}) then resume · Reject = never resume.</span></div>
+      <div class="cheat-item"><b>Dynamic gate</b><span>interrupt(payload) inside a node when THIS run needs a human; resume with Command(resume=...).</span></div>
+      <div class="cheat-item"><b>Two altitudes</b><span>HumanInTheLoopMiddleware at create_agent level, interrupts at graph level - same checkpoint machinery.</span></div>
+      <div class="cheat-item"><b>Time travel</b><span>get_state_history = log · invoke(None, past.config) = replay · update_state(past.config) = fork. Git for conversations.</span></div>
+      <div class="cheat-item"><b>Debug workflow</b><span>Reproduce by replay → bisect by earlier checkpoints → fork the fix → original preserved as evidence.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v4: asks permission before it writes. Next: b8 teaches it to actually answer the docs route - RAG.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 7 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b6-state-memory-persistence.html">← Prev: State, memory, persistence</a> &nbsp;·&nbsp; <a href="../index.html">All sessions</a> &nbsp;·&nbsp; <a href="b8-rag.html">Next: RAG the 1.x way →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

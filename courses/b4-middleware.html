@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 4 · Middleware: the production layer - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 4 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 4 of 10</div>
+    <h1>Middleware: <span class="accent">the production layer</span></h1>
+    <p class="sub">Everything that separates a demo agent from a deployable one - PII scrubbing, conversation summarization, retries, fallbacks, approval gates - is cross-cutting. LangChain 1.x ships them as composable layers around the model call. Tonight DataDesk grows armor, and you learn why we pin versions from a story where LangChain itself shipped the bug.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">DataDesk v1 from b3 · langchain&gt;=1.3,&lt;2 pinned</span>
+      <span class="chip time">45 minutes</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:5">3-18 · Concepts: layers + the yank story</span>
+      <span class="a3" style="flex:8">18-42 · Build-along: armor + fallback</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">v1 chains tools, streams, and refuses to invent columns. But paste it a stakeholder email and it ships the sender's address straight to a cloud API; leave a thread running all afternoon and the context window fills; and if the Claude API hiccups, DataDesk simply dies. None of these are features of your agent - they are properties every production agent needs. That is exactly what middleware is for.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      DataDesk v1.1 wearing three layers of armor (PII scrub, summarization, model fallback), proof on screen that the redaction happened before the provider saw anything, a graceful-degrade demo where losing the API key downgrades quality instead of crashing - and a version-pinning reflex backed by a true story.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: CROSS-CUTTING CONCERNS ============ -->
+  <section class="section" id="cross-cutting">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the middleware docs</span>
+      <h2>Cross-cutting concerns, composably <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">A concern is cross-cutting when every agent needs it and no agent's business logic should contain it. The 1.x insight: model them all as layers a request passes through on its way to the model - and back through on the way out.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Middleware onion: a request passes inward through PII scrubbing, summarization and fallback-retry rings before reaching the model call at the center, and the response passes back out through the same rings">
+        <style>
+          .b4oT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b4oI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b4oS { font: 400 12.5px Inter, sans-serif; fill: #132D2D; }
+          .b4oW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b4oX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .b4oN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b4oArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b4oAh); }
+        </style>
+        <defs>
+          <marker id="b4oAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="150" y="30" width="580" height="280" rx="20" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b4oI" x="174" y="58">PIIMiddleware - scrub before anything leaves</text>
+        <rect x="190" y="80" width="500" height="200" rx="16" fill="#BEB4FD"/>
+        <text class="b4oI" x="214" y="108">SummarizationMiddleware - keep context in budget</text>
+        <rect x="230" y="130" width="420" height="120" rx="14" fill="#8F84F2"/>
+        <text class="b4oT" x="254" y="158">Fallback + retry - survive provider failure</text>
+        <rect x="290" y="176" width="300" height="52" rx="12" fill="#132D2D"/>
+        <text class="b4oT" x="314" y="200">the model call</text>
+        <text class="b4oW" x="314" y="218">Claude, or the local engine</text>
+        <line class="b4oArr" x1="30" y1="170" x2="142" y2="170"/>
+        <text class="b4oX" x="30" y="150">request</text>
+        <text class="b4oX" x="30" y="196">passes IN through</text>
+        <text class="b4oX" x="30" y="214">every ring</text>
+        <line class="b4oArr" x1="738" y1="170" x2="850" y2="170"/>
+        <text class="b4oX" x="758" y="150">response</text>
+        <text class="b4oX" x="758" y="196">passes back OUT</text>
+        <text class="b4oX" x="758" y="214">the same rings</text>
+        <rect x="150" y="326" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b4oN" x="174" y="338">Order matters: PII sits outermost so nothing inside the onion ever sees the raw address.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the middleware onion: every request passes through the rings around the model call</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why middleware exists at all<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In the 0.x era these concerns lived inside application code: a summarize-when-long branch here, a regex PII scrub there, retry logic copy-pasted around every model call. Three failures followed, everywhere, always:</p>
+        <ul>
+          <li><strong>Duplication:</strong> five agents meant five slightly different retry implementations, four of them wrong in different ways.</li>
+          <li><strong>Tangling:</strong> business logic and plumbing in one function - unreviewable, untestable, and terrifying to touch.</li>
+          <li><strong>Gaps:</strong> the one code path someone forgot to scrub is, by law of nature, the one the auditor finds.</li>
+        </ul>
+        <p>1.x moves them into declared layers on <code>create_agent(middleware=[...])</code>. Your agent code stays business-only; the concerns compose in a list you can read, reorder, and diff in review. If you have used WSGI/ASGI middleware or Express, this is that idea, aimed at the model call.</p>
+        <div class="prompt-box bad"><span class="label">The 0.x pattern this replaces</span>def ask_agent(question):
+    question = scrub_pii_v2(question)        # copy-pasted from the other agent
+    if too_long(history):
+        history = summarize(history)          # different threshold than team B's
+    for attempt in range(3):                  # retry logic, fourth variant this repo
+        try:
+            return agent.run(question)
+        except ProviderError:
+            continue                          # and the fallback? somebody's TODO</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The built-in five<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>All from <code>langchain.agents.middleware</code>, all attachable in one line each:</p>
+        <table class="clean">
+          <thead><tr><th>Middleware</th><th>Concern</th><th>DataDesk use</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SummarizationMiddleware</strong></td><td>Long chats blow the context window</td><td>All-afternoon analysis threads keep working - Demo 1</td></tr>
+            <tr><td><strong>HumanInTheLoopMiddleware</strong></td><td>Some tool calls need a human yes</td><td>Approval gates - the b7 deep dive builds on this</td></tr>
+            <tr><td><strong>PIIMiddleware</strong></td><td>Personal data must not reach the provider</td><td>Scrub stakeholder pastes before send - Demo 1</td></tr>
+            <tr><td><strong>Tool retry</strong></td><td>Tools fail transiently</td><td>Flaky warehouse connection gets N retries, not a crash</td></tr>
+            <tr><td><strong>Model fallback</strong></td><td>Providers have bad days</td><td>Claude down → local Ollama engine - Demo 2</td></tr>
+          </tbody>
+        </table>
+        <p>(Rate limiting ships as a built-in too - same shape, attach and forget.) The composition rule from the diagram: order is the list order, and privacy layers belong outermost.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The audit that took an afternoon instead of a quarter.</strong> A regulated team was asked to prove no customer emails reached their LLM vendor. Their answer was one line of code in review - <code>PIIMiddleware("email", ...)</code> outermost in the list - plus its tests. The sister team with hand-rolled scrubbing spent three months tracing code paths for the same question.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Custom middleware - the three hooks<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When no built-in fits, you write your own. Three hook styles, in order of power:</p>
+        <ul>
+          <li><strong>before_model</strong> - runs before each model call. Inspect or edit the messages going in. Use for: injecting today's date, enforcing input budgets, custom redaction.</li>
+          <li><strong>after_model</strong> - runs on the way out. Inspect or edit the response. Use for: logging content_blocks (b2 pays off), blocking answers that violate policy, tagging outputs for evals.</li>
+          <li><strong>wrap-style</strong> - wraps the model call itself, so you control both sides AND whether the call happens at all. Retries, fallbacks, caching and circuit breakers live here - it is how the built-in fallback works.</li>
+        </ul>
+        <p>Rule of thumb: reach for before/after first; wrap only when you need to own the call. And check the built-ins list again before writing anything - the whole point of this session is that someone already wrote the boring layer, tested it, and maintains it.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>My LLM agent framework offers before_model, after_model and wrap-style middleware hooks. Here are 4 requirements from my team: [list yours - e.g. log every tool call, block answers naming customers, add a cost cap, cache repeated questions]. Map each to the right hook and say why in one sentence.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: TRUST WITH A LOCKFILE ============ -->
+  <section class="section" id="lockfile">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the changelog + release history</span>
+      <h2>Trust, with a lockfile <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The middleware system is also where LangChain shipped its most instructive recent bug. This part is short, true, and worth more than most tutorials: it is why professionals pin.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The yanked-releases story<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In the 1.x line, releases <strong>1.3.5</strong> and <strong>1.2.5</strong> were <strong>yanked</strong> from PyPI - pulled after publication - because a change to SummarizationMiddleware's signature broke code that used it. The same layer you attach tonight.</p>
+        <ul>
+          <li><strong>What yanking means:</strong> the files stay downloadable if explicitly pinned to that exact version, but installers skip yanked releases when resolving ranges. It is the ecosystem's recall notice: "we shipped this; do not take it."</li>
+          <li><strong>Why <code>pip install -U</code> on a Friday is a bad habit:</strong> an unpinned upgrade window is exactly how a yanked-grade regression walks into production between your last test run and your deploy. Nobody diffed anything; the resolver just grabbed newest.</li>
+          <li><strong>The reflex:</strong> pin <code>langchain&gt;=1.3,&lt;2</code> and <code>langgraph&gt;=1.2,&lt;2</code>, upgrade deliberately, and re-run your own smoke tests after every bump. The no-breaking-changes-until-2.0 promise is real - and yanks are what "real but human" looks like.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The honest framing</strong>
+          This story is a point FOR the 1.x era, not against it: the regression was caught, recalled, and documented in public. Your job is just to not be the team that auto-upgraded during the bad window. Trust, with a lockfile.
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Two teams, one bad window.</strong> When the regression shipped, the team with pinned ranges and a smoke-test script never noticed - their resolver skipped the yanked version on the next deliberate bump. The team with unpinned requirements rebuilt an image that Friday, picked up the broken release, and spent a weekend bisecting "middleware suddenly raises TypeError". Same ecosystem event, entirely different weekends.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Reading the changelog like an operator<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A 10-minute monthly ritual that replaces upgrade anxiety:</p>
+        <ul>
+          <li><strong>Skim the changelog</strong> at docs.langchain.com before any bump - middleware and agent-surface entries matter most to DataDesk; note anything touching classes you attach.</li>
+          <li><strong>Check PyPI for yank flags</strong> on versions between your pin and the target - yanked releases are labeled on the release history page.</li>
+          <li><strong>Keep a smoke-test file:</strong> one script that runs DataDesk's core flows (tool chain, structured output, each middleware) end to end. Green after upgrade = ship the new pin. This file grows into the b10 eval suite - same idea, more rigor.</li>
+          <li><strong>Upgrade on a Tuesday morning</strong>, not a Friday evening. Not a technology rule - a being-on-call rule.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk grows armor <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Two rings onto v1: a PII scrub for the stakeholder pastes DataDesk lives on, and summarization so long analysis threads stop dying at the context ceiling. Then the important part - we PROVE the scrub happened, on screen.</p>
+
+    <div class="steps">
+      <div class="step"><p>Import the layers and add a <code>middleware=[...]</code> list to your v1 <code>create_agent</code> call - PII outermost, exactly like the onion diagram. The rest of v1 is untouched.</p></div>
+      <div class="step"><p>Seed the test: invoke with a message containing a fake address - "Request from jane.doe@example.com: how many rows in the orders data?". Fake, always - we are demonstrating a scrubber, not feeding it.</p></div>
+      <div class="step"><p>Prove the scrub: print the message stack from the result and find the human message the model actually received. The address is redacted; the question survived. This screenshot is your future audit answer.</p></div>
+      <div class="step"><p>Now the summarizer: loop 15+ questions through one thread and watch the older turns collapse into a summary message instead of the context window overflowing. Ask a question that depends on an early turn - note what survives summarization and what blurs.</p></div>
+      <div class="step"><p>Review the diff from v1: the entire production upgrade is one list. Read it aloud in the words you would use in design review - that list IS the review.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ DataDesk v1.1 - the armor diff</span>from langchain.agents import create_agent
+from langchain.agents.middleware import PIIMiddleware, SummarizationMiddleware
+from langchain.chat_models import init_chat_model
+
+agent = create_agent(
+    model=init_chat_model("claude-haiku-4-5-20251001"),
+    tools=[csv_stats, column_mean, list_datasets],   # unchanged from v1
+    system_prompt=SYSTEM,                            # unchanged from v1
+    middleware=[
+        PIIMiddleware("email", strategy="redact"),   # outermost: scrub before send
+        SummarizationMiddleware(
+            model="claude-haiku-4-5-20251001",
+            max_tokens_before_summary=4000,          # long threads collapse, not crash
+        ),
+    ],
+)
+
+out = agent.invoke({"messages": [{"role": "user",
+    "content": "Request from jane.doe@example.com: how many rows in the orders data?"}]})
+for msg in out["messages"]:
+    print(msg.type, "·", str(msg.content)[:100])     # find the redacted human turn</div>
+
+    <div class="callout tip">
+      <strong>Scrub names too?</strong>
+      PIIMiddleware takes a type per instance - attach one for <code>"email"</code>, another for names or custom patterns, and stack them in the list. Start with email tonight; extend as homework.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>The graceful degrade <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">The two-engine setup you have maintained since b1 pays its dividend: model fallback from Claude to the local Ollama engine means a provider outage degrades DataDesk's answers instead of killing them. We simulate the outage live.</p>
+
+    <div class="steps">
+      <div class="step"><p>Add <code>ModelFallbackMiddleware("ollama:llama3.1")</code> to the middleware list. One line: if the primary model call fails, retry the call on the local engine.</p></div>
+      <div class="step"><p>Baseline run with the key present - confirm a normal Claude-quality answer to the v1 two-tool question.</p></div>
+      <div class="step"><p>Simulate the outage: in a fresh shell, <code>unset ANTHROPIC_API_KEY</code> and run the same script. The primary call fails, the fallback ring catches it, and DataDesk answers from llama3.1 - slower, plainer, alive.</p></div>
+      <div class="step"><p>Compare the two answers honestly: tool choice usually survives, nuance and phrasing degrade. Write one sentence on whether that trade is acceptable for YOUR users during an outage - that sentence is an SLA decision.</p></div>
+      <div class="step"><p>Land the reframe: the fallback is also the privacy mode. The same one line means "confidential-data path runs local" and "outage path runs local" - one architecture, two policies. Restore your key before b5.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Choose fallbacks by failure mode</strong>
+      The middleware accepts any model string, so Claude-to-hosted-Claude is also valid - it survives a model incident but not a provider outage or a network-isolated environment. The local engine survives all three, at a quality cost. Write the choice down where your on-call can find it.
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ The one-line degrade path</span>from langchain.agents.middleware import (PIIMiddleware, SummarizationMiddleware,
+                                          ModelFallbackMiddleware)
+
+middleware=[
+    PIIMiddleware("email", strategy="redact"),
+    SummarizationMiddleware(model="claude-haiku-4-5-20251001",
+                            max_tokens_before_summary=4000),
+    ModelFallbackMiddleware("ollama:llama3.1"),   # Claude down -&gt; local engine, not a crash
+]
+
+# Outage drill, in your shell:
+#   unset ANTHROPIC_API_KEY
+#   python datadesk_v1.py        # same file, same question - local answer</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The outage that nobody escalated.</strong> During a provider incident, a data team's assistant quietly fell back to its local model for two hours. Answers got terser; a banner said "running in degraded local mode". Zero pages, zero lost afternoon - and the incident review was one sentence. The neighboring team without a fallback ring filed the outage as a Sev-2.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish both demos if you did not complete them live - the redaction printout and the unset-key drill especially. Both are muscle memory you want before b7.</li>
+      <li>Stack a second PIIMiddleware for a pattern your team actually handles (names, ticket IDs, account numbers) and prove it with a seeded fake input.</li>
+      <li>Add tool retry to the list and point <code>csv_stats</code> at a missing file - watch retries happen, then decide what the right N is for a warehouse call vs a local CSV.</li>
+      <li>Write your smoke-test file: one script, every DataDesk flow, run it green. Then check PyPI's release history for langchain and find the yanked releases yourself - know what the flag looks like.</li>
+      <li>Optional reading: the middleware page at docs.langchain.com, including the custom-hooks section - you now know where each built-in sits in the onion.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain docs: middleware built-ins</span><span class="note">Part 1 + both demos · Summarization, HITL, PII, retry, fallback, rate limiting</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">LangChain docs: custom middleware hooks</span><span class="note">before_model / after_model / wrap covered as self-study; you write one when a real need appears</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Changelog + PyPI release history (yanked 1.3.5 / 1.2.5)</span><span class="note">Part 2 · the pin-your-versions lesson, from the primary sources</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why does middleware exist as a first-class concept in LangChain 1.x?</p>
+      <button class="qopt" type="button">A · To make agents run faster</button>
+      <button class="qopt" type="button">B · Cross-cutting concerns (PII, summarization, retries, approval) used to be bolted into every app's code - 1.x makes them composable layers around the model call, declared in one reviewable list</button>
+      <button class="qopt" type="button">C · It replaces the system prompt</button>
+      <p class="qwhy">Duplication, tangling and gaps were the 0.x pattern. One middleware list per agent is the fix - and the list itself becomes your audit answer.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · langchain 1.3.5 and 1.2.5 were yanked from PyPI. What does that mean, and what is the lesson?</p>
+      <button class="qopt" type="button">A · They were deleted forever; the lesson is to vendor your dependencies</button>
+      <button class="qopt" type="button">B · They were beta releases; the lesson is to wait for even version numbers</button>
+      <button class="qopt" type="button">C · They were recalled after shipping a SummarizationMiddleware signature regression - installers skip them when resolving; the lesson is to pin ranges and upgrade deliberately with your own smoke tests</button>
+      <p class="qwhy">Yanking is the ecosystem's recall notice. Pin langchain&gt;=1.3,&lt;2, read the changelog, and never let Friday's pip install -U pick your production version.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does ModelFallbackMiddleware("ollama:llama3.1") buy DataDesk?</p>
+      <button class="qopt" type="button">A · A failed Claude call retries on the local engine - the agent degrades in quality instead of crashing, and the same path doubles as the privacy mode</button>
+      <button class="qopt" type="button">B · Requests run on both engines and the faster answer wins</button>
+      <button class="qopt" type="button">C · It caches Claude answers locally for offline use</button>
+      <p class="qwhy">One line, two policies: outage resilience and a local path for confidential data. This is the b1 two-engine discipline paying its dividend.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The idea</b><span>Cross-cutting concerns = layers around the model call. Declared in create_agent(middleware=[...]), ordered, reviewable.</span></div>
+      <div class="cheat-item"><b>Built-ins</b><span>Summarization · HumanInTheLoop (b7) · PII · tool retry · model fallback (+ rate limiting). Import from langchain.agents.middleware.</span></div>
+      <div class="cheat-item"><b>Onion order</b><span>List order = ring order. Privacy (PII) outermost, so nothing inside ever sees the raw data.</span></div>
+      <div class="cheat-item"><b>Custom hooks</b><span>before_model (edit inputs) · after_model (edit/inspect outputs) · wrap (own the call: retries, caching). Built-ins first.</span></div>
+      <div class="cheat-item"><b>The yank lesson</b><span>1.3.5 / 1.2.5 recalled for a middleware signature regression. Pin langchain&gt;=1.3,&lt;2 · langgraph&gt;=1.2,&lt;2.</span></div>
+      <div class="cheat-item"><b>Upgrade ritual</b><span>Changelog → PyPI yank check → smoke tests green → new pin. Tuesday morning, never Friday night.</span></div>
+      <div class="cheat-item"><b>Graceful degrade</b><span>ModelFallbackMiddleware("ollama:llama3.1") - outage path and privacy path are the same line of code.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>DataDesk v1.1 wears armor. Next: b5 opens the LangGraph layer the whole harness runs on.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 4 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b3-create-agent.html">← Prev: create_agent, properly</a> &nbsp;·&nbsp; <a href="b5-langgraph-mental-model.html">Next: LangGraph mental model →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

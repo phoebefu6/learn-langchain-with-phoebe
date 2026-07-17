@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 8 · RAG the 1.x way - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 8 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 8 of 10</div>
+    <h1>RAG <span class="accent">the 1.x way</span></h1>
+    <p class="sub">Every RAG tutorial you have ever skimmed taught the 0.x shape: a fixed retrieve-then-answer chain. That shape now lives in langchain-classic. The 2026 pattern is simpler and stranger: retrieval is just a tool, and your agent decides when to reach for it. Tonight DataDesk learns to read the team wiki - and to admit when the answer is not in it.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · Chroma + an embeddings model pulled</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Where we are</span>
+      <span class="a2" style="flex:4">3-18 · Retrieval as a tool</span>
+      <span class="a3" style="flex:5">18-42 · Build-along: DataDesk reads the wiki</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">After b7, DataDesk is a multi-tool agent on a graph spine with persistence and approval gates. It can compute anything about your CSVs - but ask it "how do WE define active user?" and it guesses, because your team's definitions live in wiki pages it has never seen. Tonight we fix that with retrieval, built the 1.x way: an offline ingestion pipeline plus one new tool the agent calls when it decides it needs the docs.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A working ingestion pipeline (load → split → embed → Chroma), a <code>search_docs</code> tool wired into DataDesk, a grounding system prompt that makes it cite sources or say "not in the docs", and a demo that proves the uncomfortable truth: retrieval grounds the model in your data, not in reality.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: RETRIEVAL AS A TOOL ============ -->
+  <section class="section" id="retrieval-as-tool">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the 1.x retrieval docs + the agentic RAG pattern</span>
+      <h2>Retrieval as a tool <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">RAG in 2026 is two phases with a clean seam. Offline, you build a searchable index of your documents once. Online, that index is exposed to the agent as a plain tool - and the agent, not a hardcoded chain, decides whether a question needs it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two phases: offline ingestion pipeline from loaders to vector store, and online agent deciding to call the search_docs tool">
+        <style>
+          .b8rT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b8rI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b8rX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b8rW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b8rN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b8rArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b8rAh); }
+        </style>
+        <defs>
+          <marker id="b8rAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b8rX" x="40" y="34">OFFLINE · ingestion - run once, re-run when docs change</text>
+        <rect x="40" y="46" width="150" height="52" rx="12" fill="#1D3D3C"/>
+        <text class="b8rT" x="62" y="78">Loaders</text>
+        <rect x="240" y="46" width="150" height="52" rx="12" fill="#1D3D3C"/>
+        <text class="b8rT" x="262" y="78">Splitters</text>
+        <rect x="440" y="46" width="160" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b8rT" x="462" y="78">Embeddings</text>
+        <rect x="650" y="46" width="190" height="52" rx="12" fill="#132D2D"/>
+        <text class="b8rT" x="672" y="78">Vector store</text>
+        <line class="b8rArr" x1="194" y1="72" x2="232" y2="72"/>
+        <line class="b8rArr" x1="394" y1="72" x2="432" y2="72"/>
+        <line class="b8rArr" x1="604" y1="72" x2="642" y2="72"/>
+        <text class="b8rX" x="40" y="146">ONLINE · every question - the agent decides</text>
+        <rect x="40" y="158" width="170" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b8rI" x="62" y="190">Question</text>
+        <rect x="280" y="158" width="200" height="52" rx="12" fill="#132D2D"/>
+        <text class="b8rT" x="302" y="184">DataDesk agent</text>
+        <text class="b8rW" x="302" y="200">needs the docs? my call</text>
+        <rect x="560" y="158" width="200" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b8rT" x="582" y="184">search_docs tool</text>
+        <text class="b8rW" x="582" y="200">similarity search, k=3</text>
+        <line class="b8rArr" x1="214" y1="184" x2="272" y2="184"/>
+        <line class="b8rArr" x1="484" y1="184" x2="552" y2="184"/>
+        <line class="b8rArr" x1="700" y1="154" x2="740" y2="106"/>
+        <rect x="280" y="240" width="200" height="46" rx="12" fill="#BEB4FD"/>
+        <text class="b8rI" x="302" y="268">Cited answer</text>
+        <line class="b8rArr" x1="380" y1="214" x2="380" y2="232"/>
+        <rect x="40" y="304" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b8rN" x="64" y="316">The 0.x fixed retrieve-then-answer chain is gone. The agent calls search like any other tool.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - two phases: offline ingestion, online agentic retrieval</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The 2026 shape: the agent decides to retrieve<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Pre-1.0 RAG was a pipeline you hardcoded: every question went retrieve → stuff → answer, whether it needed docs or not. That machinery - RetrievalQA, legacy retrievers, the indexing API, the hub - moved to <code>langchain-classic</code> in 1.0. The 1.x pattern is <strong>agentic retrieval</strong>: wrap your search in a <code>@tool</code>, hand it to <code>create_agent</code>, and let the model decide per question.</p>
+        <ul>
+          <li><strong>"What is 2+2 of our row counts?"</strong> - the agent calls <code>csv_stats</code>, never touches the wiki.</li>
+          <li><strong>"How do we define active user?"</strong> - the agent calls <code>search_docs</code>, reads the chunks, cites the page.</li>
+          <li><strong>"Compare March churn to our churn definition"</strong> - it calls BOTH. A fixed chain could never route this; your agent from b3 already can.</li>
+        </ul>
+        <p>Nothing new to learn architecturally: retrieval is tool-calling, which you have been doing since b1. What is new is the offline pipeline that makes the tool worth calling.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The pipeline that feeds it: load → split → embed → store<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Embeddings and vector stores stayed first-class in 1.x - only the chain wrappers left. The ingestion pipeline is four honest steps, run offline, once:</p>
+        <table class="clean">
+          <thead><tr><th>Step</th><th>What it does</th><th>Course pick</th></tr></thead>
+          <tbody>
+            <tr><td>Load</td><td>Files → Document objects with metadata</td><td>Plain file reads for markdown (loaders exist for pdf, html, notion...)</td></tr>
+            <tr><td>Split</td><td>Long docs → overlapping chunks that fit retrieval</td><td><code>RecursiveCharacterTextSplitter</code>, 800 chars, 120 overlap</td></tr>
+            <tr><td>Embed</td><td>Each chunk → a vector capturing meaning</td><td><code>OllamaEmbeddings("nomic-embed-text")</code> - free, local, both engines</td></tr>
+            <tr><td>Store</td><td>Vectors + text into a searchable index</td><td>Chroma, persisted to disk (FAISS is the in-memory alternative)</td></tr>
+          </tbody>
+        </table>
+        <p>Local Chroma is plenty for a team wiki. Production-scale picks (pgvector, Pinecone, OpenSearch) are the same interface with different ops - the code you write tonight ports.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Chunking judgment, the LlamaIndex honesty card, advanced RAG namecheck<span class="mini">4 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Chunking is a judgment call, not a constant.</strong> Small chunks (300-500 chars) retrieve precisely but lose context; big chunks (1500+) keep context but blur similarity search and burn tokens. Overlap (10-20%) stops definitions being cut mid-sentence at chunk borders. Markdown with headers? Split on headers first, characters second. The only real answer is the one you will earn in b10: eval it.</p>
+        <p><strong>The LlamaIndex honesty card.</strong> If retrieval quality over messy documents IS your product - contracts, scanned pdfs, thousand-page manuals - LlamaIndex's ingestion and index tuning is deeper than LangChain's. The common 2026 hybrid: LlamaIndex for ingestion, LangGraph for orchestration. Choosing that combination is a design-review answer, not a betrayal of this course.</p>
+        <p><strong>Namecheck only:</strong> Corrective RAG (retry on bad retrieval), Self-RAG (model critiques its own chunks), Adaptive RAG (route by question type). All are LangGraph graphs wrapped around the exact primitives you learn tonight - beyond scope, but no longer beyond you.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Here are 3 documents my team actually uses: [describe them - format, length, structure]. Recommend a chunk size, overlap, and split strategy for each, and tell me which ONE is most likely to embarrass a naive 800-char splitter, and why.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: GROUNDING DISCIPLINE ============ -->
+  <section class="section" id="grounding">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the discipline that makes RAG trustworthy</span>
+      <h2>Grounding discipline <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Retrieval without rules just gives the model fancier material to freestyle over. The discipline is a system prompt contract: answer from the retrieved chunks, cite the document, and when the docs are silent - say so instead of guessing.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: ungrounded answer flows straight to a confident guess; grounded answer retrieves, then either cites a document or says not in the docs">
+        <style>
+          .b8gT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b8gI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b8gX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b8gW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b8gN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b8gArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b8gAh); }
+        </style>
+        <defs>
+          <marker id="b8gAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="b8gX" x="40" y="34">UNGROUNDED - no rules</text>
+        <rect x="40" y="46" width="170" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b8gI" x="62" y="78">Question</text>
+        <rect x="290" y="46" width="180" height="52" rx="12" fill="#1D3D3C"/>
+        <text class="b8gT" x="312" y="78">Model recalls</text>
+        <rect x="550" y="46" width="290" height="52" rx="12" fill="#8F84F2"/>
+        <text class="b8gT" x="572" y="70">"Active user = 30-day login"</text>
+        <text class="b8gW" x="572" y="88">confident. plausible. not YOUR definition.</text>
+        <line class="b8gArr" x1="214" y1="72" x2="282" y2="72"/>
+        <line class="b8gArr" x1="474" y1="72" x2="542" y2="72"/>
+        <text class="b8gX" x="40" y="150">GROUNDED - cite-or-say-so contract</text>
+        <rect x="40" y="162" width="170" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b8gI" x="62" y="194">Question</text>
+        <rect x="290" y="162" width="180" height="52" rx="12" fill="#132D2D"/>
+        <text class="b8gT" x="312" y="188">search_docs</text>
+        <text class="b8gW" x="312" y="204">chunks + sources back</text>
+        <rect x="550" y="140" width="290" height="52" rx="12" fill="#BEB4FD"/>
+        <text class="b8gI" x="572" y="164">"Per metrics.md: 3 events / 7 days"</text>
+        <text class="b8gI" x="572" y="182">cited, checkable, yours</text>
+        <rect x="550" y="212" width="290" height="52" rx="12" fill="#1D3D3C"/>
+        <text class="b8gT" x="572" y="236">"Not in the docs"</text>
+        <text class="b8gW" x="572" y="254">an honest miss beats a smooth guess</text>
+        <line class="b8gArr" x1="214" y1="188" x2="282" y2="188"/>
+        <line class="b8gArr" x1="474" y1="176" x2="542" y2="170"/>
+        <line class="b8gArr" x1="474" y1="200" x2="542" y2="232"/>
+        <rect x="40" y="278" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b8gN" x="64" y="290">Same model, same index. The only difference is the contract in the system prompt.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - grounded vs ungrounded: the contract is the difference</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Cite-or-say-so: the three-rule system prompt<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The grounding contract is three sentences added to DataDesk's system prompt. It costs nothing and changes everything a stakeholder will trust:</p>
+        <div class="prompt-box good"><span class="label">★ The grounding rules (paste into your system_prompt)</span>When a question concerns team definitions, metrics, or documentation,
+call search_docs before answering.
+Answer ONLY from the retrieved chunks and name the source document
+for every claim, like: (source: metrics.md).
+If the retrieved chunks do not contain the answer, reply exactly:
+"Not in the docs" - then say what you would need. Never fill gaps
+from general knowledge without labeling it as a guess.</div>
+        <ul>
+          <li><strong>Rule 1</strong> makes retrieval happen for the right questions - the agent decides, but you set the policy.</li>
+          <li><strong>Rule 2</strong> makes every answer checkable. A citation your analysts can click beats eloquence.</li>
+          <li><strong>Rule 3</strong> is the one that builds trust: a model that can say "I do not know" is a model people stop double-checking.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The metric with three definitions.</strong> A commerce data team found "active user" defined three ways across three dashboards. Their wiki-grounded assistant, forced to cite, surfaced the conflict in week one - because two answers came back citing different pages. The citation rule did not just prevent hallucination; it exposed a governance bug humans had shipped around for a year.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Embeddings choices + when RAG beats long context<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Embeddings model choice.</strong> The course uses <code>nomic-embed-text</code> via <code>OllamaEmbeddings</code>: free, local, and it keeps the fully-private path intact - your documents never leave the machine even when the chat model is Claude. Hosted embeddings (Voyage, OpenAI) score higher on retrieval benchmarks; swap the one constructor line if your docs are not sensitive. One hard rule: <strong>query and index must use the same embeddings model</strong> - change it and you re-ingest.</p>
+        <p><strong>When RAG beats long context - and vice versa.</strong> Models now take 200k+ tokens, so why not paste the whole wiki into every request? For a handful of stable pages, honestly - do that, it is simpler. RAG wins when the corpus is bigger than the window, changes often (re-embed one file vs re-paste everything), needs per-question cost control (3 chunks vs 200 pages of tokens per call), or needs citations with provenance. DataDesk's wiki will outgrow a context window; your five-page runbook may never. Choose per corpus, not per fashion.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>DataDesk reads the team wiki <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Ingest a tiny synthetic wiki into Chroma, wrap similarity search as a tool, hand it to DataDesk, and watch the agent decide to retrieve - then cite.</p>
+
+    <div class="steps">
+      <div class="step"><p>Seed the wiki: create <code>wiki/</code> with 3-5 short markdown files - <code>metrics.md</code> (define active user, churn, MAU), <code>data_dictionary.md</code> (columns of your demo CSV), <code>oncall.md</code>. Synthetic content only; write definitions with real opinions in them.</p></div>
+      <div class="step"><p>Install the retrieval pieces: <code>pip install langchain-chroma langchain-ollama langchain-text-splitters</code> and <code>ollama pull nomic-embed-text</code>.</p></div>
+      <div class="step"><p>Run the ingestion script below once. Peek at <code>./wiki_db</code> - your wiki is now vectors on disk.</p></div>
+      <div class="step"><p>Add <code>search_docs</code> to DataDesk's tool list and the grounding rules to its system prompt. That is the whole integration.</p></div>
+      <div class="step"><p>Ask: <em>"How do we define active user?"</em> Watch the stream: the agent chooses <code>search_docs</code>, gets chunks back, answers with <code>(source: metrics.md)</code>. Then ask a pure-CSV question and confirm it does NOT retrieve. The routing is the lesson.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Ingestion + the retrieval tool - the whole thing</span>from pathlib import Path
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
+from langchain.tools import tool
+
+emb = OllamaEmbeddings(model="nomic-embed-text")
+
+# ---- offline: ingest.py - run once, re-run when the wiki changes ----
+docs = [Document(page_content=p.read_text(), metadata={"source": p.name})
+        for p in Path("wiki").glob("*.md")]
+chunks = RecursiveCharacterTextSplitter(
+    chunk_size=800, chunk_overlap=120).split_documents(docs)
+Chroma.from_documents(chunks, emb, persist_directory="./wiki_db")
+print(f"ingested {len(chunks)} chunks")
+
+# ---- online: add to datadesk.py ----
+store = Chroma(persist_directory="./wiki_db", embedding_function=emb)
+
+@tool
+def search_docs(query: str) -> str:
+    """Search the team wiki for metric definitions, data docs and runbooks."""
+    hits = store.similarity_search(query, k=3)
+    return "\n\n".join(
+        f"[source: {h.metadata['source']}]\n{h.page_content}" for h in hits)
+
+# then: tools=[csv_stats, column_mean, search_docs] in create_agent,
+# and the grounding rules appended to system_prompt.</div>
+
+    <div class="callout tip">
+      <strong>Both engines, one index</strong>
+      Embeddings run locally on Ollama regardless of which chat engine answers - so the Claude path and the llama3.1 path share the same <code>wiki_db</code>. Swap the chat model with the usual one line; the index does not care.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Prove the grounding <span class="tag demo">★ 8 min · build your own</span></h2>
+    </div>
+    <p class="lede">Two stress tests: one the agent should pass, and one it cannot - because retrieval is grounding, not truth.</p>
+
+    <div class="steps">
+      <div class="step"><p>Ask something the wiki does not cover: <em>"What is our policy on sharing dashboards with vendors?"</em> A grounded DataDesk retrieves, finds nothing usable, and answers "Not in the docs". If it improvises a plausible policy instead, tighten rule 3 and re-run - watch the refusal appear.</p></div>
+      <div class="step"><p>Now poison the well: add <code>metrics_v2.md</code> defining active user as <em>"any user who has EVER logged in"</em> - deliberately wrong. Re-run ingestion.</p></div>
+      <div class="step"><p>Ask about active user again. DataDesk may now cite the wrong doc - faithfully, with a tidy <code>(source: metrics_v2.md)</code>. It did everything right. The data lied.</p></div>
+      <div class="step"><p>Discuss: retrieval grounds the model in your documents, so your documents can now hallucinate FOR it. Garbage in the index is worse than garbage in training data, because it arrives wearing a citation.</p></div>
+      <div class="step"><p>Close the loop: the fixes are governance, not prompts - curate what gets ingested, date-stamp docs, prefer one source of truth per definition, and (b10 preview) put "cites the RIGHT doc" into your eval set.</p></div>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The stale runbook incident.</strong> An ops assistant grounded on a wiki confidently walked an engineer through a decommissioned failover process - citing the page correctly. The page was two years stale. Post-mortem fix: ingestion filter on last-modified date plus a "verified" front-matter flag. Citation discipline caught it fast; index curation stopped it recurring.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 30-45 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish both demos, including the poisoned-doc experiment - feeling the wrong citation land is the point of the session.</li>
+      <li>Swap 2-3 of your team's REAL (non-confidential) docs into <code>wiki/</code>, re-ingest, and ask five questions your teammates actually ask. Note every miss and every wrong chunk.</li>
+      <li>Re-run one miss with <code>chunk_size=400</code> and then <code>1500</code>. Watch retrieval quality move with a number you chose in one second. Write down which won and your guess why.</li>
+      <li>Run the chunking-judgment prompt from Part 1 on your gnarliest real document. Bring its verdict to b9.</li>
+      <li>Optional reading: skim a Corrective RAG or Self-RAG writeup - you now recognize every primitive inside it.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">LangChain retrieval docs (1.x)</span><span class="note">Parts 1-2 · the 1.x-native pieces: splitters, embeddings, vector stores, retrieval-as-a-tool</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">langchain-classic migration caveat</span><span class="note">Part 1 · RetrievalQA, legacy retrievers, indexing API and hub = 0.x history, pip install langchain-classic</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">langchain-chroma + langchain-ollama embeddings docs</span><span class="note">Demo 1 · Chroma.from_documents, OllamaEmbeddings, similarity_search patterns verified</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Community RAG curriculum (DeepLearning.AI + tutorial corpus)</span><span class="note">Framing only · most of that corpus teaches the 0.x chain shape - date-check every tutorial</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · The 1.x-native RAG shape is...</p>
+      <button class="qopt" type="button">A · A fixed retrieve-then-answer chain that runs on every question</button>
+      <button class="qopt" type="button">B · A search tool the agent decides to call when a question needs the docs</button>
+      <button class="qopt" type="button">C · Fine-tuning the model on your documents</button>
+      <p class="qwhy">Agentic retrieval: the fixed chain is 0.x history living in langchain-classic. In 1.x, retrieval is a @tool and the agent routes - which is why DataDesk needed only one new tool, not a new architecture.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · A tutorial builds RAG with RetrievalQA and a retriever pipeline from the hub. What do you know?</p>
+      <button class="qopt" type="button">A · That is the current recommended pattern</button>
+      <button class="qopt" type="button">B · RetrievalQA is LangSmith-only now</button>
+      <button class="qopt" type="button">C · It is 0.x-era machinery - moved to langchain-classic; embeddings and vector stores stayed, the chain wrappers left</button>
+      <p class="qwhy">Same era-reading skill as b1's pipe-operator check. Legacy chains, retrievers, indexing and the hub moved out in 1.0; the primitives you used tonight are what remained first-class.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · You seed a deliberately wrong definition doc and DataDesk cites it perfectly. What did the demo prove?</p>
+      <button class="qopt" type="button">A · Retrieval is grounding, not truth - the model is now faithful to your index, so index curation is a governance job</button>
+      <button class="qopt" type="button">B · The embeddings model was too small</button>
+      <button class="qopt" type="button">C · The system prompt needs a "be accurate" line</button>
+      <p class="qwhy">RAG moves the trust problem; it does not solve it. A wrong doc arrives wearing a citation - the fixes are curation, provenance, one source of truth per definition, and evals (b10).</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 8 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>RAG, 1.x shape</b><span>Retrieval is a @tool the agent decides to call. Fixed retrieve-then-answer chains = 0.x history in langchain-classic.</span></div>
+      <div class="cheat-item"><b>Two phases</b><span>Offline: load → split → embed → store (run once). Online: agent calls search_docs when needed.</span></div>
+      <div class="cheat-item"><b>Course pipeline</b><span>RecursiveCharacterTextSplitter(800/120) → OllamaEmbeddings("nomic-embed-text") → Chroma(persist_directory).</span></div>
+      <div class="cheat-item"><b>The tool</b><span>@tool search_docs(query) → similarity_search(query, k=3) → chunks with [source: file] prefixes.</span></div>
+      <div class="cheat-item"><b>Grounding contract</b><span>Retrieve for doc questions · answer only from chunks, cite the doc · say "Not in the docs" instead of guessing.</span></div>
+      <div class="cheat-item"><b>Grounding ≠ truth</b><span>A wrong doc gets cited faithfully. Curate the index, date-stamp, one source of truth per definition.</span></div>
+      <div class="cheat-item"><b>One index, both engines</b><span>Embeddings stay local on Ollama; the chat model swaps Claude ↔ llama3.1 without re-ingesting. Never mix embeddings models.</span></div>
+      <div class="cheat-item"><b>Honesty card</b><span>Retrieval-first product? Consider LlamaIndex ingestion + LangGraph orchestration. RAG vs long context: choose per corpus.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 8 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b7-hitl-time-travel.html">← Prev: Human-in-the-loop + time travel</a> &nbsp;·&nbsp; <a href="b9-multi-agent.html">Next: Multi-agent and subgraphs →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

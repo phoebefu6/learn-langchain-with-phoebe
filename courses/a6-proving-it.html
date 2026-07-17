@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 6 · Proving it: ROI and the honest scorecard - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Leader session 6 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Leader track · Session 6 of 6</div>
+    <h1>Proving it: ROI and <span class="accent">the honest scorecard</span></h1>
+    <p class="sub">The final session of the leader track. One company - Klarna - is simultaneously the industry's best ROI story and its best cautionary tale, and which one you hear depends entirely on which metrics the teller chose. Today you hear both halves, then build the five-metric scorecard you will demand before funding any agent's scale-up.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Leader track</span>
+      <span class="chip audience">Leaders: C-level · managers · curious minds</span>
+      <span class="chip audience">No code, ever</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-16 · The believers' exhibits</span>
+      <span class="a3" style="flex:5">16-33 · The skeptics + the scorecard</span>
+      <span class="a4" style="flex:3">33-45 · Draft yours + close</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The same deployment, two true stories</h2>
+    </div>
+    <p class="lede">Klarna's support agent is quoted in board decks as proof that agents deliver, and in skeptics' posts as proof that the hype collapsed. Both citations are accurate. The deployment did produce the headline numbers - and the company did partially reverse course. What decides which story gets told is <strong>the choice of metrics</strong>. That choice is a leadership act, and it is the last skill this track teaches: how to demand the scorecard that tells you the truth before the truth gets expensive.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Paste-into-AI prompt</span>
+      <span class="pill inkpill">Sourced in the evidence pack</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Both halves of the Klarna arc with the numbers attached, the benchmark rates that say agents can pay back and the Gartner/MIT counts that say most do not, a five-metric scorecard with the gamed version of each metric named so you can refuse it, and kill criteria drafted for one agent of your own. Then the track hands you to the builders.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE BELIEVERS' EXHIBITS ============ -->
+  <section class="section" id="believers">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the published ROI evidence</span>
+      <h2>The believers' exhibits <span class="tag concept">13 min live</span></h2>
+    </div>
+    <p class="lede">First, the honest version of the good news. These numbers are real, published, and repeatable enough to take seriously. If agents never paid back, this track would have been one session long.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Exhibit A: Klarna by the numbers<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The most-cited agent deployment in the world, and deservedly so at launch. Klarna's AI assistant, built on the LangChain stack, published these figures:</p>
+        <ul>
+          <li><strong>2.5 million conversations</strong> handled - roughly two-thirds of the company's support chats.</li>
+          <li><strong>Resolution time from 11 minutes to 2 minutes</strong> - the metric customers actually feel.</li>
+          <li><strong>Output equivalent to ~700 full-time agents</strong> - the line every headline ran with.</li>
+          <li><strong>A projected $40M profit improvement</strong> - the line every CFO ran with.</li>
+        </ul>
+        <p>Hold these numbers with respect: they are what a successful large-scale agent deployment looks like. And hold your applause: Part 2 shows what the same deployment looked like a year later, and why both views belong in the same board pack.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Exhibit B: the quieter wins<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The less-headlined cases are in some ways more instructive - narrower, internal, and easier to measure honestly:</p>
+        <ul>
+          <li><strong>Uber:</strong> agentic tooling for large-scale code migration - around <strong>21,000 developer hours saved</strong>. Internal, countable, no customer emotions in the loop.</li>
+          <li><strong>AppFolio:</strong> a property-management copilot that roughly <strong>doubled response accuracy</strong> - a quality win, not a headcount story.</li>
+          <li><strong>LinkedIn:</strong> an internal <strong>SQL Bot</strong> that lets analysts self-serve data questions - value measured in unblocked analysts rather than press releases.</li>
+        </ul>
+        <p>The pattern worth stealing: the most defensible ROI stories are internal-facing, have a clear human baseline, and measure a boring number well. If your first agent's business case looks like Uber's rather than Klarna's, that is a feature.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The benchmark rates - what "normal" payback looks like<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Beyond the marquee names, the survey benchmarks give you calibration for your own plans:</p>
+        <ul>
+          <li><strong>41% of deployments</strong> report positive payback within 12 months - agents can pay for themselves, and most still do not within a year. Both halves of that sentence matter.</li>
+          <li><strong>Median time-to-value is 5.1 months</strong> - budget for two quarters of investment before the curve bends.</li>
+          <li><strong>Use case changes everything:</strong> SDR-style sales agents average <strong>3.4 months</strong> to value; finance and operations agents average <strong>8.9 months</strong>. If a vendor promises finance-agent value in six weeks, you now know to smile and check the scorecard.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE SKEPTICS' EXHIBITS ============ -->
+  <section class="section" id="skeptics">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the reversal arc + the failure-rate research</span>
+      <h2>The skeptics' exhibits <span class="tag concept">10 min live</span></h2>
+    </div>
+    <p class="lede">Now the other half of the courtroom. Same industry, same years, same companies in some cases - and a very different set of numbers. A leader who can recite only Part 1 is a mark; a leader who can recite both is a buyer.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Klarna arc as a timeline: launch, headline numbers, CSAT drop, human rebalance, steady hybrid">
+        <style>
+          .a6kT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a6kI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .a6kW { font: 400 12px Inter, sans-serif; fill: #EBE8FE; }
+          .a6kX { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+          .a6kN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a6kArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a6kAh); }
+        </style>
+        <defs>
+          <marker id="a6kAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <line class="a6kArr" x1="40" y1="150" x2="850" y2="150"/>
+        <rect x="50" y="60" width="140" height="70" rx="12" fill="#1D3D3C"/>
+        <text class="a6kT" x="66" y="88">1 · Launch</text>
+        <text class="a6kW" x="66" y="110">agent takes support</text>
+        <rect x="210" y="170" width="150" height="90" rx="12" fill="#8F84F2"/>
+        <text class="a6kT" x="226" y="198">2 · Headlines</text>
+        <text class="a6kW" x="226" y="220">2.5M chats · 11 to 2 min</text>
+        <text class="a6kW" x="226" y="240">~700 FTEs · $40M</text>
+        <rect x="390" y="60" width="140" height="70" rx="12" fill="#132D2D"/>
+        <text class="a6kT" x="406" y="88">3 · CSAT drops</text>
+        <text class="a6kW" x="406" y="110">quality metric dissents</text>
+        <rect x="560" y="170" width="140" height="90" rx="12" fill="#BEB4FD"/>
+        <text class="a6kI" x="576" y="198">4 · Rebalance</text>
+        <text class="a6kX" x="576" y="220">humans rehired for</text>
+        <text class="a6kX" x="576" y="240">complex + emotional</text>
+        <rect x="720" y="60" width="130" height="70" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6kI" x="736" y="88">5 · Hybrid</text>
+        <text class="a6kX" x="736" y="110">steady state</text>
+        <rect x="40" y="278" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a6kN" x="64" y="290">The $40M survived. The "replace everyone" story did not. The difference was one unwatched metric: CSAT.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the Klarna arc: launch, headlines, CSAT drop, rebalance, steady hybrid</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Klarna, act two - the metric they were not watching<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A year after the headlines, Klarna adjusted course. <strong>Customer satisfaction had dropped</strong> - the agent handled routine cases fine but disappointed on complex and emotional ones. The company <strong>rehired human agents</strong> for exactly those cases and settled into a deliberate <strong>hybrid model</strong>.</p>
+        <ul>
+          <li><strong>Read it precisely:</strong> the $40M-class efficiency numbers largely survived. What died was the "replace everyone" narrative - the deployment was oversold, not worthless.</li>
+          <li><strong>The lesson is metric selection:</strong> every celebrated number was a cost or speed metric. The dissenting signal - CSAT - was a quality metric, and it was not on the headline scorecard. The problem announced itself in the one place nobody had put a spotlight.</li>
+          <li><strong>The leadership takeaway:</strong> any scorecard composed only of cost and speed metrics will read as triumphant right up until the customers leave. Quality metrics are not decoration; they are the early-warning system.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The base rates: Gartner and MIT<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Zoom out from one company to the population and the skeptics hold strong cards:</p>
+        <ul>
+          <li><strong>Gartner:</strong> forecasts <strong>over 40% of agentic AI projects canceled by end-2027</strong> - the named causes are cost, unclear business value, and inadequate risk controls. Notice: all three are leadership failures from sessions a3-a5, not model failures.</li>
+          <li><strong>MIT:</strong> the GenAI Divide research found <strong>95% of pilots show no measurable P&amp;L impact</strong> - carried, as always in this track, with its methodology caveat: definitions of impact vary and the sample skews, so treat it as a warning shot rather than a precise census.</li>
+          <li><strong>The scale gap:</strong> roughly <strong>78% of organizations report piloting</strong> agents while only about <strong>14% have scaled</strong> them - the graveyard between pilot and production is where unclear metrics send projects to die.</li>
+        </ul>
+        <p>Put Part 1 and Part 2 together and the resolution is not "agents work" or "agents fail". It is: <strong>agents pay back where somebody defined payback honestly in advance.</strong> Which is why this session ends with a scorecard and not a verdict.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>How to read a vendor case study<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Most ROI evidence you will ever see arrives via vendor marketing. Three filters before you believe a number:</p>
+        <ul>
+          <li><strong>Company-published:</strong> the metrics were chosen by the party with the strongest incentive to look good. Not fake - curated. Ask what is NOT reported: no CSAT in a support-agent case study is a choice.</li>
+          <li><strong>Survivor bias:</strong> case studies are written about the deployments that worked. The 40% that get canceled do not get landing pages. Every case study is drawn from the winners' bracket.</li>
+          <li><strong>Post-hoc metric selection:</strong> when success is measured after the fact, the teller picks whichever number moved. The defense is the same discipline you will draft today: metrics defined before launch, including the ones that could dissent.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE HONEST SCORECARD ============ -->
+  <section class="section" id="scorecard">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the track's closing tool</span>
+      <h2>The honest scorecard <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Five metrics, demanded before any agent gets scale-up funding. Each comes with its gamed twin - the flattering version you will be offered instead, and must refuse by name.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The five-metric scorecard: metric, honest version, and gamed version to refuse, one row per metric">
+        <style>
+          .a6sT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a6sI { font: 600 13px Inter, sans-serif; fill: #132D2D; }
+          .a6sX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a6sN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+        </style>
+        <rect x="40" y="30" width="180" height="40" rx="8" fill="#132D2D"/>
+        <text class="a6sT" x="60" y="55">Metric</text>
+        <rect x="230" y="30" width="300" height="40" rx="8" fill="#132D2D"/>
+        <text class="a6sT" x="250" y="55">Honest version</text>
+        <rect x="540" y="30" width="310" height="40" rx="8" fill="#1D3D3C"/>
+        <text class="a6sT" x="560" y="55">Gamed version - refuse</text>
+        <rect x="40" y="80" width="180" height="44" rx="8" fill="#BEB4FD"/>
+        <text class="a6sI" x="60" y="107">1 · Resolution</text>
+        <rect x="230" y="80" width="300" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sI" x="250" y="107">vs human baseline</text>
+        <rect x="540" y="80" width="310" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sX" x="560" y="107">easy tickets only</text>
+        <rect x="40" y="134" width="180" height="44" rx="8" fill="#BEB4FD"/>
+        <text class="a6sI" x="60" y="161">2 · Quality</text>
+        <rect x="230" y="134" width="300" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sI" x="250" y="161">CSAT delta, all cases</text>
+        <rect x="540" y="134" width="310" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sX" x="560" y="161">happy-path surveys</text>
+        <rect x="40" y="188" width="180" height="44" rx="8" fill="#BEB4FD"/>
+        <text class="a6sI" x="60" y="215">3 · Cost</text>
+        <rect x="230" y="188" width="300" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sI" x="250" y="215">per resolved task, all-in</text>
+        <rect x="540" y="188" width="310" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sX" x="560" y="215">tokens + ops hidden</text>
+        <rect x="40" y="242" width="180" height="44" rx="8" fill="#BEB4FD"/>
+        <text class="a6sI" x="60" y="269">4 · Escalation</text>
+        <rect x="230" y="242" width="300" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sI" x="250" y="269">rate + workload shift</text>
+        <rect x="540" y="242" width="310" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sX" x="560" y="269">silent deflection</text>
+        <rect x="40" y="296" width="180" height="44" rx="8" fill="#BEB4FD"/>
+        <text class="a6sI" x="60" y="323">5 · Incidents</text>
+        <rect x="230" y="296" width="300" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sI" x="250" y="323">count + near-misses</text>
+        <rect x="540" y="296" width="310" height="44" rx="8" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a6sX" x="560" y="323">only logged incidents</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the five-metric scorecard: the honest version, and the gamed twin to refuse</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The five metrics, and the gamed twin of each<span class="mini">8 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Demand these five before funding scale-up. Anything less is a story, not a scorecard.</p>
+        <table class="clean">
+          <thead><tr><th>Metric</th><th>Honest version</th><th>Gamed version to refuse</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1 · Task resolution</strong></td><td>Resolution rate vs the human baseline on the same case mix</td><td>A high rate earned by routing only easy tickets to the agent - "95% resolution" of the simplest 60%</td></tr>
+            <tr><td><strong>2 · Quality / CSAT delta</strong></td><td>Satisfaction change across ALL cases, including complex and emotional ones</td><td>Surveys sampled from happy paths, or quality simply not measured - the exact Klarna gap</td></tr>
+            <tr><td><strong>3 · Cost per resolved task</strong></td><td>All-in: tokens, infrastructure, monitoring, AND the humans handling what the agent could not</td><td>License-fee-only math with token bills and ops labor hidden in other budget lines</td></tr>
+            <tr><td><strong>4 · Escalation rate + workload shift</strong></td><td>How often humans take over, and where that workload actually went</td><td>Silent deflection - customers who gave up counted as "resolved", staff absorbing overflow uncounted</td></tr>
+            <tr><td><strong>5 · Incidents + near-misses</strong></td><td>Count of failures AND close calls, reviewed on a schedule</td><td>Only formally logged incidents - a quiet logbook presented as a safe agent</td></tr>
+          </tbody>
+        </table>
+        <p>And the scorecard's spine: every metric is measured <strong>against a human baseline captured before launch</strong>, and the whole card is defined <strong>before</strong> the pilot - so nobody gets to choose the flattering number afterwards. That single discipline is what separates your board pack from a vendor landing page.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ EXERCISE ============ -->
+  <section class="section" id="exercise-scorecard">
+    <div class="section-kicker">
+      <span class="klabel">Thinking exercise</span>
+      <h2>Draft your scorecard <span class="tag demo">★ 15 min · everyone works</span></h2>
+    </div>
+    <p class="lede">The track's final worksheet. Take one live or proposed agent - ideally the same use case from your a4 approval matrix and a5 scoresheet - and give it the scorecard it will be judged by.</p>
+
+    <div class="steps">
+      <div class="step"><p>Name the agent and its job in one sentence. Same use case as a4/a5 if you have been carrying one - you are about to complete its governance file.</p></div>
+      <div class="step"><p>Define the five metrics FOR YOUR CASE: what counts as a resolved task, whose satisfaction you measure, what goes into all-in cost, what counts as an escalation, what counts as a near-miss. Specific nouns, not categories.</p></div>
+      <div class="step"><p>Write the human baseline for each: what does the current human process score today? If nobody knows, your first funded work item is measuring it - BEFORE the agent launches.</p></div>
+      <div class="step"><p>Name the gamed twin you refuse for each metric, in writing. "We do not count deflected customers as resolutions" is a sentence that saves audits.</p></div>
+      <div class="step"><p>Write the kill criteria: "we stop if ..." - the CSAT floor, the cost ceiling, the incident count that ends the experiment. An agent without kill criteria is a project that can only ever be declared a success.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Stress-test your scorecard (paste into any chat AI)</span>I am a business leader defining success metrics for an AI agent before funding it. Here is my draft scorecard: [paste your five metrics, human baselines, and kill criteria]. Attack it: (1) For each metric, how would a team under pressure game it while technically complying? (2) Which dissenting signal - the Klarna-style CSAT drop - is still missing or underweighted? (3) Are my kill criteria specific enough that a neutral third party could rule "stop" from the numbers alone? Rewrite the two weakest items.</div>
+
+    <div class="callout tip">
+      <strong>The handoff</strong>
+      Approval matrix (a4) + six-axis pitch score (a5) + this scorecard = a complete governance file for one agent, written entirely by you, with no code. Hand it to your data team as the brief. That handoff is what this track was for.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="homework">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>After the track <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish the scorecard if you did not complete it live, run the stress-test prompt, and staple it to your a4 matrix and a5 scoresheet - one agent, one complete governance file.</li>
+      <li>Find one agent ROI claim in the wild this week - a vendor page, a keynote, a LinkedIn post - and run the three case-study filters on it: who published it, who is missing from the sample, when were the metrics chosen?</li>
+      <li>Read the benchmark self-study card and place your own use case: is it a 3.4-month SDR-shaped case or an 8.9-month finance-shaped one? Reset your own payback expectations accordingly.</li>
+      <li>Ask the owner of any live agent in your organization for its current CSAT-class quality metric. If the answer is "we don't track one", you have found your Klarna gap - close it before it closes on you.</li>
+    </ul>
+    <div class="callout win">
+      <strong>Questions to ask your data team</strong>
+      <ol>
+        <li>What is the human baseline for this task, measured before the agent launched - and if we never measured it, how fast can we?</li>
+        <li>Does our cost per resolved task include tokens, infrastructure, monitoring, AND the humans handling escalations - or just the license line?</li>
+        <li>What is the escalation rate, and where exactly did that workload move - who absorbed it?</li>
+        <li>How many incidents and near-misses did the agent log last month, and who reviews them on what schedule?</li>
+        <li>What are the kill criteria - which specific number makes us stop, and who has the authority to call it?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Evidence covered</h2>
+    </div>
+    <p class="lede">The leader track teaches from a verified evidence pack - published case studies, vendor material flagged as such, and independent research, sourced in the course map. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Klarna case study (LangChain-published)</span><span class="note">Part 1 · 2.5M conversations, 11 to 2 min, ~700 FTEs, $40M projection - vendor-published, flagged as such</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Klarna reversal coverage</span><span class="note">Part 2 · CSAT drop, human rehiring, hybrid rebalance - the arc taught whole, not half</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Uber · AppFolio · LinkedIn cases</span><span class="note">Part 1 · vendor-published numbers; carried with the case-study reading filters from Part 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Gartner forecast + MIT GenAI Divide</span><span class="note">Part 2 · 40%+ canceled by end-2027; 95% no P&amp;L impact with methodology caveat; 78% pilot / 14% scaled</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Klarna is cited as both the best ROI story and the best cautionary tale. What actually decides which story gets told?</p>
+      <button class="qopt" type="button">A · Whether the teller likes AI</button>
+      <button class="qopt" type="button">B · The choice of metrics - the cost and speed numbers held up while the unwatched quality metric (CSAT) forced the reversal</button>
+      <button class="qopt" type="button">C · The model the agent ran on</button>
+      <p class="qwhy">The $40M-class efficiency numbers largely survived; the "replace everyone" narrative did not. The dissenting signal lived in the one metric that was not on the headline scorecard - which is why quality metrics are the early-warning system.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · A team reports 95% task resolution and asks for scale-up funding. Your first scorecard question is...</p>
+      <button class="qopt" type="button">A · Which model are you using?</button>
+      <button class="qopt" type="button">B · Can we get to 98%?</button>
+      <button class="qopt" type="button">C · 95% of which case mix, against what human baseline - and what are the CSAT delta and escalation numbers?</button>
+      <p class="qwhy">The gamed twin of resolution is a high rate earned on easy tickets only. Baseline, case mix, quality delta, and escalation are exactly the columns that expose it - or confirm it honestly.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Why do kill criteria ("we stop if ...") belong on the scorecard before launch?</p>
+      <button class="qopt" type="button">A · Without them, metrics get chosen after the fact and every project can only ever be declared a success</button>
+      <button class="qopt" type="button">B · Regulators require the exact phrase</button>
+      <button class="qopt" type="button">C · They motivate the team through fear</button>
+      <p class="qwhy">Post-hoc metric selection is how the 40% cancellation statistic gets populated slowly and expensively. Pre-committed stop conditions are what let a neutral party call "stop" from the numbers - Gartner's named causes are all absences of this discipline.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Klarna, both halves</b><span>2.5M chats · 11 to 2 min · ~700 FTEs · $40M projected - then CSAT drop, rehiring, steady hybrid. Teach the whole arc.</span></div>
+      <div class="cheat-item"><b>The quieter wins</b><span>Uber ~21k dev hours · AppFolio 2x response accuracy · LinkedIn SQL Bot. Internal, baselined, boring - and defensible.</span></div>
+      <div class="cheat-item"><b>Benchmark rates</b><span>41% positive payback within 12 months · median time-to-value 5.1 months (SDR 3.4, finance/ops 8.9).</span></div>
+      <div class="cheat-item"><b>The counterweight</b><span>Gartner: 40%+ agentic projects canceled by end-2027. MIT: 95% of pilots no P&amp;L impact (methodology caveat). 78% pilot / 14% scaled.</span></div>
+      <div class="cheat-item"><b>The 5-metric scorecard</b><span>Resolution vs baseline · CSAT delta · all-in cost per resolved task · escalation + workload shift · incidents + near-misses.</span></div>
+      <div class="cheat-item"><b>Refuse the gamed twins</b><span>Easy-tickets-only rates · happy-path surveys · license-only cost math · silent deflection · unlogged near-misses.</span></div>
+      <div class="cheat-item"><b>Case-study filters</b><span>Company-published (curated) · survivor bias (winners write) · post-hoc metrics (the teller picked what moved).</span></div>
+      <div class="cheat-item"><b>Kill criteria</b><span>"We stop if ..." defined before launch, specific enough for a neutral party to call. No kill criteria = unfalsifiable project.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 6 of 6 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a5-build-buy-blend.html">← Prev: Build, buy, or blend</a> &nbsp;·&nbsp; <a href="b1-need-a-framework.html">Continue: the Builder track →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

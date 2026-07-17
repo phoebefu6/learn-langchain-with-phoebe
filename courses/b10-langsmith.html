@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 10 · LangSmith: trace, eval, ship - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Builder session 10 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Builder track · Session 10 of 10</div>
+    <h1>LangSmith: <span class="accent">trace, eval, ship</span></h1>
+    <p class="sub">The graduation session. For nine sessions you judged DataDesk by vibes - tonight you turn on x-ray vision with two environment variables, replace vibes with an eval suite, and look honestly at the shipping options. Then you re-read the sentence you wrote in b1 about whether the framework is worth it - this time with numbers.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Builder track</span>
+      <span class="chip audience">Practitioners: DA · DE · DS · engineers</span>
+      <span class="chip audience">Python 3.10+ · free LangSmith account + API key</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Where we are</span>
+      <span class="a2" style="flex:4">3-18 · Trace · eval · ship</span>
+      <span class="a3" style="flex:5">18-43 · Build-along: DataDesk graduates</span>
+      <span class="a4" style="flex:1">43-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where DataDesk stands</h2>
+    </div>
+    <p class="lede">DataDesk is a team now: analyst, checker and writer under a supervisor, on a persistent graph with approval gates and cited retrieval. What it does not have is proof. You cannot see inside a run without print statements, and "it seems better" is your entire quality methodology. Tonight fixes both - and closes the loop this track opened in b1.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Official docs + Academy covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Full traces of every DataDesk run (zero code changes), a 15-question golden dataset, an eval suite with an exact-match evaluator and an LLM-as-judge, a clear map of OSS self-run vs LangSmith Deployment, and your b1 framework verdict rewritten with evidence.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SEE EVERYTHING ============ -->
+  <section class="section" id="tracing">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the LangSmith observability quickstart</span>
+      <h2>See everything <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Debugging an agent with print statements is archaeology. Tracing is the live feed: every model call, every tool call, every token and millisecond, nested exactly as they happened - and for LangChain/LangGraph apps it costs two environment variables.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Tracing in two env vars - zero code changes<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Because DataDesk is built on LangChain and LangGraph, the framework already emits structured run data. LangSmith just needs to know where to send it:</p>
+        <div class="prompt-box good"><span class="label">★ The entire integration</span>export LANGSMITH_TRACING=true
+export LANGSMITH_API_KEY="lsv2_..."   # from smith.langchain.com settings
+
+# then run DataDesk exactly as before - not one line of code changes.
+python datadesk.py</div>
+        <p>Open the project at smith.langchain.com and every run is a collapsible tree:</p>
+        <ul>
+          <li><strong>Every model call</strong> - full prompt in, full response out, per-call token counts and cost.</li>
+          <li><strong>Every tool call</strong> - arguments and returns, so "why did it retrieve THAT chunk?" is a click, not a guess.</li>
+          <li><strong>Latency per step</strong> - the waterfall shows exactly where a slow run spent its time.</li>
+          <li><strong>The multi-agent tree</strong> - supervisor → analyst → checker → writer as nested spans; b9's cascade experiment becomes literally visible.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Privacy note, said plainly</strong>
+          Tracing sends prompts and outputs to LangSmith's cloud. For the fully-local Ollama path with sensitive data, decide deliberately: trace a synthetic-data project, self-host LangSmith (Enterprise), or leave tracing off for that workload. Seeing everything cuts both ways.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Free-tier reality check<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The Developer tier is genuinely free: <strong>$0, 5,000 traces per month, 14-day retention</strong>, one seat. For a team pilot of DataDesk - tens of runs a day - that is comfortable headroom. Paid tiers add seats, longer retention, higher volumes and the deployment features in Part 3.</p>
+        <table class="clean">
+          <thead><tr><th>What</th><th>Developer (free)</th><th>When you outgrow it</th></tr></thead>
+          <tbody>
+            <tr><td>Price</td><td>$0</td><td>Per-seat + usage pricing above</td></tr>
+            <tr><td>Traces</td><td>5k / month</td><td>A busy production app in days</td></tr>
+            <tr><td>Retention</td><td>14 days</td><td>Audit or compliance needs longer</td></tr>
+            <tr><td>Seats</td><td>1</td><td>The moment a teammate asks "can I see?"</td></tr>
+          </tbody>
+        </table>
+        <p>Numbers as of 2026-07 - re-check the pricing page before you present this to anyone with a budget.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>@traceable + the business model, seen clearly<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Non-framework code:</strong> your plain Python functions (a pandas cleanup step, a custom API call) do not auto-trace. Decorate them with <code>@traceable</code> from the <code>langsmith</code> package and they appear in the same tree, nested where they ran. Your whole pipeline, not just the LLM parts, becomes one waterfall.</p>
+        <p><strong>The business model, now visible:</strong> b1 told you "frameworks free, trust layer paid" - tonight you see the mechanics. LangChain and LangGraph are MIT and always will be; the moment you NEED to see inside a production agent - and you will - the tool that shows you is the product. That is not a criticism, it is the deal, and you should walk into it with open eyes: the free tier is real, and so is the gravity.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FROM VIBES TO NUMBERS ============ -->
+  <section class="section" id="evals">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the LangSmith evaluation quickstart + openevals</span>
+      <h2>From vibes to numbers <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">"It seems better after my change" is how agent projects die. An eval suite is 15 real questions with known-good answers, scored automatically on every change. It is unit testing for behavior - and it is the single highest-leverage habit this track can leave you with.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The eval loop: a golden dataset feeds an experiment, which produces scores, which drive fixes, which trigger a re-run back into the experiment">
+        <style>
+          .b10eT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b10eI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b10eX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b10eW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b10eN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .b10eArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#b10eAh); }
+        </style>
+        <defs>
+          <marker id="b10eAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="100" width="190" height="64" rx="12" fill="#132D2D"/>
+        <text class="b10eT" x="64" y="126">Golden dataset</text>
+        <text class="b10eW" x="64" y="146">15 real Qs + answers</text>
+        <rect x="300" y="100" width="190" height="64" rx="12" fill="#1D3D3C"/>
+        <text class="b10eT" x="324" y="126">Experiment</text>
+        <text class="b10eW" x="324" y="146">evaluate(target, ...)</text>
+        <rect x="560" y="100" width="190" height="64" rx="12" fill="#8F84F2"/>
+        <text class="b10eT" x="584" y="126">Scores</text>
+        <text class="b10eW" x="584" y="146">exact match + judge</text>
+        <rect x="300" y="212" width="190" height="56" rx="12" fill="#BEB4FD"/>
+        <text class="b10eI" x="324" y="236">Fix + re-run</text>
+        <text class="b10eI" x="324" y="254">compare experiments</text>
+        <line class="b10eArr" x1="234" y1="132" x2="292" y2="132"/>
+        <line class="b10eArr" x1="494" y1="132" x2="552" y2="132"/>
+        <line class="b10eArr" x1="620" y1="168" x2="498" y2="234"/>
+        <line class="b10eArr" x1="360" y1="208" x2="360" y2="170"/>
+        <rect x="560" y="34" width="280" height="52" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="b10eI" x="582" y="56">Regression gate habit:</text>
+        <text class="b10eI" x="582" y="74">no merge without an eval run</text>
+        <rect x="40" y="240" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b10eN" x="64" y="252">The dataset grows forever: every</text>
+        <text class="b10eN" x="64" y="270">production miss becomes a test case.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the eval loop: dataset → experiment → scores → fix → re-run</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Datasets + evaluate() - unit tests for behavior<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three pieces: a <strong>dataset</strong> (inputs + reference outputs, curated from questions people actually asked DataDesk), a <strong>target</strong> function (your agent, wrapped), and <strong>evaluators</strong> (functions that score each output). <code>client.evaluate(...)</code> runs the whole grid and posts an experiment you can compare against every previous one.</p>
+        <ul>
+          <li><strong>Curate from reality:</strong> your best test questions are the ones DataDesk already got wrong - b8's "not in the docs" probes, b9's poisoned CSV. Every production miss becomes a dataset row.</li>
+          <li><strong>15 is enough to start.</strong> A small suite you run on every change beats a grand one you run never.</li>
+          <li><strong>Experiments diff:</strong> change the model, a prompt, a chunk size - the experiment view shows exactly which questions improved and which regressed. That is the "regression gate" your team can actually enforce.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>LLM-as-judge via openevals - scoring at scale<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Exact match works for "how many rows?" but not for the writer's COO summary - correct answers phrased a thousand ways. An <strong>LLM-as-judge</strong> evaluator hands the question, the reference and the agent's answer to a model with a grading rubric. The <code>openevals</code> package ships prebuilt ones - <code>CORRECTNESS_PROMPT</code> is the workhorse.</p>
+        <ul>
+          <li><strong>Judge choice matters:</strong> use a strong model as judge even if the agent runs on the cheap one - a weak judge grades noise.</li>
+          <li><strong>Spot-check the judge:</strong> read 5 of its verdicts yourself before trusting 500. Judges have biases (verbosity, agreeableness); calibrate once, then scale.</li>
+          <li><strong>Two evaluators beat one:</strong> exact match for the factual rows, judge for the prose rows - Demo 2 wires both.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Online evals, pairwise, and the regression-gate habit<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Online evals</strong> run evaluators on sampled LIVE traffic - catching drift your golden dataset has not learned yet (new question types, a changed upstream doc). <strong>Pairwise experiments</strong> show a judge two versions' answers side by side and ask which is better - often more reliable than absolute scores for prose.</p>
+        <p><strong>The habit that outlives this course:</strong> treat the eval suite like CI. No prompt change, model swap, or chunk-size tweak merges without an eval run attached. Teams that adopt this bore their stakeholders with steady numbers; teams that skip it entertain everyone with incidents.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: SHIPPING OPTIONS ============ -->
+  <section class="section" id="shipping">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers LangSmith Deployment (ex "LangGraph Platform")</span>
+      <h2>Shipping options <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">DataDesk runs on your laptop. Shipping it to the team means choosing a lane: run the open-source stack on your own infra for free, or pay for LangSmith Deployment to host it. Know both lanes AND both names - "LangGraph Platform" was renamed "LangSmith Deployment" in late 2025, and the old name still dominates search results.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two shipping lanes compared: self-run open source on your infrastructure versus managed LangSmith Deployment, with what each includes">
+        <style>
+          .b10sT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .b10sI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .b10sX { font: 400 12.5px Inter, sans-serif; fill: #5F6B6B; }
+          .b10sW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .b10sN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+        </style>
+        <rect x="40" y="40" width="390" height="220" rx="12" fill="#1D3D3C"/>
+        <text class="b10sT" x="64" y="72">Lane 1 · your infra (OSS)</text>
+        <text class="b10sW" x="64" y="100">$0 in licenses - MIT all the way down</text>
+        <text class="b10sW" x="64" y="124">you run: the graph, Postgres for</text>
+        <text class="b10sW" x="64" y="142">checkpoints, an API wrapper (FastAPI),</text>
+        <text class="b10sW" x="64" y="160">queues, retries, scaling, auth</text>
+        <text class="b10sW" x="64" y="188">you own: everything - including 3am</text>
+        <text class="b10sW" x="64" y="212">fits: platform teams with infra muscle,</text>
+        <text class="b10sW" x="64" y="230">strict data-residency requirements</text>
+        <rect x="450" y="40" width="390" height="220" rx="12" fill="#8F84F2"/>
+        <text class="b10sT" x="474" y="72">Lane 2 · LangSmith Deployment</text>
+        <text class="b10sW" x="474" y="100">managed - the renamed "LangGraph Platform"</text>
+        <text class="b10sW" x="474" y="124">you get: agent server (API from your graph),</text>
+        <text class="b10sW" x="474" y="142">assistants (configured agent versions),</text>
+        <text class="b10sW" x="474" y="160">Studio (visual debugger on live runs)</text>
+        <text class="b10sW" x="474" y="188">plus: queues, persistence, scaling handled</text>
+        <text class="b10sW" x="474" y="212">fits: teams who want to ship the agent,</text>
+        <text class="b10sW" x="474" y="230">not build an agent-hosting platform</text>
+        <rect x="40" y="280" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="b10sN" x="64" y="292">Enterprise tier adds hybrid + fully self-hosted deployment - regulated-industry lanes exist.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - shipping lanes: OSS self-run vs managed LangSmith Deployment</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Choosing a lane without religion<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The honest framing: everything you built in b1-b9 runs anywhere Python runs - the OSS lane is real, not a demo tier. What LangSmith Deployment sells is the platform work you would otherwise build around it: an agent server exposing your graph as an API, <strong>assistants</strong> (versioned configurations of one graph - prompts and models tuned per use case without redeploying), and <strong>Studio</strong>, the visual debugger for stepping through live graph runs.</p>
+        <ul>
+          <li><strong>Pilot for a five-person data team?</strong> OSS lane: your graph + Postgres checkpointer + FastAPI is an afternoon (you own patching it).</li>
+          <li><strong>Org-wide with SLAs and no platform team?</strong> The managed lane earns its bill fast.</li>
+          <li><strong>Regulated industry?</strong> Hybrid and fully self-hosted deployment exist at the Enterprise tier - data plane on your metal, control plane theirs, or everything yours.</li>
+          <li><strong>Search-result decoder:</strong> anything titled "LangGraph Platform" or "LangGraph Studio" is the same product family pre-rename - read on, mentally substituting the new names.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What production needs beyond deploy<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Deployment is where this course stops, not where production ends. Still ahead of a real rollout: monitoring dashboards and alerting on live traffic, online evals as drift detection, cost budgets and rate limits per user, access control, and an incident playbook for when the agent is confidently wrong in public. The free Academy courses on observability and monitoring production agents are the natural next step - you now have every prerequisite they assume, and DataDesk is a better lab than their examples.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Turn the lights on <span class="tag demo">★ 10 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Two env vars, three queries, and nine sessions of guessing what DataDesk does become a waterfall you can read.</p>
+
+    <div class="steps">
+      <div class="step"><p>Create the free account at smith.langchain.com, generate an API key, and export the two env vars from Part 1. Nothing else changes - <code>pip install langsmith</code> if it is not already present as a dependency.</p></div>
+      <div class="step"><p>Run three DataDesk queries you know well: a pure CSV question, a wiki question from b8, and the full b9 team request ("analyze march.csv and draft a COO summary").</p></div>
+      <div class="step"><p>Open the project and read the multi-agent trace as a tree: supervisor → analyst (watch its tool calls) → checker → writer. Every prompt, every return value, expandable.</p></div>
+      <div class="step"><p>Find the slowest step in the waterfall and the total token cost of the b9 run. Say the number out loud - this is the multi-agent price tag from the honest gate, now in dollars.</p></div>
+      <div class="step"><p>Find the checker catching the bad number (re-run the b9 cascade experiment if needed). The fix you built blind is now a visible span with the wrong value in its input and the bounce in its output.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Ollama path note</strong>
+      Local runs trace too - LangSmith records whatever the framework saw, regardless of engine. <code>ChatOllama</code> reports no token-usage metadata, so cost columns stay empty on the local path; latency and structure still show in full.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>DataDesk graduates <span class="tag demo">★ 12 min · build your own</span></h2>
+    </div>
+    <p class="lede">Build the golden dataset, wire two evaluators, run the first experiment - and settle the b1 question with evidence.</p>
+
+    <div class="steps">
+      <div class="step"><p>Curate 15 questions from your real DataDesk usage this course: 8 factual (CSV stats, wiki definitions - exact expected answers), 4 grounding probes ("not in the docs" cases), 3 prose (summary requests with reference summaries).</p></div>
+      <div class="step"><p>Create the dataset and run the script below: one exact-match evaluator for the factual rows, one LLM-as-judge for correctness.</p></div>
+      <div class="step"><p>Read the experiment in the UI: score per question, judge reasoning attached, total cost. Find your worst question and read its full trace - score and diagnosis, one click apart.</p></div>
+      <div class="step"><p>Revisit your b1 sentence: "for DataDesk, the framework is/is not worth it because...". Rewrite it with tonight's numbers - accuracy on 15 real questions, cost per run, the checker's saves. That sentence is now a design-review answer.</p></div>
+      <div class="step"><p>Graduation checklist, out loud: persistence ✓ (b6) · approval gates ✓ (b7) · grounded RAG ✓ (b8) · team + checker ✓ (b9) · traces + evals ✓ (tonight). DataDesk is no longer a course exercise - it is a system you can defend.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ evals.py - the graduation suite</span>from langsmith import Client
+from openevals.llm import create_llm_as_judge
+from openevals.prompts import CORRECTNESS_PROMPT
+
+client = Client()
+
+# one-time: create the dataset (or build it in the UI)
+ds = client.create_dataset("datadesk-golden-15")
+client.create_examples(dataset_id=ds.id, examples=[
+    {"inputs": {"question": "How many rows does march.csv have?"},
+     "outputs": {"answer": "1,204 rows"}},
+    # ... your other 14, curated from real usage
+])
+
+def target(inputs: dict) -> dict:
+    result = team.invoke({"messages":
+        [{"role": "user", "content": inputs["question"]}]})
+    return {"answer": result["messages"][-1].content}
+
+def exact_match(outputs: dict, reference_outputs: dict) -> bool:
+    return reference_outputs["answer"].strip().lower() in outputs["answer"].lower()
+
+correctness = create_llm_as_judge(
+    prompt=CORRECTNESS_PROMPT,
+    model="anthropic:claude-haiku-4-5-20251001",   # strong judge, always
+    feedback_key="correctness")
+
+client.evaluate(target, data="datadesk-golden-15",
+    evaluators=[exact_match, correctness],
+    experiment_prefix="datadesk-b10-baseline")</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The experiment that ended a meeting.</strong> A data team argued for three weeks about whether the cheap model was "good enough" for their assistant. One golden dataset and two experiments later: 93% vs 89% on their real questions, at a quarter of the cost. The argument died in an afternoon - not because anyone won, but because the question finally had a unit.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 45-60 min total</span></h2>
+    </div>
+    <ul>
+      <li>Run the full eval suite on BOTH engines - <code>init_chat_model("claude-haiku-4-5-20251001")</code> and <code>("ollama:llama3.1")</code> - and compare honestly: score, latency, cost (local = $0 but slower and weaker on tool routing?). Write the three-line verdict you would give your team.</li>
+      <li>Add 5 new dataset rows from this week's real questions, including at least one that failed. The dataset grows forever; start the habit now.</li>
+      <li>Adopt the regression gate: before your next prompt or model change, run the suite, change, re-run, and diff the experiments. Once, deliberately.</li>
+      <li>Read your rewritten b1 sentence to a colleague and defend it for two minutes. If it survives, you have graduated.</li>
+      <li>Next steps when ready: the free Academy courses on LangSmith observability and monitoring production agents - DataDesk is your lab.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches from the official docs and the free LangChain Academy curricula (login required for lesson content; certificates stay with the Academy - all free). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangSmith observability quickstart</span><span class="note">Part 1 + Demo 1 · env-var tracing, trace anatomy, @traceable for non-framework code</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangSmith evaluation quickstart + openevals</span><span class="note">Part 2 + Demo 2 · datasets, evaluate(), custom evaluators, prebuilt LLM-as-judge (CORRECTNESS_PROMPT)</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Academy: LangSmith Essentials</span><span class="note">Tracing + dataset + experiment workflow covered end to end on DataDesk instead of the course's demo app</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Academy: Building Reliable Agents</span><span class="note">The eval-first mindset and regression gate · full course depth (agent-specific eval design) stays with the Academy</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangSmith pricing + Deployment docs</span><span class="note">Parts 1 + 3 · free-tier numbers, agent server / assistants / Studio, hybrid + self-hosted at Enterprise, the rename</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Turning on full tracing for a LangChain/LangGraph app requires...</p>
+      <button class="qopt" type="button">A · Wrapping every node in a logging decorator</button>
+      <button class="qopt" type="button">B · Two env vars - LANGSMITH_TRACING=true and LANGSMITH_API_KEY - and zero code changes</button>
+      <button class="qopt" type="button">C · Deploying to LangSmith Deployment first</button>
+      <p class="qwhy">The framework already emits structured run data; the env vars just route it. @traceable exists for NON-framework code you want in the same tree. Deployment is a separate, optional product.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · The regression-gate habit means...</p>
+      <button class="qopt" type="button">A · No prompt/model/config change ships without running the golden-dataset eval suite and diffing the experiments</button>
+      <button class="qopt" type="button">B · Blocking all model upgrades until 2.0</button>
+      <button class="qopt" type="button">C · Having the LLM-as-judge approve every production answer live</button>
+      <p class="qwhy">Evals as CI: a small suite of real questions, run on every change, compared against the last experiment. Online evals on live traffic exist too - but the gate is the habit that prevents regressions from shipping.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · A 2025 blog post raves about "LangGraph Platform". You know that...</p>
+      <button class="qopt" type="button">A · It was discontinued - OSS self-hosting is now the only option</button>
+      <button class="qopt" type="button">B · It is a different product from LangSmith</button>
+      <button class="qopt" type="button">C · It is the old name for LangSmith Deployment - agent server, assistants, Studio; hybrid and self-hosted variants exist at Enterprise</button>
+      <p class="qwhy">Renamed late 2025, and the old name still owns the search results. Same product family: managed hosting for your graphs, alongside the always-available OSS self-run lane.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 10 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Tracing on</b><span>LANGSMITH_TRACING=true + LANGSMITH_API_KEY. Zero code changes for framework apps; @traceable for the rest.</span></div>
+      <div class="cheat-item"><b>Free tier</b><span>$0 · 5k traces/mo · 14-day retention · 1 seat. Real headroom for a pilot; re-check pricing before budget talks.</span></div>
+      <div class="cheat-item"><b>Eval loop</b><span>Golden dataset (15 real Qs) → evaluate() experiment → scores → fix → re-run. Every production miss becomes a row.</span></div>
+      <div class="cheat-item"><b>evaluate() shape</b><span>client.evaluate(target, data="dataset-name", evaluators=[...], experiment_prefix=...). Diff experiments in the UI.</span></div>
+      <div class="cheat-item"><b>LLM-as-judge</b><span>openevals create_llm_as_judge + CORRECTNESS_PROMPT. Strong judge always; spot-check 5 verdicts before trusting 500.</span></div>
+      <div class="cheat-item"><b>Shipping lanes</b><span>OSS self-run (free, you own ops) vs LangSmith Deployment - ex "LangGraph Platform" - (agent server, assistants, Studio). Enterprise adds hybrid/self-hosted.</span></div>
+      <div class="cheat-item"><b>Regression gate</b><span>No merge without an eval run. Evals are CI for behavior - the habit that outlives this course.</span></div>
+      <div class="cheat-item"><b>Graduation</b><span>DataDesk: persistence ✓ gates ✓ RAG ✓ team+checker ✓ evals ✓. Your b1 sentence now has numbers behind it.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 10 of 10 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="b9-multi-agent.html">← Prev: Multi-agent and subgraphs</a> &nbsp;·&nbsp; <a href="../index.html">Back to all sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

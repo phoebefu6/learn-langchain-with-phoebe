@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 5 · Build, buy, or blend: the investment decision - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Leader session 5 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Leader track · Session 5 of 6</div>
+    <h1>Build, buy, or blend: <span class="accent">the investment decision</span></h1>
+    <p class="sub">Four sessions of concepts, risks, and governance come down to a budget line eventually. This session gives you the three options on the table, the real numbers behind each, the crossover point where the answer flips, and the one question that exposes any vendor's business model - including the one behind the framework this course is named after.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Leader track</span>
+      <span class="chip audience">Leaders: C-level · managers · curious minds</span>
+      <span class="chip audience">No code, ever</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-16 · The three doors</span>
+      <span class="a3" style="flex:5">16-33 · The numbers + the vendor model</span>
+      <span class="a4" style="flex:3">33-45 · Score the pitch + Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The framework is free - and that confuses every budget conversation</h2>
+    </div>
+    <p class="lede">LangChain, LangGraph, and most of their competitors cost nothing to download. Open source, permissive license, no invoice. And yet agent projects carry six-figure price tags, vendors quote annual licenses, and consultancies bill build programs. If the software is free, <strong>what are you actually paying for?</strong> Today we answer that precisely - because until you can, every build-vs-buy conversation in your organization is comparing numbers that measure different things.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Paste-into-AI prompt</span>
+      <span class="pill inkpill">Sourced in the evidence pack</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The three doors - buy, build, blend - with honest cost and time ranges for each, the ~1M-conversations crossover rule that decides most cases on volume alone, the MIT statistic that should make every internal build justify itself, and a six-axis scoresheet you can run on the next vendor pitch that lands in your inbox.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE THREE DOORS ============ -->
+  <section class="section" id="three-doors">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the 2026 build-vs-buy landscape</span>
+      <h2>The three doors <span class="tag concept">13 min live</span></h2>
+    </div>
+    <p class="lede">Every agent investment decision walks through one of three doors. None of them is wrong in general - each is wrong for the wrong use case. The variables are always the same three: time, money, and control.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three doors labeled buy, build, and blend, each with its time, cost, and control profile">
+        <style>
+          .a5dT { font: 700 17px Inter, sans-serif; fill: #FFFFFF; }
+          .a5dW { font: 400 13px Inter, sans-serif; fill: #EBE8FE; }
+          .a5dI { font: 700 17px Inter, sans-serif; fill: #132D2D; }
+          .a5dX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a5dN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+        </style>
+        <rect x="60" y="40" width="220" height="220" rx="14" fill="#1D3D3C"/>
+        <rect x="80" y="60" width="30" height="8" rx="4" fill="#8F84F2"/>
+        <text class="a5dT" x="80" y="102">BUY</text>
+        <text class="a5dW" x="80" y="130">SaaS agent product</text>
+        <text class="a5dW" x="80" y="158">Time: days to weeks</text>
+        <text class="a5dW" x="80" y="182">Cost: ~$50k-500k+/yr</text>
+        <text class="a5dW" x="80" y="206">Control: their roadmap</text>
+        <text class="a5dW" x="80" y="234">Wins: commodity + speed</text>
+        <rect x="330" y="40" width="220" height="220" rx="14" fill="#8F84F2"/>
+        <rect x="350" y="60" width="30" height="8" rx="4" fill="#EBE8FE"/>
+        <text class="a5dT" x="350" y="102">BUILD</text>
+        <text class="a5dW" x="350" y="130">framework + your team</text>
+        <text class="a5dW" x="350" y="158">Time: months to MVP</text>
+        <text class="a5dW" x="350" y="182">Cost: ~$15-50k MVP</text>
+        <text class="a5dW" x="350" y="206">+ $3.2-13k/mo to run</text>
+        <text class="a5dW" x="350" y="234">Wins: differentiation</text>
+        <rect x="600" y="40" width="220" height="220" rx="14" fill="#132D2D"/>
+        <rect x="620" y="60" width="30" height="8" rx="4" fill="#BEB4FD"/>
+        <text class="a5dT" x="620" y="102">BLEND</text>
+        <text class="a5dW" x="620" y="130">the 2026 consensus</text>
+        <text class="a5dW" x="620" y="158">Buy the commodity</text>
+        <text class="a5dW" x="620" y="182">workflows, build the</text>
+        <text class="a5dW" x="620" y="206">differentiating ones</text>
+        <text class="a5dW" x="620" y="234">Wins: most portfolios</text>
+        <rect x="60" y="298" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a5dN" x="84" y="310">The door is chosen per use case, not per company. Most organizations end up holding all three keys.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - buy, build, blend: three doors, three time-cost-control profiles</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Door 1: BUY - speed on commodity ground<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Buying means licensing a SaaS agent product - a support agent, an SDR agent, a coding assistant - that someone else built, runs, and improves.</p>
+        <ul>
+          <li><strong>Time:</strong> days to weeks to deployment. The vendor has already made the thousand small decisions.</li>
+          <li><strong>Money:</strong> license fees typically run ~$50k-500k+ per year depending on seats and volume - often priced per conversation or per resolution.</li>
+          <li><strong>When it wins:</strong> when speed beats customization on a <strong>commodity</strong> use case - a problem shaped the same at your company as at a thousand others. Ticket triage, meeting notes, standard outreach.</li>
+          <li><strong>The cost you do not see on the invoice:</strong> lock-in. Your prompts, workflows, and accumulated tuning live in their product. Exit cost is a real number; ask for it up front.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Door 2: BUILD - ownership where it differentiates<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Building means your team assembles the agent on a framework - LangGraph and its peers - and owns it end to end.</p>
+        <ul>
+          <li><strong>Money, honestly split in two:</strong> the MVP costs roughly <strong>$15-50k</strong> of team time. The number budgets forget is the run-rate: <strong>~$3.2-13k per month</strong> for tokens, infrastructure, monitoring, and continuous tuning. A build is a product with an operating cost, not a project with an end date.</li>
+          <li><strong>When it wins:</strong> when the agent IS the differentiator - it encodes how your organization works, touches proprietary data and processes, and would be worth less as everyone else's product. And when you have the team to own it (details in the self-study card in Part 2).</li>
+          <li><strong>What you get for the money:</strong> control. Your data stays where you put it, the roadmap is yours, and the governance stack from session a4 is built to your matrix, not the vendor's defaults.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Door 3: BLEND - the 2026 consensus<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The pattern serious organizations converged on: <strong>buy a vendor platform for commodity workflows, build custom for the differentiating ones.</strong> Not a compromise - a portfolio decision.</p>
+        <ul>
+          <li><strong>The sorting question:</strong> for each use case, ask "would our version of this be meaningfully better than the market's?" If no - buy it and move on. If yes - that is build territory, and probably worth it.</li>
+          <li><strong>The discipline blend requires:</strong> a clear line. Organizations that blend badly build commodity things for pride and buy differentiating things for speed - the exact wrong assignment on both sides.</li>
+          <li><strong>What it means for skills:</strong> even a mostly-buy portfolio needs in-house capability to evaluate vendors, run evals, and own governance. Blend is not an excuse to skip building the muscle.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The pride-build and the speed-buy.</strong> The classic blend failure comes in matched pairs: a team spends two quarters building a meeting-notes agent (pure commodity, three mature products on the market) because it looked fun - while buying an off-the-shelf pricing assistant for the negotiation process that IS the company's edge, handing its differentiating logic to a vendor's roadmap. Same organization, both doors, both wrong. The sorting question exists to catch exactly this.</p>
+        </div>
+        <div class="prompt-box good"><span class="label">★ Paste into any chat AI</span>Here are 5 AI agent use cases my organization is considering: [list them]. For each, answer: (1) commodity or differentiating - would our custom version be meaningfully better than a market product? (2) which door - buy, build, or blend-position it in a portfolio? (3) the one risk of that door for this specific case. Be decisive; no fence-sitting.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE NUMBERS THAT DECIDE ============ -->
+  <section class="section" id="numbers">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers TCO crossover + the MIT GenAI Divide evidence</span>
+      <h2>The numbers that decide <span class="tag concept">12 min live</span></h2>
+    </div>
+    <p class="lede">Opinion leaves the room when two numbers enter it: your annual conversation volume, and the base rate of build success. Between them they settle most build-vs-buy debates before the meeting ends.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cost curves for buy and build crossing at roughly one million conversations per year - buy is cheaper below the crossover, build is cheaper above it">
+        <style>
+          .a5cI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .a5cX { font: 400 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a5cN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a5cBuy { stroke: #8F84F2; stroke-width: 3.5; fill: none; }
+          .a5cBld { stroke: #132D2D; stroke-width: 3.5; fill: none; }
+          .a5cAx { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a5cAh); }
+          .a5cDash { stroke: #BBC4C4; stroke-width: 2; stroke-dasharray: 6 6; fill: none; }
+        </style>
+        <defs>
+          <marker id="a5cAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <line class="a5cAx" x1="90" y1="250" x2="90" y2="40"/>
+        <line class="a5cAx" x1="90" y1="250" x2="820" y2="250"/>
+        <text class="a5cX" x="60" y="30">Annual cost</text>
+        <text class="a5cX" x="640" y="278">Conversations / year →</text>
+        <path class="a5cBuy" d="M 90 230 L 460 130 L 800 46"/>
+        <path class="a5cBld" d="M 90 160 L 460 130 L 800 112"/>
+        <text class="a5cI" x="640" y="42">BUY: per-conversation</text>
+        <text class="a5cX" x="640" y="60">pricing keeps climbing</text>
+        <text class="a5cI" x="640" y="140">BUILD: fixed team +</text>
+        <text class="a5cX" x="640" y="158">cheap per-token scaling</text>
+        <line class="a5cDash" x1="460" y1="250" x2="460" y2="110"/>
+        <circle cx="460" cy="130" r="7" fill="#D85522"/>
+        <text class="a5cI" x="380" y="96">crossover ~1M / yr</text>
+        <text class="a5cX" x="110" y="140">build starts higher:</text>
+        <text class="a5cX" x="110" y="158">team + MVP first</text>
+        <rect x="90" y="298" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a5cN" x="114" y="310">Below ~1M conversations/yr, buy usually wins; above it, build economics win.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the TCO crossover: where per-token build economics overtake per-conversation buy pricing</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The crossover: ~1M conversations a year<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Vendors price per conversation or per resolution; builds cost a team plus tokens. Those two cost curves cross, and the crossover sits around <strong>one million conversations a year</strong>.</p>
+        <ul>
+          <li><strong>Below the line:</strong> buy usually wins. The vendor's per-conversation fee is smaller than a standing team, and time-to-value arrives in weeks instead of quarters.</li>
+          <li><strong>Above the line:</strong> per-token build economics undercut per-conversation pricing - the same volume that makes vendor invoices painful makes a fixed team cheap per unit.</li>
+          <li><strong>How to use it:</strong> before any build-vs-buy meeting, get your realistic annual volume for the use case. Which side of ~1M are you on? That one number sets the burden of proof - whoever argues against their side of the crossover owes the room a reason.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Watch the volume assumption</strong>
+          The crossover is only as honest as the volume estimate feeding it. Vendors quote pilot volume (small - makes buy look cheap); build advocates quote full-rollout volume (large - makes build look inevitable). Ask for both numbers with their assumptions written down, and run the comparison at each.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The sobering stat: buy succeeds roughly twice as often<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>MIT's GenAI Divide research found that <strong>bought or partnered solutions succeed roughly twice as often as internal builds</strong>. Sit with that: the default outcome of "we'll build it ourselves" is worse, at the population level, than writing a check.</p>
+        <ul>
+          <li><strong>Why builds fail:</strong> not usually the framework. Underestimated run-rate, no eval discipline, teams staffed part-time, and use cases that were commodity all along - meaning the build never had a differentiation payoff to justify its risk.</li>
+          <li><strong>The leadership translation:</strong> BUILD is not the default it feels like to a proud engineering culture. A build proposal needs a <strong>reason</strong> (differentiation), a <strong>team</strong> (real, staffed, permanent), and <strong>evals from day one</strong> - or the base rate says you are funding the failure statistics.</li>
+          <li><strong>The caveat, honestly:</strong> the same MIT research carries a methodology caveat you will meet again in a6 - definitions of "success" vary and samples skew. Use the 2x as a burden-of-proof setter, not a law of physics.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What a minimal build team actually looks like<span class="mini">3 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>If a build proposal reaches your desk, the team sheet matters more than the architecture slide. The credible minimum:</p>
+        <ul>
+          <li><strong>1-2 engineers</strong> who own the agent as a product, not a side quest - including the 2am circuit-breaker pages from session a4.</li>
+          <li><strong>A product owner</strong> who decides what the agent should do and holds the approval matrix.</li>
+          <li><strong>A part-time domain expert</strong> - the person whose judgment the agent is trying to encode, available for eval reviews every week, not just at kickoff.</li>
+          <li><strong>Eval maintenance as a permanent line item.</strong> Test suites rot as the business changes; someone owns keeping them honest, forever. If the plan has no name next to "evals", the plan is not real.</li>
+        </ul>
+        <p>And the risk-side anchor for your spreadsheet: the average failed agent project runs around <strong>$340k</strong> once team time, licenses, and opportunity cost are counted. That is the number the build option has to beat on a risk-adjusted basis - not just the vendor's license fee.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE VENDOR'S BUSINESS MODEL ============ -->
+  <section class="section" id="vendor-model">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers the free-framework, paid-trust vendor model</span>
+      <h2>Read the vendor's business model <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">One skill separates leaders who negotiate well in this market from those who do not: reading what the vendor actually sells. The framework this course is named after is the perfect teaching specimen.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The LangChain model - frameworks free, trust for sale<span class="mini">5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>LangChain the company gives away LangChain and LangGraph under the MIT license - genuinely free, forever. It makes money on <strong>LangSmith</strong>: the observability, evaluation, deployment, and compliance layer that wraps the free frameworks for production use.</p>
+        <ul>
+          <li><strong>Translation:</strong> companies do not pay for agent logic - the market has made that free. They pay for <strong>trust and control</strong>: seeing what agents did (tracing), proving they work (evals), running them reliably (deployment), and satisfying auditors (compliance). Notice that this list is session a4's governance stack, productized.</li>
+          <li><strong>Why this matters beyond one vendor:</strong> it is the dominant model across the market. "Open-source core" companies monetize the operational wrapper. So when any vendor pitches you, locate the boundary - where does free end and paid begin?</li>
+          <li><strong>The question to ask every "open-source core" vendor:</strong> <em>"If the framework is free, what exactly am I paying you for?"</em> A good vendor answers crisply - trust, operations, support, compliance. A vendor who cannot answer is charging you for something you could have downloaded.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Negotiation corollary</strong>
+          Because the logic layer is free and portable, your leverage lives in the wrapper. Ask what leaves with you if you exit: traces, eval datasets, prompts, workflows. Portable evals are negotiable - if you ask before signing.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ EXERCISE ============ -->
+  <section class="section" id="exercise-pitch">
+    <div class="section-kicker">
+      <span class="klabel">Thinking exercise</span>
+      <h2>Score the pitch <span class="tag demo">★ 15 min · everyone works</span></h2>
+    </div>
+    <p class="lede">A worksheet you will reuse for years: take one vendor pitch - live in your inbox or a realistic hypothetical - and score it against the build option on six axes.</p>
+
+    <div class="steps">
+      <div class="step"><p>Pick the pitch: a real vendor proposal you have received, or write a one-line hypothetical ("SupportBot Pro, $120k/yr, resolves tier-1 tickets").</p></div>
+      <div class="step"><p>Write your volume number: realistic conversations per year for this use case. Note which side of the ~1M crossover you sit on.</p></div>
+      <div class="step"><p>Score buy vs build on six axes, 1-5 each: <strong>time-to-value</strong>, <strong>TCO at your volume</strong>, <strong>differentiation</strong> (is your version worth building?), <strong>lock-in</strong>, <strong>data location</strong>, <strong>exit cost</strong>.</p></div>
+      <div class="step"><p>Circle the two axes with the biggest gap. Those two are your negotiation agenda if you buy, and your justification memo if you build.</p></div>
+      <div class="step"><p>Write the vendor-model question in your own words: "the framework layer is free - what exactly is the $120k buying?" You now have your first meeting question drafted.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Stress-test your scoring (paste into any chat AI)</span>I am evaluating an AI agent vendor pitch against building in-house. Here is my six-axis scoresheet: [paste your scores for time-to-value, TCO at our volume of N conversations/year, differentiation, lock-in, data location, exit cost]. Challenge it: (1) Which score looks most like wishful thinking, and why? (2) What is the vendor's likely business model, and which axis does that model make them strong or evasive on? (3) Given ~1M conversations/year as the typical TCO crossover, does my volume support my conclusion? Finish with the three hardest questions I should ask this vendor.</div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The pitch that flipped in one meeting.</strong> A support-agent vendor quoted per-resolution pricing that looked cheap at pilot volume. Scored at realistic full-rollout volume - well past the crossover - the three-year TCO exceeded a build twice over. The team bought anyway, deliberately: they needed value in eight weeks and had no team to own a build. Right door, chosen with open eyes - which is the entire point of the scoresheet.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="homework">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session a6 <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish the six-axis scoresheet if you did not complete it live, and run the stress-test prompt. Keep the use case - a6's scorecard exercise continues it.</li>
+      <li>Find your real volume number: for one live or proposed agent use case, get the honest conversations-per-year estimate from the team that owns the process. Which side of the crossover are you on?</li>
+      <li>Read the self-study card on the minimal build team, then look at any current build proposal in your organization. Does it name the eval owner? If not, you have your first question.</li>
+      <li>Sort your organization's agent wishlist into commodity vs differentiating. Ten minutes, gut call - a6 will give you the metrics to test the sort.</li>
+    </ul>
+    <div class="callout win">
+      <strong>Questions to ask your data team</strong>
+      <ol>
+        <li>At our realistic conversation volume, which side of the ~1M crossover is this use case on - and what volume did you assume?</li>
+        <li>Is this use case commodity or differentiating - would our custom version be meaningfully better than a market product, and how?</li>
+        <li>What is the monthly run-rate of the build option - tokens, infrastructure, monitoring, tuning - not just the MVP quote?</li>
+        <li>If we buy, what is the exit cost - which prompts, workflows, eval datasets, and data leave with us, and which stay with the vendor?</li>
+        <li>The framework layer is free - what exactly would we be paying this vendor for, in one sentence?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Evidence covered</h2>
+    </div>
+    <p class="lede">The leader track teaches from a verified evidence pack - published research, vendor documentation, and pricing, sourced in the course map. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Build-vs-buy guides (2026 landscape)</span><span class="note">Parts 1-2 · cost ranges, run-rates, the blend consensus; synthesized across sources, ranges not quotes</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">MIT GenAI Divide research</span><span class="note">Part 2 · buy/partner succeeds ~2x internal builds - carried WITH its methodology caveat, here and in a6</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">LangChain pricing + business model</span><span class="note">Part 3 · MIT-licensed frameworks free; LangSmith (observability, evals, deployment, compliance) is the product</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · LangChain's frameworks are free under the MIT license. What does the company actually sell?</p>
+      <button class="qopt" type="button">A · A premium version of the framework with better agent logic</button>
+      <button class="qopt" type="button">B · Consulting hours to build your agents</button>
+      <button class="qopt" type="button">C · The trust layer - observability, evals, deployment, and compliance via LangSmith</button>
+      <p class="qwhy">Agent logic is free across the market; companies pay for seeing, proving, running, and auditing - the governance stack, productized. Reading this model tells you where any vendor's pitch is strong and where to negotiate.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · Your use case will handle about 200k conversations a year. What does the TCO crossover suggest?</p>
+      <button class="qopt" type="button">A · Buy likely wins - below ~1M conversations/yr, per-conversation pricing beats a standing team on time-to-value and cost</button>
+      <button class="qopt" type="button">B · Build likely wins - low volume means low token bills</button>
+      <button class="qopt" type="button">C · Volume is irrelevant to the decision</button>
+      <p class="qwhy">Below the ~1M crossover the vendor's per-conversation fee is usually smaller than a permanent team, and value arrives in weeks. Above it, per-token build economics flip the answer. Volume sets the burden of proof.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · MIT found buy/partner succeeds roughly twice as often as internal builds. The right leadership response is...</p>
+      <button class="qopt" type="button">A · Ban internal builds</button>
+      <button class="qopt" type="button">B · Make BUILD justify itself: a differentiation reason, a real staffed team, and evals from day one - or default to buy</button>
+      <button class="qopt" type="button">C · Ignore it - our engineers are above average</button>
+      <p class="qwhy">The 2x is a base rate, not a ban - some builds are exactly right. But it moves the burden of proof: a build without a reason, a team, and evals is funding the failure statistics.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The three doors</b><span>BUY: speed on commodity ground. BUILD: ownership where it differentiates. BLEND: buy commodity, build differentiating.</span></div>
+      <div class="cheat-item"><b>Buy numbers</b><span>Days-to-weeks deployment · ~$50k-500k+/yr licenses · lock-in is the invisible line item - ask for exit cost up front.</span></div>
+      <div class="cheat-item"><b>Build numbers</b><span>~$15-50k MVP + $3.2-13k/mo run-rate (tokens, infra, monitoring, tuning). A build is a product, not a project.</span></div>
+      <div class="cheat-item"><b>The crossover</b><span>~1M conversations/yr. Below: buy wins on time-to-value. Above: per-token build economics undercut per-conversation pricing.</span></div>
+      <div class="cheat-item"><b>The MIT 2x</b><span>Buy/partner succeeds ~2x internal builds (methodology caveat noted). BUILD needs a reason, a team, and evals from day one.</span></div>
+      <div class="cheat-item"><b>Minimal build team</b><span>1-2 owning engineers + product owner + part-time domain expert. Eval maintenance is a permanent line item with a name on it.</span></div>
+      <div class="cheat-item"><b>Risk anchor</b><span>~$340k average failed project - the number the build option must beat risk-adjusted, not just the license fee.</span></div>
+      <div class="cheat-item"><b>The vendor question</b><span>"The framework is free - what exactly am I paying you for?" Good vendors answer crisply: trust, operations, compliance.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 5 of 6 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a4-trifecta-governance.html">← Prev: The lethal trifecta</a> &nbsp;·&nbsp; <a href="a6-proving-it.html">Next: Proving it →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 1 · Chatbot, robot, or colleague? The autonomy ladder - learn langchain with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-langchain-with-phoebe</a> / Leader session 1 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LangChain with Phoebe · Leader track · Session 1 of 6</div>
+    <h1>Chatbot, robot, or colleague? <span class="accent">The autonomy ladder</span></h1>
+    <p class="sub">"Agent" is the most-abused word in enterprise software right now. This session gives you the one mental model that cuts through it: a five-rung ladder from fixed rules to systems that choose their own steps. By the end you can place any vendor pitch, any internal proposal, and any headline on the right rung - and know what each rung costs.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Leader track</span>
+      <span class="chip audience">Leaders: C-level · managers · curious minds</span>
+      <span class="chip audience">No code, ever</span>
+      <span class="chip time">Start here</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · Concepts</span>
+      <span class="a3" style="flex:4">20-40 · Exercises</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this hour is worth your calendar</h2>
+    </div>
+    <p class="lede">Agents are now a board topic. Budgets are being approved, vendors are pitching, and analysts are warning about cancellations - all using the same word to mean five different things. Gartner has a name for the worst of it: <strong>agent-washing</strong>, vendors relabeling ordinary chatbots and automation as "agents". Nobody on your data team can do that due diligence for you in a board meeting or a vendor call. That makes the vocabulary, and the skepticism, YOUR job. This track exists so you can do it in plain English, with zero code, ever.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">★ Try it now prompt</span>
+      <span class="pill inkpill">Sources covered at the end</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A five-rung autonomy ladder you can draw on a napkin, a two-question decision flow that sorts any use case onto the right rung, your own task portfolio actually sorted (that is the exercise), and a five-question screen that exposes agent-washing in any vendor meeting.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THREE MACHINES ============ -->
+  <section class="section" id="three-machines">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Anthropic's definitions + the agent-washing warning</span>
+      <h2>Three machines that look alike <span class="tag concept">9 min live</span></h2>
+    </div>
+    <p class="lede">A chatbot, an automated workflow, and an agent can produce identical-looking demos. Under the hood they are different machines with different costs, different failure modes, and different governance needs. The ladder below is the whole session on one picture.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The autonomy ladder: rules and RPA, single LLM call, workflow, agent, multi-agent as ascending steps; flexibility climbs, auditability falls">
+        <style>
+          .a1lT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a1lI { font: 700 15px Inter, sans-serif; fill: #132D2D; }
+          .a1lW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .a1lS { font: 400 12.5px Inter, sans-serif; fill: #132D2D; }
+          .a1lX { font: 600 13.5px Inter, sans-serif; fill: #5F6B6B; }
+          .a1lN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+        </style>
+        <text class="a1lX" x="40" y="52">Flexibility climbs with every rung ↗</text>
+        <text class="a1lX" x="40" y="76">Auditability and predictability fall ↘</text>
+        <rect x="40" y="230" width="150" height="56" rx="12" fill="#132D2D"/>
+        <text class="a1lT" x="58" y="254">Rules / RPA</text>
+        <text class="a1lW" x="58" y="274">fixed scripts</text>
+        <rect x="196" y="188" width="150" height="56" rx="12" fill="#1D3D3C"/>
+        <text class="a1lT" x="212" y="212">Single call</text>
+        <text class="a1lW" x="212" y="232">one ask, one answer</text>
+        <rect x="352" y="146" width="150" height="56" rx="12" fill="#8F84F2"/>
+        <text class="a1lT" x="368" y="170">Workflow</text>
+        <text class="a1lW" x="368" y="190">you fix the steps</text>
+        <rect x="508" y="104" width="150" height="56" rx="12" fill="#BEB4FD"/>
+        <text class="a1lI" x="524" y="128">Agent</text>
+        <text class="a1lS" x="524" y="148">model picks steps</text>
+        <rect x="664" y="62" width="150" height="56" rx="12" fill="#132D2D"/>
+        <text class="a1lT" x="680" y="86">Multi-agent</text>
+        <text class="a1lW" x="680" y="106">agents hand off</text>
+        <rect x="40" y="304" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a1lN" x="64" y="316">Climb only when the rung below demonstrably fails you.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the autonomy ladder: five rungs, one napkin drawing</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Chatbot, workflow, or agent - definitions that hold up<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Anthropic's engineering team drew the line the industry now uses, and it fits in two sentences. A <strong>workflow</strong> is a fixed flowchart: YOU decided the steps in advance, and the model fills in text at some of them. An <strong>agent</strong> is a system where the MODEL chooses the steps - it decides what to look up, what to do next, and when it is done.</p>
+        <ul>
+          <li><strong>Chatbot:</strong> answers when spoken to. One question in, one answer out. Useful, cheap, and not an agent.</li>
+          <li><strong>Workflow:</strong> "summarize the ticket, classify it, route it" - three fixed steps, forever, with a model inside some of them. Predictable and auditable.</li>
+          <li><strong>Agent:</strong> "resolve this ticket" - the model decides whether to search the knowledge base, check the order history, escalate, or answer. Flexible, and much harder to predict.</li>
+        </ul>
+        <p>Notice what the distinction is NOT about: model quality, vendor, or how impressive the demo looks. It is about one thing - <strong>who chooses the steps</strong>.</p>
+        <div class="prompt-box good"><span class="label">★ Try it now (any chat AI)</span>Explain the difference between an AI workflow and an AI agent using Anthropic's definitions, in language a board member would enjoy. Then give me one example of each from a retail business, and tell me which one is harder to audit and why.</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>RPA vs agents - and the 2026 hybrid pattern<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Your organization probably already runs automation: RPA - robotic process automation - the software robots that click through screens and move data between systems. RPA is a <strong>fixed script</strong>: brilliant at doing the exact same thing ten thousand times, brittle the moment anything changes. Agents are the opposite: they <strong>reason toward an outcome</strong>, so they handle variation - and introduce unpredictability.</p>
+        <ul>
+          <li><strong>RPA:</strong> deterministic, cheap per run, fully auditable, breaks on exceptions.</li>
+          <li><strong>Agents:</strong> flexible on exceptions, costlier per run, harder to audit, can surprise you.</li>
+          <li><strong>The 2026 hybrid pattern:</strong> keep RPA on the deterministic 70% of a process, and point agents only at the exception-heavy 30% that used to land in a human queue. Not either/or - a division of labor.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The claims team that stopped arguing.</strong> An insurance operations group (anonymized) spent a quarter debating "RPA vs agents" for claims intake. The answer was the split: RPA kept the standard claims it already handled flawlessly, and a pilot agent took only the malformed, multi-document exceptions. The debate was never RPA <em>or</em> agents - it was where to draw the line between them.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Agent-washing - the due-diligence trap<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Gartner has warned loudly about <strong>agent-washing</strong>: vendors relabeling existing chatbots, RPA suites, and scripted assistants as "AI agents" because the word now opens budgets. The product did not change; the label did.</p>
+        <ul>
+          <li><strong>Why it matters to you:</strong> agent pricing on chatbot capability means you overpay for the label; agent risk controls on a chatbot means you over-govern it - and agent claims with no agent architecture mean the roadmap you were sold does not exist.</li>
+          <li><strong>The one-question test:</strong> "does the model choose the steps at runtime, or did your engineers fix the flow in advance?" Vendors selling relabeled workflows struggle with that question in the room.</li>
+          <li><strong>The trap:</strong> the demo cannot tell you. A polished fixed workflow demos exactly like an agent. Only the architecture answer - and a trace of a real run - can tell you. Exercise 2 gives you the full five-question screen.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: THE ONLY RULE ============ -->
+  <section class="section" id="only-rule">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the start-simple hierarchy + McKinsey's lessons</span>
+      <h2>The only rule that saves money <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Every rung up the ladder buys flexibility and costs money, speed, and auditability. The organizations shipping successful AI in 2026 share one habit: they start at the bottom of the ladder and climb only under evidence. Here is the whole discipline as a two-question flow.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision flow: if steps are predictable use a workflow; if variance is high and tools are needed use an agent; otherwise a single LLM call">
+        <style>
+          .a1dT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a1dI { font: 700 14px Inter, sans-serif; fill: #132D2D; }
+          .a1dW { font: 400 12.5px Inter, sans-serif; fill: #EBE8FE; }
+          .a1dX { font: 600 13px Inter, sans-serif; fill: #5F6B6B; }
+          .a1dN { font: 600 14px Inter, sans-serif; fill: #451A08; }
+          .a1dArr { stroke: #BBC4C4; stroke-width: 2.5; fill: none; marker-end: url(#a1dAh); }
+        </style>
+        <defs>
+          <marker id="a1dAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#BBC4C4" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="40" y="52" width="170" height="56" rx="12" fill="#132D2D"/>
+        <text class="a1dT" x="60" y="86">New AI use case</text>
+        <rect x="260" y="48" width="240" height="64" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a1dI" x="282" y="76">Steps predictable,</text>
+        <text class="a1dI" x="282" y="96">same shape every time?</text>
+        <rect x="600" y="52" width="210" height="56" rx="12" fill="#1D3D3C"/>
+        <text class="a1dT" x="622" y="76">Workflow</text>
+        <text class="a1dW" x="622" y="96">cheap, auditable</text>
+        <rect x="260" y="164" width="240" height="64" rx="12" fill="#EBE8FE" stroke="#BEB4FD"/>
+        <text class="a1dI" x="282" y="192">High variance AND</text>
+        <text class="a1dI" x="282" y="212">tools genuinely needed?</text>
+        <rect x="600" y="168" width="210" height="56" rx="12" fill="#8F84F2"/>
+        <text class="a1dT" x="622" y="192">Agent</text>
+        <text class="a1dW" x="622" y="212">flexible, costly</text>
+        <rect x="260" y="272" width="240" height="52" rx="12" fill="#BEB4FD"/>
+        <text class="a1dI" x="282" y="303">Single LLM call - start here</text>
+        <line class="a1dArr" x1="212" y1="80" x2="252" y2="80"/>
+        <line class="a1dArr" x1="504" y1="80" x2="592" y2="80"/>
+        <text class="a1dX" x="530" y="70">yes</text>
+        <line class="a1dArr" x1="380" y1="116" x2="380" y2="156"/>
+        <text class="a1dX" x="392" y="142">no</text>
+        <line class="a1dArr" x1="504" y1="196" x2="592" y2="196"/>
+        <text class="a1dX" x="530" y="186">yes</text>
+        <line class="a1dArr" x1="380" y1="232" x2="380" y2="264"/>
+        <text class="a1dX" x="392" y="254">no</text>
+        <rect x="600" y="288" width="14" height="14" rx="3" fill="#D85522"/>
+        <text class="a1dN" x="624" y="300">Most ideas end here. That is success.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the two-question decision flow that sorts any use case</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Start simple - the rule with a pedigree<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Anthropic's advice to its own customers is disarmingly modest: a <strong>single LLM call is usually enough</strong>. Summarize this, draft that, classify these - one ask, one answer, no ladder-climbing required. Their standing rule: <strong>add complexity only when it demonstrably improves outcomes</strong>.</p>
+        <ul>
+          <li>"Demonstrably" is the load-bearing word. It means measured, not felt. A demo is not a demonstration of improved outcomes; a comparison against the simpler version is.</li>
+          <li>As a leader, this hands you a wonderfully polite challenge for any proposal: <em>"what did the simpler version score, and by how much does this beat it?"</em> If nobody built the simpler version, the conversation is already valuable.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>The budget intuition</strong>
+          Complexity is a loan against future operations. Every rung up the ladder is borrowed flexibility that operations, audit, and finance repay monthly. Approve the climb the way you would approve debt: against evidence of return.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>McKinsey's two lessons from 50+ builds<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>McKinsey teams distilled six lessons from more than fifty agentic builds. Two of them do most of the work for a leader, and both are pleasingly deflationary:</p>
+        <ul>
+          <li><strong>"It's not about the agent, it's about the workflow."</strong> The value never comes from the agent as an artifact - it comes from redesigning the business workflow around it. Teams that bolt an agent onto an unchanged process ship a demo; teams that redesign the process ship savings.</li>
+          <li><strong>"Agents aren't always the answer."</strong> From the people building them for a living. Low-variance, standardized processes are better served by rules, RPA, or fixed workflows - lower cost, higher auditability, no surprises.</li>
+        </ul>
+        <p>Together they hand you the questions for any internal pitch: <em>which workflow is being redesigned, and why is an agent the right rung for it?</em> A proposal that cannot answer both is a technology looking for a problem.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The pitch that answered both.</strong> A logistics team (anonymized) proposed an "exceptions agent" and opened with the workflow slide, not the agent slide: here is the process today, here is the redesigned process, here are the two steps where variance genuinely requires model-directed decisions. Approval took one meeting. The pitch before it - "we want to build an agent" - had taken four and gone nowhere.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Cost intuition - what each rung multiplies<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You do not need to price tokens to have the right instinct. Each rung up the ladder multiplies three things at once - and the multiplication compounds:</p>
+        <table class="clean">
+          <thead><tr><th>Rung</th><th>What multiplies</th><th>Leadership read</th></tr></thead>
+          <tbody>
+            <tr><td>Single call</td><td>Baseline: one model call per task</td><td>Cheap enough to try on anything</td></tr>
+            <tr><td>Workflow</td><td>A few calls, fixed and known in advance</td><td>Costs are predictable line items</td></tr>
+            <tr><td>Agent</td><td>Unknown number of calls + tool runs per task</td><td>Budget becomes a range, not a number</td></tr>
+            <tr><td>Multi-agent</td><td>Agents calling agents; failure modes multiply too</td><td>Needs spend caps and monitoring by design</td></tr>
+          </tbody>
+        </table>
+        <p>Tokens, latency, and failure modes all climb together. The runaway-cost stories in session a3 are what happens when this table is discovered in production instead of in planning.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ EXERCISE 1 ============ -->
+  <section class="section" id="exercise-1">
+    <div class="section-kicker">
+      <span class="klabel">Exercise 1 of 2</span>
+      <h2>Sort your own portfolio <span class="tag demo">★ 12 min · pen and paper</span></h2>
+    </div>
+    <p class="lede">The ladder becomes yours the moment you sort real work onto it. No code - a pen, the decision flow above, and eight honest minutes.</p>
+
+    <div class="steps">
+      <div class="step"><p>List <strong>8 real tasks</strong> from your organization that someone has proposed (or you suspect someone will propose) "putting AI on". Mix sizes: a report, a customer reply, a reconciliation, an analysis.</p></div>
+      <div class="step"><p>Run each through the two-question flow: steps predictable? → workflow. High variance AND tools needed? → agent. Neither? → single call. Write the rung next to each task.</p></div>
+      <div class="step"><p>Count the rungs. In most honest portfolios the majority land on single call or workflow - if all eight landed on "agent", re-run the first question with a colder eye.</p></div>
+      <div class="step"><p>Circle the one task you (or your organization) would have over-engineered - the workflow that was about to be funded as an agent. That circle is today's return on 45 minutes.</p></div>
+    </div>
+
+    <div class="prompt-box good"><span class="label">★ Your AI sorting partner (paste into any chat AI)</span>You are my sorting partner for AI use cases. I will list 8 tasks from my organization. For each one, ask me the two questions from the autonomy ladder: (1) are the steps predictable and the same shape every time? (2) is there high variance AND a genuine need for tools like search or database access? Then place each task on one rung: single LLM call, workflow, or agent. Be stingy - recommend the simplest rung that works, and flag any task where I seem to be over-engineering. Here are my tasks: [list your 8 tasks]</div>
+  </section>
+
+  <!-- ============ EXERCISE 2 ============ -->
+  <section class="section" id="exercise-2">
+    <div class="section-kicker">
+      <span class="klabel">Exercise 2 of 2</span>
+      <h2>The agent-washing screen <span class="tag demo">★ 8 min · your next vendor meeting</span></h2>
+    </div>
+    <p class="lede">Five questions that separate an agent from a relabeled chatbot - politely, in one meeting. Practice them out loud once; they land differently when they sound routine.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>"Does the model choose the steps at runtime, or is the flow fixed in advance?"</strong> The definitional question. Hesitation here tells you most of what you need.</p></div>
+      <div class="step"><p><strong>"What happens on an exception it has never seen?"</strong> Fixed scripts break or escalate; agents reason. The answer reveals the architecture.</p></div>
+      <div class="step"><p><strong>"Show me a trace of one real production run - every step, every tool call."</strong> Real agent products produce traces on demand. "We'll follow up" is a data point.</p></div>
+      <div class="step"><p><strong>"What limits what it can do and spend - and what happens at the limit?"</strong> A real agent vendor has thought hard about guardrails and caps, because their other customers made them.</p></div>
+      <div class="step"><p><strong>"Which parts of the product are deterministic automation, and which are model-directed?"</strong> The honest answer is almost always "a mix" - and an honest mix beats a pure-agent claim every time.</p></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Keep the tone curious, not prosecutorial</strong>
+      These questions work best delivered with genuine interest. Vendors with real agents enjoy answering them; only the relabelers find them hostile.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="homework">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session a2 <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Finish sorting all 8 portfolio tasks if you ran out of time, and keep the sheet - sessions a5 and a6 reuse it for investment and ROI decisions.</li>
+      <li>Run the sorting-partner prompt on the two tasks you were least sure about, and notice where the AI pushes back on your rung choice.</li>
+      <li>Use at least two of the five agent-washing questions in a real conversation this week - a vendor call, a team review, or a pitch you receive.</li>
+      <li>Optional reading: Anthropic's essay "Building effective agents" - you now have the ladder, so it reads as a friendly confirmation rather than a technical paper.</li>
+    </ul>
+    <div class="callout win">
+      <strong>★ Questions to ask your data team this week</strong>
+      <ol>
+        <li>Of everything we currently call an "agent", where does each one actually sit on the autonomy ladder?</li>
+        <li>Which of our processes are predictable enough that a workflow or RPA would be cheaper and more auditable than an agent?</li>
+        <li>Where have we added agent complexity without evidence that it demonstrably improves outcomes over the simpler version?</li>
+        <li>If a vendor pitched us "agents" tomorrow, who runs our due-diligence screen, and what is on it?</li>
+        <li>What is the simplest version of our most ambitious AI idea - and have we tried it first?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">The leader track teaches from published engineering guidance, consulting research, and analyst warnings - no vendor marketing. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Anthropic "Building effective agents"</span><span class="note">Part 1 · workflow vs agent definitions · Part 2 · the start-simple rule</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">McKinsey's six lessons from 50+ agentic builds</span><span class="note">Part 2 covers the two leadership lessons; the remaining four surface in a3 and a6</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Gartner's agent-washing warning</span><span class="note">Part 1 · the relabeling pattern · Exercise 2 · the five-question screen</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Anthropic's line between a workflow and an agent is...</p>
+      <button class="qopt" type="button">A · Agents use newer, more capable models</button>
+      <button class="qopt" type="button">B · In a workflow YOU fixed the steps in advance; in an agent the MODEL chooses the steps</button>
+      <button class="qopt" type="button">C · Workflows are on-premise, agents run in the cloud</button>
+      <p class="qwhy">Who chooses the steps - that is the whole distinction, and it decides cost, auditability, and governance. Not model quality, not vendor, not the demo.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · A vendor demo looks impressively agentic. The single best due-diligence move is...</p>
+      <button class="qopt" type="button">A · Ask which foundation model powers it</button>
+      <button class="qopt" type="button">B · Request a discount to pilot it quickly</button>
+      <button class="qopt" type="button">C · Ask whether the model chooses steps at runtime, and request a trace of one real run</button>
+      <p class="qwhy">A polished fixed workflow demos exactly like an agent - only the architecture answer and a real trace can tell them apart. That is the heart of the agent-washing screen.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Your team proposes a multi-agent system for a process with the same four steps every time. You should...</p>
+      <button class="qopt" type="button">A · Push back - predictable steps mean a workflow (or RPA) is cheaper, faster, and more auditable</button>
+      <button class="qopt" type="button">B · Approve it - multi-agent is where the industry is heading</button>
+      <button class="qopt" type="button">C · Ask them to add more agents for resilience</button>
+      <p class="qwhy">Predictable steps = workflow territory. McKinsey's builders say it themselves: agents aren't always the answer, and each rung up multiplies cost and failure modes.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The ladder</b><span>Rules/RPA → single call → workflow → agent → multi-agent. Flexibility up, auditability down.</span></div>
+      <div class="cheat-item"><b>Workflow vs agent</b><span>You fix the steps vs the model chooses them. The only line that matters - everything else is marketing.</span></div>
+      <div class="cheat-item"><b>The decision flow</b><span>Steps predictable? → workflow. High variance + tools needed? → agent. Neither? → single call.</span></div>
+      <div class="cheat-item"><b>The only rule</b><span>Start with a single call. Add complexity only when it demonstrably improves outcomes - measured, not felt.</span></div>
+      <div class="cheat-item"><b>McKinsey's two lessons</b><span>It's not about the agent, it's about the workflow · agents aren't always the answer.</span></div>
+      <div class="cheat-item"><b>RPA hybrid</b><span>RPA keeps the deterministic 70%; agents take the exception-heavy 30%. Division of labor, not replacement.</span></div>
+      <div class="cheat-item"><b>Agent-washing test</b><span>"Does the model choose the steps at runtime?" + "show me a trace of one real run."</span></div>
+      <div class="cheat-item"><b>Cost intuition</b><span>Each rung multiplies tokens, latency, AND failure modes. Approve the climb like you approve debt.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 1 of 6 · learn-langchain-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="a2-speaking-agent.html">Next: Speaking agent →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>
