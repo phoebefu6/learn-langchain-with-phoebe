@@ -139,7 +139,52 @@
       <summary><span class="mode live">Live</span>The four primitives - the entire vocabulary<span class="mini">5 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Everything in LangGraph is built from four ideas. Learn these and you have learned the framework:</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four LangGraph primitives: State is one typed shared document every node reads and writes, Nodes are functions that return partial updates, Edges are fixed arrows from one node to the next, and Conditional edges are routing functions that return the name of the next node.">
+    <style>
+      .b5hT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b5hH { font: 700 12px Inter, sans-serif; fill: #132D2D; }
+      .b5hL { font: 400 11px Inter, sans-serif; fill: #132D2D; }
+      .b5hC { font: 400 10.5px monospace; fill: #EBE8FE; }
+      .b5hN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F8F7FF"/>
+    <text class="b5hT" x="40" y="28">Four primitives, the entire vocabulary</text>
+
+    <rect x="50" y="56" width="180" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b5hH" x="140" y="80" text-anchor="middle">STATE</text>
+    <text class="b5hL" x="66" y="106">shared doc every</text>
+    <text class="b5hL" x="66" y="122">node reads &amp; writes</text>
+    <rect x="64" y="150" width="152" height="26" rx="6" fill="#132D2D"/>
+    <text class="b5hC" x="76" y="167">State(TypedDict)</text>
+
+    <rect x="250" y="56" width="180" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b5hH" x="340" y="80" text-anchor="middle">NODES</text>
+    <text class="b5hL" x="266" y="106">functions returning</text>
+    <text class="b5hL" x="266" y="122">a PARTIAL update</text>
+    <rect x="264" y="150" width="152" height="26" rx="6" fill="#132D2D"/>
+    <text class="b5hC" x="276" y="167">return {'route':'x'}</text>
+
+    <rect x="450" y="56" width="180" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b5hH" x="540" y="80" text-anchor="middle">EDGES</text>
+    <text class="b5hL" x="466" y="106">fixed arrow,</text>
+    <text class="b5hL" x="466" y="122">A then always B</text>
+    <rect x="464" y="150" width="152" height="26" rx="6" fill="#132D2D"/>
+    <text class="b5hC" x="476" y="167">add_edge('a','b')</text>
+
+    <rect x="650" y="56" width="180" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b5hH" x="740" y="80" text-anchor="middle">COND. EDGES</text>
+    <text class="b5hL" x="666" y="106">routing fn returns</text>
+    <text class="b5hL" x="666" y="122">the next node name</text>
+    <rect x="664" y="150" width="152" height="26" rx="6" fill="#132D2D"/>
+    <text class="b5hC" x="676" y="167">add_conditional_edges</text>
+
+    <text class="b5hN" x="40" y="232">Nodes return partial updates only; routing functions return node names, not objects.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - learn these four ideas and you have learned the framework</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Primitive</th><th>What it is</th><th>In code</th></tr></thead>
           <tbody>
             <tr><td><strong>State</strong></td><td>One typed, shared document every node reads and writes - a TypedDict, dataclass, or Pydantic model</td><td><code>class State(TypedDict): ...</code></td></tr>
@@ -191,6 +236,59 @@ g.add_conditional_edges(               # 4 · a function picks the path
     {"stats": "stats", "other": "fallback"})
 graph = g.compile()                    # 5 · build it - returns a runnable</div>
         <p>Reading order for someone else's graph: find the <code>StateGraph(...)</code> call to learn the state schema, scan the <code>add_node</code> lines for the cast of characters, then follow edges from <code>START</code>. The <code>compile()</code> call is where the later superpowers plug in - <code>compile(checkpointer=...)</code> is next week's entire session in one argument.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A timeline of the five-call build sequence every LangGraph file follows: StateGraph declares the state schema, add_node registers functions as nodes, add_edge wires fixed arrows, add_conditional_edges lets a function pick the path, and compile builds a runnable graph.">
+    <style>
+      .b5iT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b5iD { font: 700 11px Inter, sans-serif; fill: #5F6B6B; }
+      .b5iL { font: 600 12px Inter, sans-serif; fill: #132D2D; }
+      .b5iB { font: 700 9.5px Inter, sans-serif; fill: #FFFFFF; letter-spacing: .04em; }
+      .b5iN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="250" fill="#F8F7FF"/>
+    <text class="b5iT" x="40" y="28">The five-call build sequence: every LangGraph file ever</text>
+    <line x1="70" y1="120" x2="810" y2="120" stroke="#E9ECEC" stroke-width="2"/>
+
+    <circle cx="70" cy="120" r="7" fill="#1D3D3C"/>
+    <text class="b5iD" x="70" y="102" text-anchor="middle">STEP 1</text>
+    <rect x="26" y="132" width="88" height="17" rx="8" fill="#1D3D3C"/>
+    <text class="b5iB" x="70" y="144" text-anchor="middle">STATEGRAPH</text>
+    <text class="b5iL" x="70" y="168" text-anchor="middle">declare the</text>
+    <text class="b5iL" x="70" y="184" text-anchor="middle">state schema</text>
+
+    <circle cx="255" cy="120" r="7" fill="#1D3D3C"/>
+    <text class="b5iD" x="255" y="102" text-anchor="middle">STEP 2</text>
+    <rect x="211" y="132" width="88" height="17" rx="8" fill="#1D3D3C"/>
+    <text class="b5iB" x="255" y="144" text-anchor="middle">ADD_NODE</text>
+    <text class="b5iL" x="255" y="168" text-anchor="middle">functions</text>
+    <text class="b5iL" x="255" y="184" text-anchor="middle">become nodes</text>
+
+    <circle cx="440" cy="120" r="7" fill="#1D3D3C"/>
+    <text class="b5iD" x="440" y="102" text-anchor="middle">STEP 3</text>
+    <rect x="396" y="132" width="88" height="17" rx="8" fill="#1D3D3C"/>
+    <text class="b5iB" x="440" y="144" text-anchor="middle">ADD_EDGE</text>
+    <text class="b5iL" x="440" y="168" text-anchor="middle">fixed arrows,</text>
+    <text class="b5iL" x="440" y="184" text-anchor="middle">wire them</text>
+
+    <circle cx="625" cy="120" r="7" fill="#1D3D3C"/>
+    <text class="b5iD" x="625" y="102" text-anchor="middle">STEP 4</text>
+    <rect x="581" y="132" width="88" height="17" rx="8" fill="#1D3D3C"/>
+    <text class="b5iB" x="625" y="144" text-anchor="middle">COND_EDGES</text>
+    <text class="b5iL" x="625" y="168" text-anchor="middle">a function</text>
+    <text class="b5iL" x="625" y="184" text-anchor="middle">picks the path</text>
+
+    <circle cx="810" cy="120" r="7" fill="#1D3D3C"/>
+    <text class="b5iD" x="810" y="102" text-anchor="middle">STEP 5</text>
+    <rect x="766" y="132" width="88" height="17" rx="8" fill="#1D3D3C"/>
+    <text class="b5iB" x="810" y="144" text-anchor="middle">COMPILE()</text>
+    <text class="b5iL" x="810" y="168" text-anchor="middle">build it,</text>
+    <text class="b5iL" x="810" y="184" text-anchor="middle">get a runnable</text>
+
+    <text class="b5iN" x="40" y="222">Say it as a sentence: declare the state, register the nodes, wire the edges, compile.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - learn the five-call sequence and any LangGraph file opens like a map</figcaption>
+</figure>
+
         <div class="callout tip">
           <strong>Naming discipline</strong>
           Node names are strings you will see again in traces, interrupts and diagrams. Name them like verbs in a runbook ("classify", "draft", "save_report"), not like variables ("node1", "llm_call_2") - future-you reads these under incident pressure.

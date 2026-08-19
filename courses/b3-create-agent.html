@@ -147,7 +147,42 @@
       <summary><span class="mode self">Self-study</span>Where the defaults end and LangGraph begins<span class="mini">2 min read</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>create_agent's defaults carry you far: single agent, flat tool list, linear conversation, middleware for cross-cutting concerns (b4). You eject down to raw LangGraph (b5) when the SHAPE of the flow itself must change:</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision tree for choosing create_agent versus raw LangGraph: when the shape of the flow stays the same, more tools, a better prompt, and middleware like PII scrubbing or retries stay on create_agent, but branching flows, custom routing, or multi-agent teams require ejecting to LangGraph.">
+    <style>
+      .b3dT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b3dQ { font: 700 12px Inter, sans-serif; fill: #132D2D; }
+      .b3dO { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .b3dS { font: 400 10.5px Inter, sans-serif; fill: rgba(255,255,255,.86); }
+      .b3dE { font: 700 11px Inter, sans-serif; fill: #5F6B6B; }
+      .b3dN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="340" fill="#F8F7FF"/>
+    <text class="b3dT" x="40" y="28">Stay on create_agent, or eject to LangGraph?</text>
+
+    <rect x="40" y="142" width="240" height="56" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b3dQ" x="58" y="176">Does the SHAPE change?</text>
+
+    <rect x="640" y="60" width="200" height="70" rx="10" fill="#1D3D3C"/>
+    <text class="b3dO" x="658" y="90">STAY ON create_agent</text>
+    <text class="b3dS" x="658" y="107">tools, prompt, middleware</text>
+
+    <rect x="640" y="210" width="200" height="70" rx="10" fill="#D85522"/>
+    <text class="b3dO" x="658" y="240">EJECT TO LANGGRAPH</text>
+    <text class="b3dS" x="658" y="257">custom routing, multi-agent</text>
+
+    <path d="M280,170 L640,95" fill="none" stroke="#1D3D3C" stroke-width="1.6"/>
+    <text class="b3dE" x="460" y="126" text-anchor="middle">no</text>
+
+    <path d="M280,170 L640,245" fill="none" stroke="#D85522" stroke-width="1.6"/>
+    <text class="b3dE" x="460" y="212" text-anchor="middle">yes</text>
+
+    <text class="b3dN" x="40" y="316">Ejecting is a rewrite of the wiring, not the parts - tools and prompts carry over.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - eject only when the SHAPE of the flow itself must change</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Need</th><th>Stay on create_agent</th><th>Eject to LangGraph</th></tr></thead>
           <tbody>
             <tr><td>More tools, better prompt</td><td>Yes - just configuration</td><td></td></tr>
@@ -173,7 +208,34 @@
       <summary><span class="mode live">Live</span>invoke vs stream - and the two modes that matter<span class="mini">4 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p><code>invoke</code> blocks until everything - tool calls included - is done, then returns the full result. <code>stream</code> yields as work happens, and the <code>stream_mode</code> argument picks what "work" means:</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two panels contrasting LangChain stream modes: messages yields token chunks for a typing effect in chat UIs and CLIs, while updates yields one update per agent step for progress panes, logs, and debugging tool choice.">
+    <style>
+      .b3eT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b3eH1 { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b3eH2 { font: 700 13px Inter, sans-serif; fill: #451A08; }
+      .b3eB { font: 400 12px Inter, sans-serif; fill: #132D2D; }
+      .b3eN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F8F7FF"/>
+    <text class="b3eT" x="40" y="28">Two stream modes, two different jobs</text>
+
+    <rect x="40" y="50" width="390" height="150" rx="12" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b3eH1" x="58" y="84">stream_mode="messages"</text>
+    <text class="b3eB" x="58" y="114">Tokens as the model generates them</text>
+    <text class="b3eB" x="58" y="134">Typing effect: chat UIs, CLIs</text>
+
+    <rect x="450" y="50" width="390" height="150" rx="12" fill="#FDEDE5" stroke="#D85522" stroke-width="1.5"/>
+    <text class="b3eH2" x="468" y="84">stream_mode="updates"</text>
+    <text class="b3eB" x="468" y="114">One update per agent step fired</text>
+    <text class="b3eB" x="468" y="134">Progress panes, logs, debugging</text>
+
+    <text class="b3eN" x="40" y="236">Humans watching the answer want messages; humans watching the agent want updates.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - humans watching the answer want messages, humans watching the agent want updates</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Mode</th><th>You receive</th><th>Build with it</th></tr></thead>
           <tbody>
             <tr><td><code>stream_mode="messages"</code></td><td>Message chunks - tokens as the model generates them</td><td>The typing effect: chat UIs, CLIs, anything human-facing</td></tr>

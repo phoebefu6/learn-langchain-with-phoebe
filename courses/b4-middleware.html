@@ -130,7 +130,60 @@
       <summary><span class="mode live">Live</span>The built-in five<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>All from <code>langchain.agents.middleware</code>, all attachable in one line each:</p>
-        <table class="clean">
+        
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five built-in LangChain middleware layers shown as cards: Summarization, PII scrub, and Model fallback are wired into DataDesk in tonight's demos, while Human-in-the-loop and Tool retry are built-ins used later, covering long chats, human approval, personal data, transient tool failures, and provider outages.">
+    <style>
+      .b4pT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b4pH { font: 700 12px Inter, sans-serif; fill: #132D2D; }
+      .b4pL { font: 400 11px Inter, sans-serif; fill: #132D2D; }
+      .b4pTagW { font: 700 10px Inter, sans-serif; fill: #FFFFFF; }
+      .b4pTagI { font: 700 10px Inter, sans-serif; fill: #132D2D; }
+      .b4pN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F8F7FF"/>
+    <text class="b4pT" x="40" y="28">The built-in five: middleware you attach, not build</text>
+
+    <rect x="60" y="56" width="148" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b4pH" x="134" y="80" text-anchor="middle">SUMMARIZATION</text>
+    <text class="b4pL" x="76" y="112">long chats blow</text>
+    <text class="b4pL" x="76" y="130">context window</text>
+    <rect x="74" y="152" width="120" height="24" rx="12" fill="#D85522"/>
+    <text class="b4pTagW" x="134" y="168" text-anchor="middle">DEMO 1</text>
+
+    <rect x="218" y="56" width="148" height="150" rx="10" fill="#F8F7FF" stroke="#BBC4C4" stroke-width="1.5"/>
+    <text class="b4pH" x="292" y="80" text-anchor="middle">HUMAN-IN-LOOP</text>
+    <text class="b4pL" x="234" y="112">some tool calls</text>
+    <text class="b4pL" x="234" y="130">need a human yes</text>
+    <rect x="232" y="152" width="120" height="24" rx="12" fill="#BBC4C4"/>
+    <text class="b4pTagI" x="292" y="168" text-anchor="middle">b7 DEEP DIVE</text>
+
+    <rect x="376" y="56" width="148" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b4pH" x="450" y="80" text-anchor="middle">PII SCRUB</text>
+    <text class="b4pL" x="392" y="112">personal data</text>
+    <text class="b4pL" x="392" y="130">skips the API</text>
+    <rect x="390" y="152" width="120" height="24" rx="12" fill="#D85522"/>
+    <text class="b4pTagW" x="450" y="168" text-anchor="middle">DEMO 1</text>
+
+    <rect x="534" y="56" width="148" height="150" rx="10" fill="#F8F7FF" stroke="#BBC4C4" stroke-width="1.5"/>
+    <text class="b4pH" x="608" y="80" text-anchor="middle">TOOL RETRY</text>
+    <text class="b4pL" x="550" y="112">tools fail</text>
+    <text class="b4pL" x="550" y="130">transiently</text>
+    <rect x="548" y="152" width="120" height="24" rx="12" fill="#BBC4C4"/>
+    <text class="b4pTagI" x="608" y="168" text-anchor="middle">N RETRIES</text>
+
+    <rect x="692" y="56" width="148" height="150" rx="10" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b4pH" x="766" y="80" text-anchor="middle">MODEL FALLBACK</text>
+    <text class="b4pL" x="708" y="112">providers have</text>
+    <text class="b4pL" x="708" y="130">bad days</text>
+    <rect x="706" y="152" width="120" height="24" rx="12" fill="#D85522"/>
+    <text class="b4pTagW" x="766" y="168" text-anchor="middle">DEMO 2</text>
+
+    <text class="b4pN" x="40" y="232">Three of five wired into DataDesk tonight; order is the list order, privacy layers outermost.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - five cross-cutting concerns, attached in one line each</figcaption>
+</figure>
+<table class="clean">
           <thead><tr><th>Middleware</th><th>Concern</th><th>DataDesk use</th></tr></thead>
           <tbody>
             <tr><td><strong>SummarizationMiddleware</strong></td><td>Long chats blow the context window</td><td>All-afternoon analysis threads keep working - Demo 1</td></tr>
@@ -187,6 +240,35 @@
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p><strong>Two teams, one bad window.</strong> When the regression shipped, the team with pinned ranges and a smoke-test script never noticed - their resolver skipped the yanked version on the next deliberate bump. The team with unpinned requirements rebuilt an image that Friday, picked up the broken release, and spent a weekend bisecting "middleware suddenly raises TypeError". Same ecosystem event, entirely different weekends.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two panels contrasting the same yanked LangChain release: a team with unpinned requirements rebuilt their image, picked up the broken release, and spent a weekend bisecting a TypeError, while a team with pinned ranges and a smoke test had its resolver skip the yanked version and never noticed.">
+    <style>
+      .b4qT { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b4qH1 { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .b4qH2 { font: 700 13px Inter, sans-serif; fill: #132D2D; }
+      .b4qB { font: 400 12px Inter, sans-serif; fill: #132D2D; }
+      .b4qN { font: 400 12px Inter, sans-serif; fill: #5F6B6B; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#F8F7FF"/>
+    <text class="b4qT" x="40" y="28">Same yanked release, two different weekends</text>
+
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+    <text class="b4qH1" x="58" y="84">✗ UNPINNED REQUIREMENTS</text>
+    <text class="b4qB" x="58" y="114">Rebuilt image that Friday</text>
+    <text class="b4qB" x="58" y="134">Picked up the broken release</text>
+    <text class="b4qB" x="58" y="154">Spent a weekend bisecting TypeError</text>
+
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#EBE8FE" stroke="#1D3D3C" stroke-width="1.5"/>
+    <text class="b4qH2" x="468" y="84">✓ PINNED RANGES + SMOKE TEST</text>
+    <text class="b4qB" x="468" y="114">Resolver skipped yanked version</text>
+    <text class="b4qB" x="468" y="134">Never noticed the regression</text>
+    <text class="b4qB" x="468" y="154">Shipped on schedule</text>
+
+    <text class="b4qN" x="40" y="276">Same ecosystem event, entirely different weekends - pinning is the difference.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - same ecosystem event, entirely different weekends</figcaption>
+</figure>
+
         </div>
       </div>
     </details>
